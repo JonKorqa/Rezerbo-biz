@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -7,10 +7,14 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
 import { getBusinessAppointments } from '../../services/appointments';
+import { getBusiness } from '../../services/businesses';
 import { WeekStrip } from './components/WeekStrip';
 import { TimeGrid } from './components/TimeGrid';
+import { AgendaList } from './components/AgendaList';
+import { Button } from '../../components/ui';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { DEFAULT_BUSINESS_HOURS } from '../../constants/businessHours';
 import type { RootStackParamList } from '../../types/navigation';
 
 // Placeholder until the business profile stores real opening hours.
@@ -30,6 +34,8 @@ export default function AppointmentsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showAddSheet, setShowAddSheet] = useState(false);
+  const [showCalendarSettings, setShowCalendarSettings] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const uid = auth.currentUser?.uid;
 
   const { data: appointments = [] } = useQuery({
@@ -38,6 +44,14 @@ export default function AppointmentsScreen() {
     enabled: !!uid,
   });
 
+  const { data: business } = useQuery({
+    queryKey: ['business', uid],
+    queryFn: () => (uid ? getBusiness(uid) : Promise.resolve(null)),
+    enabled: !!uid,
+  });
+
+  const businessHours = { ...DEFAULT_BUSINESS_HOURS, ...business?.hours };
+
   const dayAppointments = useMemo(
     () => appointments.filter((appt) => isSameDay(appt.start, selectedDate)),
     [appointments, selectedDate],
@@ -45,6 +59,20 @@ export default function AppointmentsScreen() {
 
   const openAddSheet = () => setShowAddSheet(true);
   const closeAddSheet = () => setShowAddSheet(false);
+
+  const openCalendarSettings = () => setShowCalendarSettings(true);
+  const closeCalendarSettings = () => setShowCalendarSettings(false);
+
+  const toggleViewMode = () => setViewMode((mode) => (mode === 'grid' ? 'list' : 'grid'));
+
+  const goToScheduleManagement = () => {
+    closeCalendarSettings();
+    navigation.navigate('ScheduleManagement');
+  };
+
+  const handleCalendarSettingsStub = (label: string) => {
+    console.log(`${label} tapped — not built yet.`);
+  };
 
   const handleNewAppointment = () => {
     closeAddSheet();
@@ -59,7 +87,7 @@ export default function AppointmentsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <TouchableOpacity hitSlop={10}>
+        <TouchableOpacity hitSlop={10} onPress={() => navigation.navigate('Notifications')}>
           <Ionicons name="notifications-outline" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
 
@@ -71,24 +99,22 @@ export default function AppointmentsScreen() {
           <Text style={styles.headerHours}>{BUSINESS_HOURS}</Text>
         </View>
 
-        <TouchableOpacity hitSlop={10}>
+        <TouchableOpacity hitSlop={10} onPress={openCalendarSettings}>
           <Ionicons name="ellipsis-horizontal" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
       </View>
 
-      <WeekStrip selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+      {viewMode === 'grid' ? (
+        <>
+          <WeekStrip selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+          <TimeGrid appointments={dayAppointments} />
+        </>
+      ) : (
+        <AgendaList appointments={appointments} hours={businessHours} onEditHours={goToScheduleManagement} />
+      )}
 
-      <TimeGrid appointments={dayAppointments} />
-
-      <TouchableOpacity
-        style={styles.checklistButton}
-        activeOpacity={0.85}
-        onPress={() => {
-          // TODO: wire up daily checklist / task-list flow.
-          Alert.alert('Coming soon', 'Daily checklist is not built yet.');
-        }}
-      >
-        <Ionicons name="clipboard-outline" size={20} color={Light.textPrimary} />
+      <TouchableOpacity style={styles.viewToggleButton} activeOpacity={0.85} onPress={toggleViewMode}>
+        <Ionicons name={viewMode === 'grid' ? 'list-outline' : 'calendar-outline'} size={20} color={Light.textPrimary} />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={openAddSheet}>
@@ -139,6 +165,49 @@ export default function AppointmentsScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      <Modal
+        visible={showCalendarSettings}
+        transparent
+        animationType="fade"
+        onRequestClose={closeCalendarSettings}
+      >
+        <Pressable style={styles.sheetBackdrop} onPress={closeCalendarSettings}>
+          <Pressable style={styles.sheet} onPress={() => {}}>
+            <View style={styles.sheetHeader}>
+              <Text style={styles.sheetTitle}>Calendar Settings</Text>
+              <TouchableOpacity onPress={closeCalendarSettings} hitSlop={12}>
+                <Text style={styles.sheetDoneLink}>Done</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.sheetRow}
+              activeOpacity={0.7}
+              onPress={() => handleCalendarSettingsStub('Calendar Color Scheme')}
+            >
+              <Text style={styles.sheetRowLabel}>Calendar Color Scheme</Text>
+              <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.sheetRow}
+              activeOpacity={0.7}
+              onPress={() => handleCalendarSettingsStub('Calendar Import')}
+            >
+              <Text style={styles.sheetRowLabel}>Calendar Import</Text>
+              <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+            </TouchableOpacity>
+
+            <Button
+              label="Schedule Management"
+              variant="secondary"
+              onPress={goToScheduleManagement}
+              style={styles.scheduleButton}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -165,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.xs,
     fontFamily: Typography.fontFamily.regular,
   },
-  checklistButton: {
+  viewToggleButton: {
     position: 'absolute',
     left: Spacing.xl,
     bottom: Spacing.xl,
@@ -223,6 +292,12 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
     fontFamily: Typography.fontFamily.heading,
   },
+  sheetDoneLink: {
+    color: Colors.teal,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  scheduleButton: { marginTop: Spacing.md },
   sheetRow: {
     flexDirection: 'row',
     alignItems: 'center',

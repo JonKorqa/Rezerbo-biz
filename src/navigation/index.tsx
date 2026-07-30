@@ -15,6 +15,7 @@ import ServicePickerScreen from '../screens/dashboard/ServicePickerScreen';
 import AddClientScreen from '../screens/dashboard/AddClientScreen';
 import CheckoutCompleteScreen from '../screens/dashboard/CheckoutCompleteScreen';
 import ScheduleManagementScreen from '../screens/dashboard/ScheduleManagementScreen';
+import NotificationsScreen from '../screens/dashboard/NotificationsScreen';
 import SettingsPlaceholderScreen from '../screens/dashboard/SettingsPlaceholderScreen';
 import type { RootStackParamList } from '../types/navigation';
 
@@ -42,6 +43,7 @@ export default function Navigation() {
           options={{ presentation: 'fullScreenModal', gestureEnabled: false }}
         />
         <Stack.Screen name="ScheduleManagement" component={ScheduleManagementScreen} />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
         <Stack.Screen name="SettingsPlaceholder" component={SettingsPlaceholderScreen} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -30,6 +30,7 @@ export type RootStackParamList = {
   AddClient: undefined;
   CheckoutComplete: { amount: number; clientName?: string };
   ScheduleManagement: undefined;
+  Notifications: undefined;
   SettingsPlaceholder: { title: string; icon: keyof typeof Ionicons.glyphMap };
 };
 
