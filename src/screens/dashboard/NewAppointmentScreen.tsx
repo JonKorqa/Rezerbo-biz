@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
@@ -101,6 +101,7 @@ const TIME_SLOTS = buildTimeSlots();
 
 export default function NewAppointmentScreen({ navigation, route }: Props) {
   const uid = auth.currentUser?.uid;
+  const queryClient = useQueryClient();
 
   const { data: business } = useQuery({
     queryKey: ['business', uid],
@@ -198,6 +199,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
     } finally {
       setSaving(false);
     }
+    queryClient.invalidateQueries({ queryKey: ['appointments', uid] });
     navigation.goBack();
   };
 
