@@ -17,6 +17,7 @@ import CheckoutCompleteScreen from '../screens/dashboard/CheckoutCompleteScreen'
 import ScheduleManagementScreen from '../screens/dashboard/ScheduleManagementScreen';
 import NotificationsScreen from '../screens/dashboard/NotificationsScreen';
 import SettingsPlaceholderScreen from '../screens/dashboard/SettingsPlaceholderScreen';
+import BusinessSettingsScreen from '../screens/dashboard/BusinessSettingsScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -45,6 +46,7 @@ export default function Navigation() {
         <Stack.Screen name="ScheduleManagement" component={ScheduleManagementScreen} />
         <Stack.Screen name="Notifications" component={NotificationsScreen} />
         <Stack.Screen name="SettingsPlaceholder" component={SettingsPlaceholderScreen} />
+        <Stack.Screen name="BusinessSettings" component={BusinessSettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

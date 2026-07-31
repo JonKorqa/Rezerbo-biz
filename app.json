@@ -35,6 +35,14 @@
         {
           "locationWhenInUsePermission": "Allow Rezervo Biz to use your location to set your business address."
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Rezervo Biz to save your profile QR code to your photos.",
+          "savePhotosPermission": "Allow Rezervo Biz to save your profile QR code to your photos.",
+          "isAccessMediaLocationEnabled": false
+        }
       ]
     ]
   }

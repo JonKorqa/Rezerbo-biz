@@ -32,6 +32,7 @@ export type RootStackParamList = {
   ScheduleManagement: undefined;
   Notifications: undefined;
   SettingsPlaceholder: { title: string; icon: keyof typeof Ionicons.glyphMap };
+  BusinessSettings: undefined;
 };
 
 export type DashboardTabParamList = {

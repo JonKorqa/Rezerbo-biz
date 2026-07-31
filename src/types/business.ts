@@ -24,6 +24,10 @@ export interface Business {
   category?: string;
   location?: BusinessLocationData;
   hours?: BusinessHours;
+  coverPhotoUrl?: string;
+  photoUrl?: string;
+  portfolio?: string[];
+  instagramHandle?: string;
   onboardingComplete?: boolean;
   createdAt?: unknown;
   updatedAt?: unknown;

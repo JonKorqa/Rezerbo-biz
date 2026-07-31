@@ -1,297 +1,778 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  TextInput,
+  Linking,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Svg, { Defs, LinearGradient as SvgLinearGradient, Stop, Rect } from 'react-native-svg';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { auth } from '../../services/firebase';
+import {
+  addPortfolioImage,
+  getBusiness,
+  removePortfolioImage,
+  saveBusinessCoverPhoto,
+  saveBusinessPhoto,
+  saveInstagramHandle,
+} from '../../services/businesses';
+import { pickImageAsync, uploadImageAsync } from '../../services/imageUpload';
+import { Button, ProgressBar } from '../../components/ui';
+import { ShareProfileSheet } from '../../components/ShareProfileSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
 
-interface SettingsRowConfig {
-  key: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  description: string;
-  badge?: 'new' | 'dot';
-}
-
-const SETTINGS_ROWS: SettingsRowConfig[] = [
-  {
-    key: 'loyalty',
-    icon: 'gift-outline',
-    title: 'Loyalty Cards Program',
-    description: 'Create stamp cards for clients and track their rewards',
-    badge: 'new',
-  },
-  {
-    key: 'payments',
-    icon: 'card-outline',
-    title: 'Payments & Checkout',
-    description: 'All payment settings in one place',
-  },
-  {
-    key: 'services',
-    icon: 'cut-outline',
-    title: 'Services Setup',
-    description: 'Add service details, adjust settings, and categorize them for easy discovery',
-  },
-  {
-    key: 'schedule',
-    icon: 'time-outline',
-    title: 'Schedule Management',
-    description:
-      'Edit your opening hours and business hours, manage time-off, and schedule working hours for staff members',
-  },
-  {
-    key: 'staff',
-    icon: 'people-outline',
-    title: 'Staff Management',
-    description: 'Add new staff members, edit permissions, and adjust team details.',
-  },
-  {
-    key: 'gift-cards',
-    icon: 'pricetags-outline',
-    title: 'Gift Cards',
-    description: 'Allow your customers to buy gift cards and share your talent with their friends.',
-  },
-  {
-    key: 'memberships',
-    icon: 'ribbon-outline',
-    title: 'Memberships',
-    description: 'Use memberships to offer unlimited visits for specific services',
-  },
-  {
-    key: 'packages',
-    icon: 'cube-outline',
-    title: 'Packages',
-    description: 'Encourage repeat visits or combine multiple services into a single experience',
-  },
-  {
-    key: 'business-details',
-    icon: 'storefront-outline',
-    title: 'Business Details',
-    description: 'Edit business information, adjust location settings, and add your policies and safety rules',
-  },
-  {
-    key: 'online-booking',
-    icon: 'globe-outline',
-    title: 'Online Booking',
-    description: "Decide which online booking options you'd like to make available for your clients",
-  },
-  {
-    key: 'advanced',
-    icon: 'options-outline',
-    title: 'Advanced Options',
-    description: 'Access your Booking Settings and adjust retail information',
-  },
-  {
-    key: 'personal',
-    icon: 'person-circle-outline',
-    title: 'Personal Settings',
-    description:
-      'Modify your language, set your notification preferences, and switch business profiles (if applicable)',
-  },
-  {
-    key: 'subscription',
-    icon: 'wallet-outline',
-    title: 'Subscription & Billing',
-    description: 'Manage your Rezervo subscription, view statements, and your payment method',
-  },
-  {
-    key: 'app',
-    icon: 'apps-outline',
-    title: 'App',
-    description: "Access to Rezervo's Terms & Conditions and Privacy Policy",
-    badge: 'dot',
-  },
-];
+const GRID_GAP = Spacing.md;
+const GRID_COLUMNS = 3;
+const TILE_SIZE =
+  (Dimensions.get('window').width - Spacing.xl * 2 - GRID_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
 
 export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [search, setSearch] = useState('');
+  const queryClient = useQueryClient();
+  const uid = auth.currentUser?.uid;
 
-  const handleBack = () => {
-    if (navigation.canGoBack()) navigation.goBack();
-  };
+  const { data: business } = useQuery({
+    queryKey: ['business', uid],
+    queryFn: () => (uid ? getBusiness(uid) : Promise.resolve(null)),
+    enabled: !!uid,
+  });
 
-  const handleRowPress = (row: SettingsRowConfig) => {
-    if (row.key === 'schedule') {
-      navigation.navigate('ScheduleManagement');
-    } else {
-      navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
+  const [showInstagramModal, setShowInstagramModal] = useState(false);
+  const [instagramInput, setInstagramInput] = useState('');
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const profileUrl = uid ? `rezervo://salon/${uid}` : '';
+
+  const invalidateBusiness = () => queryClient.invalidateQueries({ queryKey: ['business', uid] });
+
+  const handleUploadCover = async () => {
+    if (!uid) return;
+    const uri = await pickImageAsync([16, 9]);
+    if (!uri) return;
+    setUploadingCover(true);
+    try {
+      const url = await uploadImageAsync(uri, `businesses/${uid}/cover.jpg`);
+      await saveBusinessCoverPhoto(uid, url);
+      invalidateBusiness();
+    } catch {
+      Alert.alert('Upload failed', 'Could not upload cover photo. Please try again.');
+    } finally {
+      setUploadingCover(false);
     }
   };
 
+  const handleUploadAvatar = async () => {
+    if (!uid) return;
+    const uri = await pickImageAsync([1, 1]);
+    if (!uri) return;
+    setUploadingAvatar(true);
+    try {
+      const url = await uploadImageAsync(uri, `businesses/${uid}/avatar.jpg`);
+      await saveBusinessPhoto(uid, url);
+      invalidateBusiness();
+    } catch {
+      Alert.alert('Upload failed', 'Could not upload profile photo. Please try again.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleAddPortfolioPhoto = async () => {
+    if (!uid) return;
+    const uri = await pickImageAsync([1, 1]);
+    if (!uri) return;
+    setUploadingPortfolio(true);
+    try {
+      const url = await uploadImageAsync(uri, `businesses/${uid}/portfolio/${Date.now()}.jpg`);
+      await addPortfolioImage(uid, url);
+      invalidateBusiness();
+    } catch {
+      Alert.alert('Upload failed', 'Could not upload photo. Please try again.');
+    } finally {
+      setUploadingPortfolio(false);
+    }
+  };
+
+  const handleRemovePortfolioPhoto = (url: string) => {
+    Alert.alert('Remove photo', 'Remove this photo from your portfolio?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          if (!uid) return;
+          try {
+            await removePortfolioImage(uid, url);
+            invalidateBusiness();
+          } catch {
+            Alert.alert('Error', 'Could not remove photo. Please try again.');
+          }
+        },
+      },
+    ]);
+  };
+
+  const openInstagramModal = () => {
+    setInstagramInput(business?.instagramHandle ?? '');
+    setShowInstagramModal(true);
+  };
+
+  const closeInstagramModal = () => setShowInstagramModal(false);
+
+  const handleSaveInstagram = async () => {
+    if (!uid) return;
+    const handle = instagramInput.trim().replace(/^@/, '');
+    if (!handle) return;
+    try {
+      await saveInstagramHandle(uid, handle);
+      invalidateBusiness();
+      closeInstagramModal();
+    } catch {
+      Alert.alert('Error', 'Could not save Instagram handle. Please try again.');
+    }
+  };
+
+  const openInstagramProfile = () => {
+    if (business?.instagramHandle) {
+      Linking.openURL(`https://instagram.com/${business.instagramHandle}`);
+    }
+  };
+
+  const handleComingSoon = (label: string) => {
+    Alert.alert('Coming soon', `${label} is not built yet.`);
+  };
+
+  const handleStubNav = (title: string, icon: keyof typeof Ionicons.glyphMap) => {
+    navigation.navigate('SettingsPlaceholder', { title, icon });
+  };
+
+  const portfolio = business?.portfolio ?? [];
+
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} hitSlop={10}>
-          <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
-        <TouchableOpacity style={styles.countrySelector} activeOpacity={0.7}>
-          <Text style={styles.countryFlag}>🇽🇰</Text>
-          <Ionicons name="chevron-down" size={16} color={Light.textSecondary} />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.coverWrap}>
+          {business?.coverPhotoUrl ? (
+            <Image source={{ uri: business.coverPhotoUrl }} style={styles.coverImage} />
+          ) : (
+            <View style={[styles.coverImage, styles.coverPlaceholder]} />
+          )}
 
-      <View style={styles.searchRow}>
-        <Ionicons name="search-outline" size={18} color={Light.textMuted} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          placeholderTextColor={Light.textMuted}
-          value={search}
-          onChangeText={setSearch}
-        />
-      </View>
-
-      <FlatList
-        data={SETTINGS_ROWS}
-        keyExtractor={(item) => item.key}
-        contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={() => handleRowPress(item)}>
-            <View style={styles.rowIconWrap}>
-              <Ionicons name={item.icon} size={20} color={Colors.teal} />
-            </View>
-            <View style={styles.rowBody}>
-              <View style={styles.rowTitleLine}>
-                <Text style={styles.rowTitle}>{item.title}</Text>
-                {item.badge === 'new' && (
-                  <View style={styles.newBadge}>
-                    <Text style={styles.newBadgeLabel}>New</Text>
-                  </View>
-                )}
-                {item.badge === 'dot' && <View style={styles.dotBadge} />}
-              </View>
-              <Text style={styles.rowDescription}>{item.description}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+          <TouchableOpacity
+            style={styles.addCoverButton}
+            activeOpacity={0.85}
+            onPress={handleUploadCover}
+            disabled={uploadingCover}
+          >
+            {uploadingCover ? (
+              <ActivityIndicator size="small" color={Colors.white} />
+            ) : (
+              <>
+                <Ionicons name="camera-outline" size={15} color={Colors.white} />
+                <Text style={styles.addCoverLabel}>Add Cover</Text>
+              </>
+            )}
           </TouchableOpacity>
-        )}
-      />
 
-      <TouchableOpacity style={styles.helpButton} activeOpacity={0.85}>
-        <Ionicons name="help-circle-outline" size={18} color={Colors.white} />
-        <Text style={styles.helpButtonLabel}>Help Center</Text>
-      </TouchableOpacity>
+          <View style={styles.coverActions}>
+            <TouchableOpacity
+              style={styles.coverIconButton}
+              activeOpacity={0.85}
+              onPress={() => handleStubNav('Public Profile Preview', 'eye-outline')}
+            >
+              <Ionicons name="eye-outline" size={18} color={Colors.white} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.shareButton}
+              activeOpacity={0.85}
+              onPress={() => setShowShareModal(true)}
+            >
+              <Ionicons name="qr-code-outline" size={15} color={Colors.white} />
+              <Text style={styles.shareButtonLabel}>Share Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.headerBody}>
+          <TouchableOpacity
+            style={styles.avatarWrap}
+            activeOpacity={0.85}
+            onPress={handleUploadAvatar}
+            disabled={uploadingAvatar}
+          >
+            {business?.photoUrl ? (
+              <Image source={{ uri: business.photoUrl }} style={styles.avatarImage} />
+            ) : (
+              <View style={[styles.avatarImage, styles.avatarPlaceholder]}>
+                <Ionicons name="storefront" size={30} color={Colors.teal} />
+              </View>
+            )}
+            <View style={styles.avatarEditBadge}>
+              {uploadingAvatar ? (
+                <ActivityIndicator size="small" color={Colors.white} />
+              ) : (
+                <Ionicons name="camera" size={13} color={Colors.white} />
+              )}
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.ratingPill}>
+            <Ionicons name="star" size={12} color={Colors.warning} />
+            <Text style={styles.ratingLabel}>n/a</Text>
+          </View>
+
+          <Text style={styles.businessName} numberOfLines={1}>
+            {business?.businessName ?? 'Your Business'}
+          </Text>
+
+          {business?.instagramHandle ? (
+            <TouchableOpacity style={styles.instagramChip} activeOpacity={0.7} onPress={openInstagramProfile}>
+              <Ionicons name="logo-instagram" size={16} color={Colors.teal} />
+              <Text style={styles.instagramHandle}>@{business.instagramHandle}</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.addInstagramChip} activeOpacity={0.7} onPress={openInstagramModal}>
+              <Ionicons name="add" size={16} color={Colors.teal} />
+              <Text style={styles.addInstagramLabel}>Add Instagram</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            style={styles.progressCard}
+            activeOpacity={0.8}
+            onPress={() => handleStubNav('Completion Checklist', 'checkmark-circle-outline')}
+          >
+            <View style={styles.progressCardTop}>
+              <View>
+                <Text style={styles.progressLevel}>Novice</Text>
+                <Text style={styles.progressLabel}>0 of 5 completed</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+            </View>
+            <ProgressBar step={0} totalSteps={5} />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={styles.rowCard}
+          activeOpacity={0.7}
+          onPress={() => handleStubNav('Stats & Reports', 'bar-chart-outline')}
+        >
+          <View style={styles.rowCardIconWrap}>
+            <Ionicons name="bar-chart-outline" size={20} color={Colors.teal} />
+          </View>
+          <View style={styles.rowCardBody}>
+            <Text style={styles.rowCardTitle}>Stats & Reports</Text>
+            <Text style={styles.rowCardDescription}>
+              Important insights about your business and staff members
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.rowCard}
+          activeOpacity={0.7}
+          onPress={() => handleComingSoon('Social Media Marketing')}
+        >
+          <View style={styles.rowCardIconWrap}>
+            <Ionicons name="share-social-outline" size={20} color={Colors.teal} />
+          </View>
+          <View style={styles.rowCardBody}>
+            <Text style={styles.rowCardTitle}>Create a Social Post</Text>
+            <Text style={styles.rowCardDescription}>Design and share it to promote your business</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+        </TouchableOpacity>
+
+        <View style={styles.banner}>
+          <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+            <Defs>
+              <SvgLinearGradient id="referralGradient" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0" stopColor={Colors.tealLight} stopOpacity={1} />
+                <Stop offset="1" stopColor={Colors.tealDark} stopOpacity={1} />
+              </SvgLinearGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#referralGradient)" />
+          </Svg>
+
+          <View style={styles.bannerContent}>
+            <View style={styles.bannerText}>
+              <Text style={styles.bannerHeadline}>Refer a business, earn rewards</Text>
+              <Text style={styles.bannerSubtext}>
+                Invite other business owners to Rezervo and get rewarded when they join.
+              </Text>
+              <TouchableOpacity
+                style={styles.bannerButton}
+                activeOpacity={0.85}
+                onPress={() => handleComingSoon('Share your link')}
+              >
+                <Text style={styles.bannerButtonLabel}>Share your link →</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.bannerIconWrap}>
+              <Ionicons name="gift" size={24} color={Colors.white} />
+            </View>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={styles.settingsPill}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate('BusinessSettings')}
+        >
+          <Ionicons name="settings-outline" size={18} color={Colors.teal} />
+          <Text style={styles.settingsPillLabel}>Settings</Text>
+        </TouchableOpacity>
+
+        <View style={styles.portfolioSection}>
+          <Text style={styles.sectionTitle}>Portfolio</Text>
+
+          <View style={styles.portfolioGrid}>
+            <TouchableOpacity
+              style={[styles.portfolioTile, styles.addTile]}
+              activeOpacity={0.7}
+              onPress={handleAddPortfolioPhoto}
+              disabled={uploadingPortfolio}
+            >
+              {uploadingPortfolio ? (
+                <ActivityIndicator color={Colors.teal} />
+              ) : (
+                <Ionicons name="add" size={28} color={Colors.teal} />
+              )}
+            </TouchableOpacity>
+
+            {portfolio.map((url) => (
+              <View key={url} style={styles.portfolioTile}>
+                <Image source={{ uri: url }} style={styles.portfolioImage} />
+                <TouchableOpacity
+                  style={styles.portfolioDeleteBadge}
+                  hitSlop={8}
+                  onPress={() => handleRemovePortfolioPhoto(url)}
+                >
+                  <Ionicons name="close" size={12} color={Colors.white} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+
+          {portfolio.length === 0 && (
+            <Text style={styles.portfolioEmptyText}>
+              Show off your best work — add photos of your space, your team, or finished results to
+              attract new clients.
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+
+      <Modal visible={showInstagramModal} transparent animationType="fade" onRequestClose={closeInstagramModal}>
+        <KeyboardAvoidingView
+          style={styles.modalBackdrop}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <Pressable style={StyleSheet.absoluteFill} onPress={closeInstagramModal} />
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Add Instagram</Text>
+              <TouchableOpacity onPress={closeInstagramModal} hitSlop={12}>
+                <Ionicons name="close" size={22} color={Light.textPrimary} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.instagramInputRow}>
+              <Text style={styles.instagramAtPrefix}>@</Text>
+              <TextInput
+                style={styles.instagramInput}
+                placeholder="yourbusiness"
+                placeholderTextColor={Light.textMuted}
+                value={instagramInput}
+                onChangeText={setInstagramInput}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoFocus
+              />
+            </View>
+
+            <Button label="Save" onPress={handleSaveInstagram} style={styles.instagramSaveButton} />
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      <ShareProfileSheet
+        visible={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        businessName={business?.businessName ?? 'Your Business'}
+        profileUrl={profileUrl}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Light.background },
-  header: {
+  scrollContent: { paddingBottom: Spacing['4xl'] },
+  coverWrap: { width: '100%', height: 168 },
+  coverImage: { width: '100%', height: '100%' },
+  coverPlaceholder: { backgroundColor: Light.fieldBg },
+  addCoverButton: {
+    position: 'absolute',
+    top: Spacing.md,
+    left: Spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.md,
-  },
-  headerTitle: {
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.md,
-    fontFamily: Typography.fontFamily.heading,
-  },
-  countrySelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
+    gap: 6,
+    backgroundColor: Colors.overlay,
     borderRadius: Radius.full,
-    backgroundColor: Light.fieldBg,
+    paddingHorizontal: Spacing.md,
+    height: 34,
   },
-  countryFlag: { fontSize: Typography.fontSize.base },
-  searchRow: {
+  addCoverLabel: {
+    color: Colors.white,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  coverActions: {
+    position: 'absolute',
+    top: Spacing.md,
+    right: Spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    marginHorizontal: Spacing.xl,
-    marginBottom: Spacing.sm,
-    backgroundColor: Light.fieldBg,
-    borderRadius: Radius.lg,
-    borderWidth: 1.5,
-    borderColor: Light.border,
-    paddingHorizontal: Spacing.md,
-    height: 44,
   },
-  searchInput: {
-    flex: 1,
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.base,
-    fontFamily: Typography.fontFamily.regular,
+  coverIconButton: {
+    width: 34,
+    height: 34,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  listContent: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing['5xl'] },
-  row: {
+  shareButton: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.md,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Light.border,
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.overlay,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.md,
+    height: 34,
   },
-  rowIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: Radius.md,
+  shareButtonLabel: {
+    color: Colors.white,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  headerBody: {
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    marginTop: -40,
+  },
+  avatarWrap: { marginBottom: Spacing.sm },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: Light.background,
+  },
+  avatarPlaceholder: {
     backgroundColor: Light.fieldBg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rowBody: { flex: 1, gap: 2 },
-  rowTitleLine: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
-  rowTitle: {
+  avatarEditBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: Colors.teal,
+    borderWidth: 2,
+    borderColor: Light.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ratingPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Light.fieldBg,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 3,
+    marginBottom: Spacing.sm,
+  },
+  ratingLabel: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.xs,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  businessName: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.xl,
+    fontFamily: Typography.fontFamily.heading,
+    marginBottom: Spacing.sm,
+  },
+  instagramChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Light.fieldBg,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    marginBottom: Spacing.lg,
+  },
+  instagramHandle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  addInstagramChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1.5,
+    borderColor: Colors.teal,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    marginBottom: Spacing.lg,
+  },
+  addInstagramLabel: {
+    color: Colors.teal,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  progressCard: {
+    width: '100%',
+    backgroundColor: Light.fieldBg,
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    marginBottom: Spacing.xl,
+  },
+  progressCardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  progressLevel: {
     color: Light.textPrimary,
     fontSize: Typography.fontSize.base,
     fontFamily: Typography.fontFamily.bold,
   },
-  rowDescription: {
+  progressLabel: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.regular,
+  },
+  rowCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Light.background,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.md,
+  },
+  rowCardIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.full,
+    backgroundColor: Light.fieldBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  rowCardBody: { flex: 1, paddingRight: Spacing.md, gap: 2 },
+  rowCardTitle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  rowCardDescription: {
     color: Light.textSecondary,
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.regular,
     lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
   },
-  newBadge: {
-    backgroundColor: Colors.teal,
-    borderRadius: Radius.full,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+  banner: {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.md,
   },
-  newBadgeLabel: {
-    color: Colors.white,
-    fontSize: Typography.fontSize.xs,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  dotBadge: {
-    width: 8,
-    height: 8,
-    borderRadius: Radius.full,
-    backgroundColor: Colors.error,
-  },
-  helpButton: {
-    position: 'absolute',
-    right: Spacing.xl,
-    bottom: Spacing.xl,
+  bannerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-    backgroundColor: Colors.teal,
+    justifyContent: 'space-between',
+    padding: Spacing.lg,
+  },
+  bannerText: { flex: 1, paddingRight: Spacing.md },
+  bannerHeadline: {
+    color: Colors.white,
+    fontSize: Typography.fontSize.md,
+    fontFamily: Typography.fontFamily.heading,
+    marginBottom: 4,
+  },
+  bannerSubtext: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.regular,
+    lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
+    marginBottom: Spacing.md,
+  },
+  bannerButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.white,
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.md,
-    height: 44,
-    shadowColor: Colors.teal,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
+    paddingVertical: Spacing.xs,
   },
-  helpButtonLabel: {
-    color: Colors.white,
+  bannerButtonLabel: {
+    color: Colors.tealDark,
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.bold,
   },
+  bannerIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingsPill: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.lg,
+    height: 40,
+    marginBottom: Spacing['2xl'],
+  },
+  settingsPillLabel: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  portfolioSection: { paddingHorizontal: Spacing.xl },
+  sectionTitle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.lg,
+    fontFamily: Typography.fontFamily.heading,
+    marginBottom: Spacing.md,
+  },
+  portfolioGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: GRID_GAP,
+  },
+  portfolioTile: {
+    width: TILE_SIZE,
+    height: TILE_SIZE,
+    borderRadius: Radius.md,
+    overflow: 'hidden',
+  },
+  addTile: {
+    backgroundColor: Light.fieldBg,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  portfolioImage: { width: '100%', height: '100%' },
+  portfolioDeleteBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: Colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  portfolioEmptyText: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.regular,
+    lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
+    marginTop: Spacing.md,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: Colors.overlay,
+    justifyContent: 'flex-end',
+  },
+  modalSheet: {
+    backgroundColor: Light.background,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing['2xl'],
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.lg,
+  },
+  modalTitle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.lg,
+    fontFamily: Typography.fontFamily.heading,
+  },
+  instagramInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    backgroundColor: Light.fieldBg,
+    borderRadius: Radius.lg,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    paddingHorizontal: Spacing.md,
+    height: 48,
+    marginBottom: Spacing.lg,
+  },
+  instagramAtPrefix: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  instagramInput: {
+    flex: 1,
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.regular,
+  },
+  instagramSaveButton: { marginBottom: Spacing.sm },
 });
