@@ -11,6 +11,7 @@ import { Button, FormInput, ProgressBar } from '../../components/ui';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
+import type { BusinessLocationData } from '../../types/business';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BusinessLocation'>;
 
@@ -80,13 +81,15 @@ export default function BusinessLocationScreen({ navigation }: Props) {
     // currently fails with "permission denied". Swallowing the error here so onboarding
     // navigation stays testable — once rules are deployed, remove this try/catch and let a
     // failed save block navigation (with retry) like it did before.
+    const trimmedUnit = unit.trim();
+    const locationData: BusinessLocationData = {
+      lat: coords.latitude,
+      lng: coords.longitude,
+      address,
+      ...(trimmedUnit ? { unit: trimmedUnit } : {}),
+    };
     try {
-      await saveBusinessLocation(uid, {
-        lat: coords.latitude,
-        lng: coords.longitude,
-        address,
-        unit: unit.trim() || undefined,
-      });
+      await saveBusinessLocation(uid, locationData);
     } catch (err) {
       console.error('saveBusinessLocation failed, continuing anyway:', err);
     } finally {
