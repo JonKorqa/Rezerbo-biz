@@ -65,53 +65,59 @@ export default function ProfileScreen() {
 
   const invalidateBusiness = () => queryClient.invalidateQueries({ queryKey: ['business', uid] });
 
-  const handleUploadCover = async () => {
+  async function uploadBusinessImage(options: {
+    aspect: [number, number];
+    storagePath: string;
+    save: (uid: string, url: string) => Promise<void>;
+    setUploading: (uploading: boolean) => void;
+    errorLabel: string;
+    errorMessage: string;
+  }): Promise<void> {
     if (!uid) return;
-    const uri = await pickImageAsync([16, 9]);
+    const uri = await pickImageAsync(options.aspect);
     if (!uri) return;
-    setUploadingCover(true);
+    options.setUploading(true);
     try {
-      const url = await uploadImageAsync(uri, `businesses/${uid}/cover.jpg`);
-      await saveBusinessCoverPhoto(uid, url);
+      const url = await uploadImageAsync(uri, options.storagePath);
+      await options.save(uid, url);
       invalidateBusiness();
-    } catch {
-      Alert.alert('Upload failed', 'Could not upload cover photo. Please try again.');
+    } catch (err) {
+      console.error(`${options.errorLabel} failed:`, err);
+      Alert.alert('Upload failed', options.errorMessage);
     } finally {
-      setUploadingCover(false);
+      options.setUploading(false);
     }
-  };
+  }
 
-  const handleUploadAvatar = async () => {
-    if (!uid) return;
-    const uri = await pickImageAsync([1, 1]);
-    if (!uri) return;
-    setUploadingAvatar(true);
-    try {
-      const url = await uploadImageAsync(uri, `businesses/${uid}/avatar.jpg`);
-      await saveBusinessPhoto(uid, url);
-      invalidateBusiness();
-    } catch {
-      Alert.alert('Upload failed', 'Could not upload profile photo. Please try again.');
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
+  const handleUploadCover = () =>
+    uploadBusinessImage({
+      aspect: [16, 9],
+      storagePath: `businesses/${uid}/cover.jpg`,
+      save: saveBusinessCoverPhoto,
+      setUploading: setUploadingCover,
+      errorLabel: 'uploadCover',
+      errorMessage: 'Could not upload cover photo. Please try again.',
+    });
 
-  const handleAddPortfolioPhoto = async () => {
-    if (!uid) return;
-    const uri = await pickImageAsync([1, 1]);
-    if (!uri) return;
-    setUploadingPortfolio(true);
-    try {
-      const url = await uploadImageAsync(uri, `businesses/${uid}/portfolio/${Date.now()}.jpg`);
-      await addPortfolioImage(uid, url);
-      invalidateBusiness();
-    } catch {
-      Alert.alert('Upload failed', 'Could not upload photo. Please try again.');
-    } finally {
-      setUploadingPortfolio(false);
-    }
-  };
+  const handleUploadAvatar = () =>
+    uploadBusinessImage({
+      aspect: [1, 1],
+      storagePath: `businesses/${uid}/avatar.jpg`,
+      save: saveBusinessPhoto,
+      setUploading: setUploadingAvatar,
+      errorLabel: 'uploadAvatar',
+      errorMessage: 'Could not upload profile photo. Please try again.',
+    });
+
+  const handleAddPortfolioPhoto = () =>
+    uploadBusinessImage({
+      aspect: [1, 1],
+      storagePath: `businesses/${uid}/portfolio/${Date.now()}.jpg`,
+      save: addPortfolioImage,
+      setUploading: setUploadingPortfolio,
+      errorLabel: 'addPortfolioPhoto',
+      errorMessage: 'Could not upload photo. Please try again.',
+    });
 
   const handleRemovePortfolioPhoto = (url: string) => {
     Alert.alert('Remove photo', 'Remove this photo from your portfolio?', [
