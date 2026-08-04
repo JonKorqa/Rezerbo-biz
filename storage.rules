@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Rezervo Biz: business cover photo — public read, owner-only write.
+    match /businesses/{uid}/cover.jpg {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Rezervo Biz: business avatar — public read, owner-only write.
+    match /businesses/{uid}/avatar.jpg {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Rezervo Biz: portfolio images — public read, owner-only write.
+    match /businesses/{uid}/portfolio/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

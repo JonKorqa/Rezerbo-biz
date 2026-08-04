@@ -64,5 +64,41 @@ service cloud.firestore {
     match /businesses/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
+
+    // Rezervo Biz: top-level, scoped by businessId field set on the document.
+    match /appointments/{appointmentId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.businessId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.businessId == request.auth.uid;
+    }
+
+    // Rezervo Biz: top-level, scoped by businessId field set on the document.
+    match /transactions/{transactionId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.businessId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.businessId == request.auth.uid;
+    }
+
+    // Rezervo Biz: clients are a SUBCOLLECTION under businesses/{businessId}/clients
+    // (see src/services/clients.ts), not a top-level collection — scoped by the
+    // path segment, with the businessId field on the doc cross-checked on writes.
+    match /businesses/{businessId}/clients/{clientId} {
+      allow read: if request.auth != null && request.auth.uid == businessId;
+      allow create: if request.auth != null && request.auth.uid == businessId
+        && request.resource.data.businessId == businessId;
+      allow update, delete: if request.auth != null && request.auth.uid == businessId
+        && resource.data.businessId == businessId;
+    }
+
+    // Rezervo Biz: no client-side code writes to `reviews` yet (grepped the repo,
+    // no matches) — this rule is speculative/future-proofing per request, using the
+    // businessId-field pattern. Re-verify field names once review submission is built.
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        (resource == null ? request.resource.data.businessId : resource.data.businessId) == request.auth.uid;
+    }
   }
 }
