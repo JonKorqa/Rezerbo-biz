@@ -68,12 +68,27 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const [bio, setBio] = useState('');
   const [copyConfirmed, setCopyConfirmed] = useState(false);
 
+  // Section 2 — Social Media
+  const [instagramHandle, setInstagramHandle] = useState('');
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [onlineShopUrl, setOnlineShopUrl] = useState('');
+  const [websiteError, setWebsiteError] = useState<string | null>(null);
+
+  // Section 3 — Profile Images
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+
   useEffect(() => {
     if (!business || initialized.current) return;
     initialized.current = true;
     setBusinessName(business.businessName ?? '');
     setPhone(business.phone ?? '');
     setBio(business.bio ?? '');
+    setInstagramHandle(business.instagramHandle ?? '');
+    setFacebookUrl(business.facebookUrl ?? '');
+    setWebsiteUrl(business.websiteUrl ?? '');
+    setOnlineShopUrl(business.onlineShopUrl ?? '');
   }, [business]);
 
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
@@ -106,6 +121,70 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       setSavingSection(null);
     }
   };
+
+  const normalizeUrl = (value: string): string => {
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  };
+
+  const isValidUrl = (value: string): boolean => /^https?:\/\/[^\s]+\.[^\s]+$/i.test(value);
+
+  const handleSaveSocial = async () => {
+    if (!uid) return;
+    const normalizedWebsite = normalizeUrl(websiteUrl);
+    if (normalizedWebsite && !isValidUrl(normalizedWebsite)) {
+      setWebsiteError('Enter a valid website URL.');
+      return;
+    }
+    setWebsiteError(null);
+    setSavingSection('social');
+    try {
+      await updateBusiness(uid, {
+        instagramHandle: instagramHandle.trim().replace(/^@/, ''),
+        facebookUrl: facebookUrl.trim(),
+        websiteUrl: normalizedWebsite,
+        onlineShopUrl: onlineShopUrl.trim(),
+      });
+      setWebsiteUrl(normalizedWebsite);
+      invalidateBusiness();
+    } catch (err) {
+      console.error('saveSocialLinks failed:', err);
+      Alert.alert('Error', 'Could not save social media links. Please try again.');
+    } finally {
+      setSavingSection(null);
+    }
+  };
+
+  const handleUploadAvatar = () => {
+    if (!uid) return;
+    return uploadBusinessImage({
+      uid,
+      aspect: [1, 1],
+      storagePath: `businesses/${uid}/avatar.jpg`,
+      save: saveBusinessPhoto,
+      setUploading: setUploadingAvatar,
+      errorLabel: 'uploadAvatar',
+      errorMessage: 'Could not upload logo. Please try again.',
+      onSuccess: invalidateBusiness,
+    });
+  };
+
+  const handleUploadCover = () => {
+    if (!uid) return;
+    return uploadBusinessImage({
+      uid,
+      aspect: [16, 9],
+      storagePath: `businesses/${uid}/cover.jpg`,
+      save: saveBusinessCoverPhoto,
+      setUploading: setUploadingCover,
+      errorLabel: 'uploadCover',
+      errorMessage: 'Could not upload cover photo. Please try again.',
+      onSuccess: invalidateBusiness,
+    });
+  };
+
+  const portfolioCount = business?.portfolio?.length ?? 0;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -179,6 +258,132 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               loading={savingSection === 'info'}
               style={styles.sectionSaveButton}
             />
+          </View>
+
+          {/* Section 2 — Social Media */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Social Media</Text>
+
+            <FormInput
+              label="Instagram handle"
+              icon="logo-instagram"
+              placeholder="yourbusiness"
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={instagramHandle}
+              onChangeText={setInstagramHandle}
+            />
+            <FormInput
+              label="Facebook page URL or handle"
+              icon="logo-facebook"
+              placeholder="e.g. facebook.com/yourbusiness"
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={facebookUrl}
+              onChangeText={setFacebookUrl}
+            />
+            <FormInput
+              label="Website URL"
+              icon="globe-outline"
+              placeholder="e.g. www.yourbusiness.com"
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="url"
+              value={websiteUrl}
+              onChangeText={(text) => {
+                setWebsiteUrl(text);
+                if (websiteError) setWebsiteError(null);
+              }}
+              error={websiteError ?? undefined}
+            />
+            <FormInput
+              label="Online shop URL"
+              icon="bag-outline"
+              placeholder="e.g. shop.yourbusiness.com"
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={onlineShopUrl}
+              onChangeText={setOnlineShopUrl}
+            />
+
+            <Button
+              label="Save"
+              onPress={handleSaveSocial}
+              loading={savingSection === 'social'}
+              style={styles.sectionSaveButton}
+            />
+          </View>
+
+          {/* Section 3 — Profile Images */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Profile Images</Text>
+
+            <View style={styles.imagesRow}>
+              <TouchableOpacity
+                style={styles.avatarPicker}
+                activeOpacity={0.85}
+                onPress={handleUploadAvatar}
+                disabled={uploadingAvatar}
+              >
+                {business?.photoUrl ? (
+                  <Image source={{ uri: business.photoUrl }} style={styles.avatarImage} />
+                ) : (
+                  <View style={[styles.avatarImage, styles.imagePlaceholder]}>
+                    <Ionicons name="storefront-outline" size={22} color={Colors.teal} />
+                  </View>
+                )}
+                <View style={styles.imageEditBadge}>
+                  {uploadingAvatar ? (
+                    <ActivityIndicator size="small" color={Colors.white} />
+                  ) : (
+                    <Ionicons name="camera" size={12} color={Colors.white} />
+                  )}
+                </View>
+                <Text style={styles.imagePickerLabel}>Logo</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.coverPicker}
+                activeOpacity={0.85}
+                onPress={handleUploadCover}
+                disabled={uploadingCover}
+              >
+                {business?.coverPhotoUrl ? (
+                  <Image source={{ uri: business.coverPhotoUrl }} style={styles.coverImage} />
+                ) : (
+                  <View style={[styles.coverImage, styles.imagePlaceholder]}>
+                    <Ionicons name="image-outline" size={22} color={Colors.teal} />
+                  </View>
+                )}
+                <View style={styles.imageEditBadge}>
+                  {uploadingCover ? (
+                    <ActivityIndicator size="small" color={Colors.white} />
+                  ) : (
+                    <Ionicons name="camera" size={12} color={Colors.white} />
+                  )}
+                </View>
+                <Text style={styles.imagePickerLabel}>Cover Photo</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.linkRow}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('Dashboard', { screen: 'Profile' })}
+            >
+              <View style={styles.linkRowIconWrap}>
+                <Ionicons name="images-outline" size={20} color={Colors.teal} />
+              </View>
+              <View style={styles.linkRowBody}>
+                <Text style={styles.linkRowTitle}>Workplace Photos</Text>
+                <Text style={styles.linkRowDescription}>
+                  {portfolioCount > 0
+                    ? `${portfolioCount} photo${portfolioCount === 1 ? '' : 's'} in your portfolio`
+                    : 'Add photos of your space, team, or results'}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -281,4 +486,76 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.regular,
   },
   sectionSaveButton: { marginTop: Spacing.xs },
+  imagesRow: {
+    flexDirection: 'row',
+    gap: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  avatarPicker: { alignItems: 'center', gap: 6 },
+  avatarImage: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+  },
+  coverPicker: { flex: 1, alignItems: 'center', gap: 6 },
+  coverImage: {
+    width: '100%',
+    height: 64,
+    borderRadius: Radius.md,
+  },
+  imagePlaceholder: {
+    backgroundColor: Light.fieldBg,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageEditBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: 20,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: Colors.teal,
+    borderWidth: 2,
+    borderColor: Light.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imagePickerLabel: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.xs,
+    fontFamily: Typography.fontFamily.medium,
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    backgroundColor: Light.fieldBg,
+    borderRadius: Radius.lg,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    padding: Spacing.md,
+  },
+  linkRowIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkRowBody: { flex: 1, gap: 2 },
+  linkRowTitle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  linkRowDescription: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.regular,
+  },
 });

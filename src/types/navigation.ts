@@ -1,4 +1,5 @@
 import type { Ionicons } from '@expo/vector-icons';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { Service } from './service';
 import type { Client } from './client';
 
@@ -20,7 +21,7 @@ export type RootStackParamList = {
   BusinessInfo: undefined;
   BusinessCategory: undefined;
   BusinessLocation: undefined;
-  Dashboard: undefined;
+  Dashboard: NavigatorScreenParams<DashboardTabParamList> | undefined;
   NewAppointment:
     | {
         selectedClient?: SelectedClientParam;
