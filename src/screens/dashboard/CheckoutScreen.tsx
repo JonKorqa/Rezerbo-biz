@@ -16,11 +16,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useQuery } from '@tanstack/react-query';
 import { auth } from '../../services/firebase';
-import { getBusinessServices } from '../../services/services';
 import { createTransaction } from '../../services/transactions';
 import { useClients } from '../../hooks/useClients';
+import { useServices } from '../../hooks/useServices';
 import { filterClients, getClientDisplayName } from '../../types/client';
 import { ClientRow } from './components/ClientRow';
 import { Button } from '../../components/ui';
@@ -57,11 +56,7 @@ export default function CheckoutScreen() {
   const { data: clients = [] } = useClients();
   const filteredClients = useMemo(() => filterClients(clients, clientSearch), [clients, clientSearch]);
 
-  const { data: services = [], isLoading: servicesLoading } = useQuery({
-    queryKey: ['services', uid],
-    queryFn: () => (uid ? getBusinessServices(uid) : Promise.resolve([])),
-    enabled: !!uid,
-  });
+  const { data: services = [], isLoading: servicesLoading } = useServices();
 
   useEffect(() => {
     if (items.length === 0) return;
@@ -283,6 +278,13 @@ export default function CheckoutScreen() {
                   </TouchableOpacity>
                 )}
                 contentContainerStyle={{ paddingBottom: Spacing.xl }}
+                ListEmptyComponent={
+                  <View style={styles.sheetEmpty}>
+                    <Text style={styles.sheetEmptyText}>
+                      No services set up yet. Add one from Settings → Services Setup.
+                    </Text>
+                  </View>
+                }
               />
             )}
           </Pressable>

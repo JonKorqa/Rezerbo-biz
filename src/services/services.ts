@@ -1,30 +1,50 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Service } from '../types/service';
 
-const collectionName = 'services';
-
-// Shown when a business hasn't set up real services yet, so the picker never renders empty.
-const PLACEHOLDER_SERVICES: Omit<Service, 'businessId'>[] = [
-  { id: 'placeholder-manicure', name: 'Manicure', durationMinutes: 40, price: 20, color: '#3B82F6' },
-  { id: 'placeholder-pedicure', name: 'Pedicure', durationMinutes: 45, price: 25, color: '#22C55E' },
-  { id: 'placeholder-haircut', name: 'Haircut', durationMinutes: 30, price: 35, color: '#F59E0B' },
-];
-
 export async function getBusinessServices(businessId: string): Promise<Service[]> {
-  const snap = await getDocs(query(collection(db, collectionName), where('businessId', '==', businessId)));
-  if (snap.empty) {
-    return PLACEHOLDER_SERVICES.map((s) => ({ ...s, businessId }));
-  }
+  const snap = await getDocs(collection(db, 'businesses', businessId, 'services'));
   return snap.docs.map((doc) => {
     const data = doc.data();
     return {
       id: doc.id,
-      businessId: data.businessId,
+      businessId,
       name: data.name ?? 'Service',
       durationMinutes: data.durationMinutes ?? 30,
       price: data.price ?? 0,
+      category: data.category || undefined,
       color: data.color,
     } satisfies Service;
   });
+}
+
+export interface ServiceInput {
+  name: string;
+  durationMinutes: number;
+  price: number;
+  category?: string;
+}
+
+export async function createService(businessId: string, input: ServiceInput): Promise<void> {
+  await addDoc(collection(db, 'businesses', businessId, 'services'), {
+    businessId,
+    name: input.name,
+    durationMinutes: input.durationMinutes,
+    price: input.price,
+    category: input.category ?? null,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateService(businessId: string, serviceId: string, input: ServiceInput): Promise<void> {
+  await updateDoc(doc(db, 'businesses', businessId, 'services', serviceId), {
+    name: input.name,
+    durationMinutes: input.durationMinutes,
+    price: input.price,
+    category: input.category ?? null,
+  });
+}
+
+export async function deleteService(businessId: string, serviceId: string): Promise<void> {
+  await deleteDoc(doc(db, 'businesses', businessId, 'services', serviceId));
 }

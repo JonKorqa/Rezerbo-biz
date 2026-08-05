@@ -1,4 +1,5 @@
 import type { Ionicons } from '@expo/vector-icons';
+import type { Service } from './service';
 
 export type SelectedClientParam = { id: string | null; name: string };
 
@@ -33,6 +34,8 @@ export type RootStackParamList = {
   Notifications: undefined;
   SettingsPlaceholder: { title: string; icon: keyof typeof Ionicons.glyphMap };
   BusinessSettings: undefined;
+  ServicesSetup: undefined;
+  AddEditService: { service?: Service } | undefined;
 };
 
 export type DashboardTabParamList = {

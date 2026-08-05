@@ -2,11 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
 import { CommonActions } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { auth } from '../../services/firebase';
-import { getBusinessServices } from '../../services/services';
+import { useServices } from '../../hooks/useServices';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -15,13 +13,7 @@ import type { Service } from '../../types/service';
 type Props = NativeStackScreenProps<RootStackParamList, 'ServicePicker'>;
 
 export default function ServicePickerScreen({ navigation, route }: Props) {
-  const uid = auth.currentUser?.uid;
-
-  const { data: services = [], isLoading } = useQuery({
-    queryKey: ['services', uid],
-    queryFn: () => (uid ? getBusinessServices(uid) : Promise.resolve([])),
-    enabled: !!uid,
-  });
+  const { data: services = [], isLoading } = useServices();
 
   const currentClient = route.params?.currentClient;
 
@@ -78,6 +70,13 @@ export default function ServicePickerScreen({ navigation, route }: Props) {
             </TouchableOpacity>
           )}
           contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>
+                No services set up yet. Add one from Settings → Services Setup.
+              </Text>
+            </View>
+          }
         />
       )}
     </SafeAreaView>
@@ -100,7 +99,15 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.heading,
   },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  listContent: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing['2xl'] },
+  listContent: { flexGrow: 1, paddingHorizontal: Spacing.xl, paddingBottom: Spacing['2xl'] },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: Spacing['4xl'] },
+  emptyText: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.regular,
+    textAlign: 'center',
+    paddingHorizontal: Spacing['2xl'],
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

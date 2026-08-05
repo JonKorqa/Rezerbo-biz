@@ -18,6 +18,8 @@ import ScheduleManagementScreen from '../screens/dashboard/ScheduleManagementScr
 import NotificationsScreen from '../screens/dashboard/NotificationsScreen';
 import SettingsPlaceholderScreen from '../screens/dashboard/SettingsPlaceholderScreen';
 import BusinessSettingsScreen from '../screens/dashboard/BusinessSettingsScreen';
+import ServicesSetupScreen from '../screens/dashboard/ServicesSetupScreen';
+import AddEditServiceScreen from '../screens/dashboard/AddEditServiceScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,6 +49,8 @@ export default function Navigation() {
         <Stack.Screen name="Notifications" component={NotificationsScreen} />
         <Stack.Screen name="SettingsPlaceholder" component={SettingsPlaceholderScreen} />
         <Stack.Screen name="BusinessSettings" component={BusinessSettingsScreen} />
+        <Stack.Screen name="ServicesSetup" component={ServicesSetupScreen} />
+        <Stack.Screen name="AddEditService" component={AddEditServiceScreen} options={{ presentation: 'modal' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

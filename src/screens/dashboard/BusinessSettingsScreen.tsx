@@ -118,6 +118,8 @@ export default function BusinessSettingsScreen() {
   const handleRowPress = (row: SettingsRowConfig) => {
     if (row.key === 'schedule') {
       navigation.navigate('ScheduleManagement');
+    } else if (row.key === 'services') {
+      navigation.navigate('ServicesSetup');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
     }
