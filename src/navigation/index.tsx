@@ -13,6 +13,7 @@ import NewAppointmentScreen from '../screens/dashboard/NewAppointmentScreen';
 import ClientPickerScreen from '../screens/dashboard/ClientPickerScreen';
 import ServicePickerScreen from '../screens/dashboard/ServicePickerScreen';
 import AddClientScreen from '../screens/dashboard/AddClientScreen';
+import ClientDetailScreen from '../screens/dashboard/ClientDetailScreen';
 import CheckoutCompleteScreen from '../screens/dashboard/CheckoutCompleteScreen';
 import ScheduleManagementScreen from '../screens/dashboard/ScheduleManagementScreen';
 import NotificationsScreen from '../screens/dashboard/NotificationsScreen';
@@ -40,6 +41,7 @@ export default function Navigation() {
         <Stack.Screen name="ClientPicker" component={ClientPickerScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="ServicePicker" component={ServicePickerScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="AddClient" component={AddClientScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="ClientDetail" component={ClientDetailScreen} />
         <Stack.Screen
           name="CheckoutComplete"
           component={CheckoutCompleteScreen}

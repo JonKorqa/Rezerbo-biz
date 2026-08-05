@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Client } from '../types/client';
 
@@ -29,4 +29,16 @@ export async function createClient(businessId: string, input: NewClientInput): P
     phone: input.phone,
     createdAt: serverTimestamp(),
   });
+}
+
+export async function updateClient(businessId: string, clientId: string, input: NewClientInput): Promise<void> {
+  await updateDoc(doc(db, 'businesses', businessId, 'clients', clientId), {
+    firstName: input.firstName,
+    lastName: input.lastName,
+    phone: input.phone,
+  });
+}
+
+export async function deleteClient(businessId: string, clientId: string): Promise<void> {
+  await deleteDoc(doc(db, 'businesses', businessId, 'clients', clientId));
 }

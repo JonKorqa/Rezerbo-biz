@@ -42,6 +42,7 @@ export async function getBusinessAppointments(businessId: string): Promise<Appoi
     return {
       id: doc.id,
       businessId: data.businessId,
+      clientId: data.clientId ?? null,
       clientName: data.clientName ?? 'Client',
       serviceLabel: data.serviceLabel ?? 'Appointment',
       start: data.start?.toDate ? data.start.toDate() : new Date(data.start),

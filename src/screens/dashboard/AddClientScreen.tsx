@@ -1,52 +1,88 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
-import { createClient } from '../../services/clients';
+import { createClient, deleteClient, updateClient } from '../../services/clients';
+import { getClientDisplayName } from '../../types/client';
 import { Button, FormInput } from '../../components/ui';
-import { Spacing, Typography } from '../../theme';
+import { Colors, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddClient'>;
 
-export default function AddClientScreen({ navigation }: Props) {
-  const [phone, setPhone] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+export default function AddClientScreen({ navigation, route }: Props) {
+  const editingClient = route.params?.client;
+  const isEditing = !!editingClient;
+
+  const [phone, setPhone] = useState(editingClient?.phone ?? '');
+  const [firstName, setFirstName] = useState(editingClient?.firstName ?? '');
+  const [lastName, setLastName] = useState(editingClient?.lastName ?? '');
   const [moreDetailsExpanded, setMoreDetailsExpanded] = useState(false);
-  const [savingAction, setSavingAction] = useState<'invite' | 'plain' | null>(null);
+  const [savingAction, setSavingAction] = useState<'invite' | 'plain' | 'edit' | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const queryClient = useQueryClient();
 
-  const canSave = phone.trim().length > 0 && savingAction === null;
+  const canSave = phone.trim().length > 0 && savingAction === null && !deleting;
 
   const handleSave = async (invite: boolean) => {
     const uid = auth.currentUser?.uid;
     if (!canSave || !uid) return;
-    setSavingAction(invite ? 'invite' : 'plain');
-    // TODO(firestore-rules): the `clients` subcollection rule isn't deployed yet, so this
-    // save currently fails with "permission denied". Swallowing the error here so the flow
-    // stays testable — once rules are deployed, remove this try/catch and let a failed save
-    // block navigation (with retry) like it did before.
+    setSavingAction(isEditing ? 'edit' : invite ? 'invite' : 'plain');
+    const input = { firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() };
     try {
-      await createClient(uid, {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        phone: phone.trim(),
-      });
-      if (invite) {
-        console.log(`Would send invite to ${phone.trim()} — not implemented yet.`);
+      if (isEditing) {
+        await updateClient(uid, editingClient.id, input);
+      } else {
+        await createClient(uid, input);
+        if (invite) {
+          console.log(`Would send invite to ${phone.trim()} — not implemented yet.`);
+        }
       }
     } catch (err) {
-      console.error('createClient failed, continuing anyway:', err);
+      console.error('client save failed, continuing anyway:', err);
     } finally {
       setSavingAction(null);
     }
     queryClient.invalidateQueries({ queryKey: ['clients'] });
     navigation.goBack();
+  };
+
+  const handleDelete = () => {
+    if (!editingClient) return;
+    Alert.alert('Delete client', `Remove ${getClientDisplayName(editingClient) || 'this client'} from your clients?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          const uid = auth.currentUser?.uid;
+          if (!uid) return;
+          setDeleting(true);
+          try {
+            await deleteClient(uid, editingClient.id);
+          } catch (err) {
+            console.error('deleteClient failed, continuing anyway:', err);
+          } finally {
+            setDeleting(false);
+          }
+          queryClient.invalidateQueries({ queryKey: ['clients'] });
+          navigation.goBack();
+        },
+      },
+    ]);
   };
 
   return (
@@ -55,7 +91,7 @@ export default function AddClientScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Add New Client</Text>
+        <Text style={styles.headerTitle}>{isEditing ? 'Edit Client' : 'Add New Client'}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -94,24 +130,37 @@ export default function AddClientScreen({ navigation }: Props) {
             // TODO: email, birthday, notes, tags, etc. once the client data model grows.
             <Text style={styles.moreDetailsPlaceholder}>More fields coming soon.</Text>
           )}
+
+          {isEditing && (
+            <TouchableOpacity style={styles.deleteRow} activeOpacity={0.7} onPress={handleDelete} disabled={deleting}>
+              <Ionicons name="trash-outline" size={18} color={Colors.error} />
+              <Text style={styles.deleteLabel}>{deleting ? 'Deleting…' : 'Delete Client'}</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={styles.bottomBar}>
-        <Button
-          label="Add & Invite"
-          onPress={() => handleSave(true)}
-          disabled={!canSave}
-          loading={savingAction === 'invite'}
-        />
-        <Button
-          label="Add"
-          onPress={() => handleSave(false)}
-          disabled={!canSave}
-          loading={savingAction === 'plain'}
-          variant="secondary"
-          style={styles.secondButton}
-        />
+        {isEditing ? (
+          <Button label="Save Changes" onPress={() => handleSave(false)} disabled={!canSave} loading={savingAction === 'edit'} />
+        ) : (
+          <>
+            <Button
+              label="Add & Invite"
+              onPress={() => handleSave(true)}
+              disabled={!canSave}
+              loading={savingAction === 'invite'}
+            />
+            <Button
+              label="Add"
+              onPress={() => handleSave(false)}
+              disabled={!canSave}
+              loading={savingAction === 'plain'}
+              variant="secondary"
+              style={styles.secondButton}
+            />
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -152,6 +201,21 @@ const styles = StyleSheet.create({
     color: Light.textMuted,
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.regular,
+  },
+  deleteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    borderTopWidth: 1,
+    borderTopColor: Light.border,
+    paddingTop: Spacing.lg,
+    marginTop: Spacing.sm,
+  },
+  deleteLabel: {
+    color: Colors.error,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.medium,
   },
   bottomBar: {
     borderTopWidth: 1,

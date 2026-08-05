@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
-import { getBusinessAppointments } from '../../services/appointments';
+import { useAppointments } from '../../hooks/useAppointments';
 import { getBusiness } from '../../services/businesses';
 import { WeekStrip } from './components/WeekStrip';
 import { TimeGrid } from './components/TimeGrid';
@@ -38,11 +38,7 @@ export default function AppointmentsScreen() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const uid = auth.currentUser?.uid;
 
-  const { data: appointments = [] } = useQuery({
-    queryKey: ['appointments', uid],
-    queryFn: () => (uid ? getBusinessAppointments(uid).catch(() => []) : Promise.resolve([])),
-    enabled: !!uid,
-  });
+  const { data: appointments = [] } = useAppointments();
 
   const { data: business } = useQuery({
     queryKey: ['business', uid],

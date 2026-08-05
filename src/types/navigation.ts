@@ -1,5 +1,6 @@
 import type { Ionicons } from '@expo/vector-icons';
 import type { Service } from './service';
+import type { Client } from './client';
 
 export type SelectedClientParam = { id: string | null; name: string };
 
@@ -28,7 +29,8 @@ export type RootStackParamList = {
     | undefined;
   ClientPicker: { currentService?: SelectedServiceParam } | undefined;
   ServicePicker: { currentClient?: SelectedClientParam } | undefined;
-  AddClient: undefined;
+  AddClient: { client?: Client } | undefined;
+  ClientDetail: { clientId: string };
   CheckoutComplete: { amount: number; clientName?: string };
   ScheduleManagement: undefined;
   Notifications: undefined;

@@ -45,7 +45,9 @@ export default function ClientsScreen() {
       <FlatList
         data={filteredClients}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ClientRow client={item} />}
+        renderItem={({ item }) => (
+          <ClientRow client={item} onPress={() => navigation.navigate('ClientDetail', { clientId: item.id })} />
+        )}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.empty}>
