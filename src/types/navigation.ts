@@ -68,6 +68,13 @@ export type RootStackParamList = {
   AddEditPackage: { pkg?: ServicePackage } | undefined;
   ImportInviteClients: undefined;
   ImportContacts: undefined;
+  OnlineBooking: undefined;
+  AdvancedOptions: undefined;
+  PersonalSettings: undefined;
+  NotificationPreferences: undefined;
+  AppInfo: undefined;
+  LegalDocument: { type: 'terms' | 'privacy' };
+  HelpCenter: undefined;
 };
 
 export type DashboardTabParamList = {

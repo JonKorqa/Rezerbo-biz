@@ -62,6 +62,19 @@ export interface Business {
   alwaysAskReceipt?: boolean;
   calendarColor?: string;
   onboardingComplete?: boolean;
+  // Online Booking settings — read by the consumer-facing Rezervo app, not yet consumed anywhere in this app.
+  offersOnlineBooking?: boolean;
+  requireBookingApproval?: boolean;
+  bookingLeadTimeMinutes?: number;
+  bookingWindowDays?: number;
+  // Advanced Options.
+  retailInfo?: string;
+  bufferTimeMinutes?: number;
+  defaultServiceDurationMinutes?: number;
+  // Personal Settings — in-app notification preferences, keyed to match NotificationType.
+  notifyNewBooking?: boolean;
+  notifyUpcomingReminder?: boolean;
+  language?: string;
   createdAt?: unknown;
   updatedAt?: unknown;
 }
