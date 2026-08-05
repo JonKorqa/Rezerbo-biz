@@ -116,6 +116,15 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const [categories, setCategories] = useState<string[]>([]);
   const [showOtherCategories, setShowOtherCategories] = useState(false);
 
+  // Section 7 — Policies & Safety
+  const [cancellationPolicy, setCancellationPolicy] = useState('');
+  const [noWaitingArea, setNoWaitingArea] = useState(false);
+  const [noWaitingAreaNote, setNoWaitingAreaNote] = useState('');
+  const [noOutsideGuests, setNoOutsideGuests] = useState(false);
+  const [noOutsideGuestsNote, setNoOutsideGuestsNote] = useState('');
+  const [healthSafetyRules, setHealthSafetyRules] = useState('');
+  const [additionalDetails, setAdditionalDetails] = useState('');
+
   useEffect(() => {
     if (!business || initialized.current) return;
     initialized.current = true;
@@ -130,6 +139,14 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
     setMobileServiceArea(business.mobileServiceArea ?? '');
     setAmenities(business.amenities ?? []);
     setCategories(business.categories ?? (business.category ? [business.category] : []));
+    const policies = business.policies;
+    setCancellationPolicy(policies?.cancellationPolicy ?? '');
+    setNoWaitingArea(policies?.noWaitingArea ?? false);
+    setNoWaitingAreaNote(policies?.noWaitingAreaNote ?? '');
+    setNoOutsideGuests(policies?.noOutsideGuests ?? false);
+    setNoOutsideGuestsNote(policies?.noOutsideGuestsNote ?? '');
+    setHealthSafetyRules(policies?.healthSafetyRules ?? '');
+    setAdditionalDetails(policies?.additionalDetails ?? '');
   }, [business]);
 
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
@@ -278,6 +295,29 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
     } catch (err) {
       console.error('saveBusinessCategories failed:', err);
       Alert.alert('Error', 'Could not save categories. Please try again.');
+    } finally {
+      setSavingSection(null);
+    }
+  };
+
+  const handleSavePolicies = async () => {
+    if (!uid) return;
+    setSavingSection('policies');
+    const policies: BusinessPolicies = {
+      cancellationPolicy: cancellationPolicy.trim(),
+      noWaitingArea,
+      noWaitingAreaNote: noWaitingArea ? noWaitingAreaNote.trim() : '',
+      noOutsideGuests,
+      noOutsideGuestsNote: noOutsideGuests ? noOutsideGuestsNote.trim() : '',
+      healthSafetyRules: healthSafetyRules.trim(),
+      additionalDetails: additionalDetails.trim(),
+    };
+    try {
+      await updateBusiness(uid, { policies });
+      invalidateBusiness();
+    } catch (err) {
+      console.error('savePolicies failed:', err);
+      Alert.alert('Error', 'Could not save policies. Please try again.');
     } finally {
       setSavingSection(null);
     }
@@ -620,6 +660,95 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               style={styles.sectionSaveButton}
             />
           </View>
+
+          {/* Section 7 — Policies & Safety */}
+          <View style={[styles.section, styles.lastSection]}>
+            <Text style={styles.sectionTitle}>Policies & Safety</Text>
+
+            <View>
+              <Text style={styles.label}>Cancellation policy</Text>
+              <TextInput
+                style={styles.textArea}
+                placeholder="e.g. Cancel or reschedule at least 24 hours in advance"
+                placeholderTextColor={Light.textMuted}
+                value={cancellationPolicy}
+                onChangeText={setCancellationPolicy}
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleRowBody}>
+                <Text style={styles.toggleRowTitle}>No waiting area</Text>
+              </View>
+              <Switch
+                value={noWaitingArea}
+                onValueChange={setNoWaitingArea}
+                trackColor={{ false: Light.track, true: Colors.tealLight }}
+                thumbColor={noWaitingArea ? Colors.teal : Colors.white}
+              />
+            </View>
+            {noWaitingArea && (
+              <FormInput
+                placeholder="Optional note for clients"
+                value={noWaitingAreaNote}
+                onChangeText={setNoWaitingAreaNote}
+              />
+            )}
+
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleRowBody}>
+                <Text style={styles.toggleRowTitle}>No outside guests</Text>
+              </View>
+              <Switch
+                value={noOutsideGuests}
+                onValueChange={setNoOutsideGuests}
+                trackColor={{ false: Light.track, true: Colors.tealLight }}
+                thumbColor={noOutsideGuests ? Colors.teal : Colors.white}
+              />
+            </View>
+            {noOutsideGuests && (
+              <FormInput
+                placeholder="Optional note for clients"
+                value={noOutsideGuestsNote}
+                onChangeText={setNoOutsideGuestsNote}
+              />
+            )}
+
+            <View>
+              <Text style={styles.label}>Health & safety rules</Text>
+              <TextInput
+                style={styles.textArea}
+                placeholder="e.g. Masks optional, please arrive on time"
+                placeholderTextColor={Light.textMuted}
+                value={healthSafetyRules}
+                onChangeText={setHealthSafetyRules}
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>Additional details</Text>
+              <TextInput
+                style={styles.textArea}
+                placeholder="Anything else clients should know before booking"
+                placeholderTextColor={Light.textMuted}
+                value={additionalDetails}
+                onChangeText={setAdditionalDetails}
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+            <Button
+              label="Save"
+              onPress={handleSavePolicies}
+              loading={savingSection === 'policies'}
+              style={styles.sectionSaveButton}
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -652,6 +781,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Light.border,
     gap: Spacing.md,
   },
+  lastSection: { borderBottomWidth: 0 },
   sectionTitle: {
     color: Light.textPrimary,
     fontSize: Typography.fontSize.lg,
