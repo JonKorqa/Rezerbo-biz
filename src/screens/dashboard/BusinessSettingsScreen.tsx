@@ -143,6 +143,8 @@ export default function BusinessSettingsScreen() {
       navigation.navigate('AdvancedOptions');
     } else if (row.key === 'personal') {
       navigation.navigate('PersonalSettings');
+    } else if (row.key === 'app') {
+      navigation.navigate('AppInfo');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
     }

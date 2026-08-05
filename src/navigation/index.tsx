@@ -43,6 +43,8 @@ import OnlineBookingScreen from '../screens/dashboard/OnlineBookingScreen';
 import AdvancedOptionsScreen from '../screens/dashboard/AdvancedOptionsScreen';
 import PersonalSettingsScreen from '../screens/dashboard/PersonalSettingsScreen';
 import NotificationPreferencesScreen from '../screens/dashboard/NotificationPreferencesScreen';
+import AppInfoScreen from '../screens/dashboard/AppInfoScreen';
+import LegalDocumentScreen from '../screens/dashboard/LegalDocumentScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -97,6 +99,8 @@ export default function Navigation() {
         <Stack.Screen name="AdvancedOptions" component={AdvancedOptionsScreen} />
         <Stack.Screen name="PersonalSettings" component={PersonalSettingsScreen} />
         <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} />
+        <Stack.Screen name="AppInfo" component={AppInfoScreen} />
+        <Stack.Screen name="LegalDocument" component={LegalDocumentScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
