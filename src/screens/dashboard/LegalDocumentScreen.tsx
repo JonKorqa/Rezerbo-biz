@@ -2,11 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Colors, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'LegalDocument'>;
 
 // Draft placeholder copy only — NOT reviewed by a lawyer. Must be replaced with real
 // Terms & Conditions / Privacy Policy text before this app is used in production.
@@ -54,9 +55,7 @@ We use reasonable technical measures to protect your data, but no method of stor
 
 This is placeholder text only and must be replaced with reviewed, jurisdiction-appropriate legal language before launch.`;
 
-export default function LegalDocumentScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'LegalDocument'>>();
+export default function LegalDocumentScreen({ navigation, route }: Props) {
   const isTerms = route.params.type === 'terms';
 
   return (
