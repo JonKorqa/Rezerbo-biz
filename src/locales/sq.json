@@ -340,5 +340,94 @@
     "checkoutsCount_other": "{{count}} arkëtime",
     "emptyMessage": "Ende nuk ka transaksione. Arkëtimet që kryen do të shfaqen këtu.",
     "noItemizedDetails": "Nuk ka detaje artikujsh për këtë pagesë."
+  },
+  "servicesSetup": {
+    "title": "Konfigurimi i Shërbimeve",
+    "emptyTitle": "Ende nuk ka shërbime",
+    "emptySubtitle": "Shto shërbimin tënd të parë që klientët dhe stafi të fillojnë me e rezervu."
+  },
+  "addEditService": {
+    "editTitle": "Ndrysho Shërbimin",
+    "addTitle": "Shto Shërbim",
+    "serviceName": "EMRI I SHËRBIMIT",
+    "serviceNamePlaceholder": "p.sh. Manikyr",
+    "duration": "KOHËZGJATJA (MINUTA)",
+    "durationPlaceholder": "p.sh. 40",
+    "price": "ÇMIMI",
+    "category": "KATEGORIA (OPSIONALE)",
+    "categoryPlaceholder": "p.sh. Thonja",
+    "deleting": "Duke fshi…",
+    "deleteService": "Fshij Shërbimin",
+    "deleteConfirmTitle": "Fshij shërbimin",
+    "deleteConfirmMessage": "Me e hjek \"{{name}}\" nga shërbimet e tua?"
+  },
+  "staffManagement": {
+    "title": "Menaxhimi i Stafit"
+  },
+  "staff": {
+    "roleOwner": "Pronar",
+    "roleStaff": "Staf",
+    "unnamed": "Pa emër",
+    "inactive": "Joaktiv"
+  },
+  "addEditStaff": {
+    "editTitle": "Ndrysho Anëtarin e Stafit",
+    "addTitle": "Shto Anëtar Stafi",
+    "name": "EMRI",
+    "phone": "TELEFONI",
+    "email": "EMAIL (OPSIONAL)",
+    "role": "ROLI",
+    "active": "Aktiv",
+    "removing": "Duke hjekë…",
+    "removeStaffMember": "Hjek Anëtarin e Stafit",
+    "remove": "Hjek",
+    "removeConfirmTitle": "Hjek anëtarin e stafit",
+    "removeConfirmMessage": "Me e hjek {{name}} nga ekipi yt?",
+    "thisStaffMember": "këtë anëtar stafi"
+  },
+  "memberships": {
+    "title": "Anëtarësimet",
+    "emptyTitle": "Ende nuk ka anëtarësime",
+    "emptySubtitle": "Ofro vizita të pakufizuara për shërbime specifike me një plan anëtarësimi.",
+    "billing": {
+      "weekly": "Javore",
+      "monthly": "Mujore",
+      "yearly": "Vjetore"
+    }
+  },
+  "addEditMembership": {
+    "editTitle": "Ndrysho Anëtarësimin",
+    "addTitle": "Shto Anëtarësim",
+    "name": "EMRI I ANËTARËSIMIT",
+    "namePlaceholder": "p.sh. Manikyre të Pakufizuara Mujore",
+    "description": "PËRSHKRIMI (OPSIONAL)",
+    "descriptionPlaceholder": "Çka përfshin ky anëtarësim?",
+    "billingPeriod": "PERIUDHA E FATURIMIT",
+    "includedServices": "SHËRBIMET E PËRFSHIRA",
+    "addServicesFirst": "Shto shërbime së pari, pastaj i përfshin këtu.",
+    "deleting": "Duke fshi…",
+    "deleteMembership": "Fshij Anëtarësimin",
+    "deleteConfirmTitle": "Fshij anëtarësimin",
+    "deleteConfirmMessage": "Me e hjek \"{{name}}\" nga anëtarësimet e tua?"
+  },
+  "packages": {
+    "title": "Paketat",
+    "emptyTitle": "Ende nuk ka paketa",
+    "emptySubtitle": "Bashko shërbime në një çmim të kombinuar për me nxit vizita të përsëritura.",
+    "servicesIncluded_one": "{{count}} shërbim i përfshirë",
+    "servicesIncluded_other": "{{count}} shërbime të përfshira"
+  },
+  "addEditPackage": {
+    "editTitle": "Ndrysho Paketën",
+    "addTitle": "Shto Paketë",
+    "name": "EMRI I PAKETËS",
+    "namePlaceholder": "p.sh. Kombo Manikyr-Pedikyr",
+    "descriptionPlaceholder": "Çka përfshin kjo paketë?",
+    "addServicesFirst": "Shto shërbime së pari, pastaj i bashkon këtu.",
+    "combinedPrice": "ÇMIMI I KOMBINUAR",
+    "deleting": "Duke fshi…",
+    "deletePackage": "Fshij Paketën",
+    "deleteConfirmTitle": "Fshij paketën",
+    "deleteConfirmMessage": "Me e hjek \"{{name}}\" nga paketat e tua?"
   }
 }

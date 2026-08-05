@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createStaffMember, deleteStaffMember, updateStaffMember } from '../../services/staff';
 import { Button, FormInput } from '../../components/ui';
@@ -27,6 +28,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AddEditStaff'>;
 const ROLES: StaffRole[] = ['Staff', 'Owner'];
 
 export default function AddEditStaffScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const editingStaff = route.params?.staff;
   const isEditing = !!editingStaff;
 
@@ -63,10 +65,13 @@ export default function AddEditStaffScreen({ navigation, route }: Props) {
 
   const handleDelete = () => {
     if (!editingStaff) return;
-    Alert.alert('Remove staff member', `Remove ${editingStaff.name || 'this staff member'} from your team?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(
+      t('addEditStaff.removeConfirmTitle'),
+      t('addEditStaff.removeConfirmMessage', { name: editingStaff.name || t('addEditStaff.thisStaffMember') }),
+      [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Remove',
+        text: t('addEditStaff.remove'),
         style: 'destructive',
         onPress: async () => {
           const uid = auth.currentUser?.uid;
@@ -92,23 +97,23 @@ export default function AddEditStaffScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isEditing ? 'Edit Staff Member' : 'Add Staff Member'}</Text>
+        <Text style={styles.headerTitle}>{isEditing ? t('addEditStaff.editTitle') : t('addEditStaff.addTitle')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <FormInput label="NAME" icon="person-outline" placeholder="e.g. Arta Krasniqi" value={name} onChangeText={setName} />
+          <FormInput label={t('addEditStaff.name')} icon="person-outline" placeholder={t('onboarding.businessInfo.ownerName.placeholder')} value={name} onChangeText={setName} />
           <FormInput
-            label="PHONE"
+            label={t('addEditStaff.phone')}
             icon="call-outline"
-            placeholder="e.g. 44 123 456"
+            placeholder={t('addClient.phonePlaceholder')}
             keyboardType="phone-pad"
             value={phone}
             onChangeText={setPhone}
           />
           <FormInput
-            label="EMAIL (OPTIONAL)"
+            label={t('addEditStaff.email')}
             icon="mail-outline"
             placeholder="e.g. arta@example.com"
             keyboardType="email-address"
@@ -118,7 +123,7 @@ export default function AddEditStaffScreen({ navigation, route }: Props) {
           />
 
           <View style={styles.roleSection}>
-            <Text style={styles.roleLabel}>ROLE</Text>
+            <Text style={styles.roleLabel}>{t('addEditStaff.role')}</Text>
             <View style={styles.roleRow}>
               {ROLES.map((r) => (
                 <TouchableOpacity
@@ -127,14 +132,16 @@ export default function AddEditStaffScreen({ navigation, route }: Props) {
                   activeOpacity={0.8}
                   onPress={() => setRole(r)}
                 >
-                  <Text style={[styles.roleChipLabel, role === r && styles.roleChipLabelSelected]}>{r}</Text>
+                  <Text style={[styles.roleChipLabel, role === r && styles.roleChipLabelSelected]}>
+                    {r === 'Owner' ? t('staff.roleOwner') : t('staff.roleStaff')}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
 
           <View style={styles.activeRow}>
-            <Text style={styles.activeLabel}>Active</Text>
+            <Text style={styles.activeLabel}>{t('addEditStaff.active')}</Text>
             <Switch
               value={active}
               onValueChange={setActive}
@@ -146,14 +153,14 @@ export default function AddEditStaffScreen({ navigation, route }: Props) {
           {isEditing && (
             <TouchableOpacity style={styles.deleteRow} activeOpacity={0.7} onPress={handleDelete} disabled={deleting}>
               <Ionicons name="trash-outline" size={18} color={Colors.error} />
-              <Text style={styles.deleteLabel}>{deleting ? 'Removing…' : 'Remove Staff Member'}</Text>
+              <Text style={styles.deleteLabel}>{deleting ? t('addEditStaff.removing') : t('addEditStaff.removeStaffMember')}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={styles.bottomBar}>
-        <Button label={isEditing ? 'Save Changes' : 'Add Staff Member'} onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={isEditing ? t('addClient.saveChanges') : t('addEditStaff.addTitle')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
     </SafeAreaView>
   );

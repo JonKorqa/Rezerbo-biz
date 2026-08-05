@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useStaff } from '../../hooks/useStaff';
 import { StaffRow } from './components/StaffRow';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -12,6 +13,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'StaffManagement'>;
 
 export default function StaffManagementScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const { data: staff = [] } = useStaff();
 
   return (
@@ -20,7 +22,7 @@ export default function StaffManagementScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Staff Management</Text>
+        <Text style={styles.headerTitle}>{t('staffManagement.title')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           activeOpacity={0.85}

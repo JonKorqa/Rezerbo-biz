@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
 import type { ServicePackage } from '../../../types/package';
@@ -11,6 +12,7 @@ interface PackageRowProps {
 }
 
 export function PackageRow({ pkg, onPress }: PackageRowProps) {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={onPress}>
       <View style={{ flex: 1 }}>
@@ -18,12 +20,12 @@ export function PackageRow({ pkg, onPress }: PackageRowProps) {
           <Text style={styles.name}>{pkg.name}</Text>
           {!pkg.active && (
             <View style={styles.inactiveBadge}>
-              <Text style={styles.inactiveBadgeLabel}>Inactive</Text>
+              <Text style={styles.inactiveBadgeLabel}>{t('staff.inactive')}</Text>
             </View>
           )}
         </View>
         <Text style={styles.meta}>
-          {pkg.includedServiceIds.length} service{pkg.includedServiceIds.length === 1 ? '' : 's'} included
+          {t('packages.servicesIncluded', { count: pkg.includedServiceIds.length })}
         </Text>
       </View>
       <Text style={styles.price}>${pkg.price.toFixed(2)}</Text>

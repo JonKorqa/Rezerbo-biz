@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
 import type { Membership } from '../../../types/membership';
@@ -11,6 +12,7 @@ interface MembershipRowProps {
 }
 
 export function MembershipRow({ membership, onPress }: MembershipRowProps) {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={onPress}>
       <View style={{ flex: 1 }}>
@@ -18,12 +20,12 @@ export function MembershipRow({ membership, onPress }: MembershipRowProps) {
           <Text style={styles.name}>{membership.name}</Text>
           {!membership.active && (
             <View style={styles.inactiveBadge}>
-              <Text style={styles.inactiveBadgeLabel}>Inactive</Text>
+              <Text style={styles.inactiveBadgeLabel}>{t('staff.inactive')}</Text>
             </View>
           )}
         </View>
         <Text style={styles.meta}>
-          ${membership.price.toFixed(2)} / {membership.billingPeriod}
+          ${membership.price.toFixed(2)} / {t(`memberships.billing.${membership.billingPeriod}`)}
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />

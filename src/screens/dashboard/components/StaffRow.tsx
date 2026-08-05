@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
 import type { StaffMember } from '../../../types/staff';
@@ -20,6 +21,8 @@ function getInitials(name: string) {
 }
 
 export function StaffRow({ staff, onPress }: StaffRowProps) {
+  const { t } = useTranslation();
+  const roleLabel = staff.role === 'Owner' ? t('staff.roleOwner') : t('staff.roleStaff');
   const content = (
     <>
       <View style={styles.avatar}>
@@ -27,15 +30,15 @@ export function StaffRow({ staff, onPress }: StaffRowProps) {
       </View>
       <View style={{ flex: 1 }}>
         <View style={styles.nameRow}>
-          <Text style={styles.name}>{staff.name || 'Unnamed'}</Text>
+          <Text style={styles.name}>{staff.name || t('staff.unnamed')}</Text>
           {!staff.active && (
             <View style={styles.inactiveBadge}>
-              <Text style={styles.inactiveBadgeLabel}>Inactive</Text>
+              <Text style={styles.inactiveBadgeLabel}>{t('staff.inactive')}</Text>
             </View>
           )}
         </View>
         <Text style={styles.meta}>
-          {staff.role}
+          {roleLabel}
           {staff.phone ? ` · ${staff.phone}` : ''}
         </Text>
       </View>

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SectionList } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useServices } from '../../hooks/useServices';
 import { groupServicesByCategory } from '../../types/service';
 import { ServiceRow } from './components/ServiceRow';
@@ -13,6 +14,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'ServicesSetup'>;
 
 export default function ServicesSetupScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const { data: services = [] } = useServices();
 
   const sections = useMemo(
@@ -30,7 +32,7 @@ export default function ServicesSetupScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Services Setup</Text>
+        <Text style={styles.headerTitle}>{t('servicesSetup.title')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           activeOpacity={0.85}
@@ -56,9 +58,9 @@ export default function ServicesSetupScreen({ navigation }: Props) {
             <View style={styles.emptyIconWrap}>
               <Ionicons name="cut-outline" size={32} color={Colors.teal} />
             </View>
-            <Text style={styles.emptyTitle}>No services yet</Text>
+            <Text style={styles.emptyTitle}>{t('servicesSetup.emptyTitle')}</Text>
             <Text style={styles.emptySubtitle}>
-              Add your first service so clients and staff can start booking it.
+              {t('servicesSetup.emptySubtitle')}
             </Text>
           </View>
         }

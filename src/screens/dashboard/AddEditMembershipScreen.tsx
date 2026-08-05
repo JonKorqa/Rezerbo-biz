@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createMembership, deleteMembership, updateMembership } from '../../services/memberships';
 import { useServices } from '../../hooks/useServices';
@@ -40,6 +41,7 @@ function toggleInArray(list: string[], value: string): string[] {
 }
 
 export default function AddEditMembershipScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const editingMembership = route.params?.membership;
   const isEditing = !!editingMembership;
   const { data: services = [] } = useServices();
@@ -86,10 +88,10 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
 
   const handleDelete = () => {
     if (!editingMembership) return;
-    Alert.alert('Delete membership', `Remove "${editingMembership.name}" from your memberships?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('addEditMembership.deleteConfirmTitle'), t('addEditMembership.deleteConfirmMessage', { name: editingMembership.name }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           const uid = auth.currentUser?.uid;
@@ -115,24 +117,24 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isEditing ? 'Edit Membership' : 'Add Membership'}</Text>
+        <Text style={styles.headerTitle}>{isEditing ? t('addEditMembership.editTitle') : t('addEditMembership.addTitle')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <FormInput
-            label="MEMBERSHIP NAME"
+            label={t('addEditMembership.name')}
             icon="ribbon-outline"
-            placeholder="e.g. Monthly Unlimited Manicures"
+            placeholder={t('addEditMembership.namePlaceholder')}
             value={name}
             onChangeText={setName}
           />
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldGroupLabel}>DESCRIPTION (OPTIONAL)</Text>
+            <Text style={styles.fieldGroupLabel}>{t('addEditMembership.description')}</Text>
             <TextInput
               style={styles.textArea}
-              placeholder="What does this membership include?"
+              placeholder={t('addEditMembership.descriptionPlaceholder')}
               placeholderTextColor={Light.textMuted}
               multiline
               textAlignVertical="top"
@@ -141,16 +143,16 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
             />
           </View>
           <FormInput
-            label="PRICE"
+            label={t('addEditService.price')}
             placeholder="0.00"
             keyboardType="decimal-pad"
             value={priceText}
-            onChangeText={(t) => setPriceText(sanitizeDecimalInput(t))}
+            onChangeText={(text) => setPriceText(sanitizeDecimalInput(text))}
             leftElement={<Text style={styles.dollarSign}>$</Text>}
           />
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldGroupLabel}>BILLING PERIOD</Text>
+            <Text style={styles.fieldGroupLabel}>{t('addEditMembership.billingPeriod')}</Text>
             <View style={styles.chipRow}>
               {BILLING_PERIODS.map((period) => (
                 <TouchableOpacity
@@ -160,7 +162,7 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
                   onPress={() => setBillingPeriod(period)}
                 >
                   <Text style={[styles.chipLabel, billingPeriod === period && styles.chipLabelSelected]}>
-                    {period[0].toUpperCase() + period.slice(1)}
+                    {t(`memberships.billing.${period}`)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -168,9 +170,9 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldGroupLabel}>INCLUDED SERVICES</Text>
+            <Text style={styles.fieldGroupLabel}>{t('addEditMembership.includedServices')}</Text>
             {services.length === 0 ? (
-              <Text style={styles.noServicesText}>Add services first, then include them here.</Text>
+              <Text style={styles.noServicesText}>{t('addEditMembership.addServicesFirst')}</Text>
             ) : (
               services.map((service) => {
                 const checked = includedServiceIds.includes(service.id);
@@ -194,7 +196,7 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
           </View>
 
           <View style={styles.activeRow}>
-            <Text style={styles.activeLabel}>Active</Text>
+            <Text style={styles.activeLabel}>{t('addEditStaff.active')}</Text>
             <Switch
               value={active}
               onValueChange={setActive}
@@ -206,14 +208,14 @@ export default function AddEditMembershipScreen({ navigation, route }: Props) {
           {isEditing && (
             <TouchableOpacity style={styles.deleteRow} activeOpacity={0.7} onPress={handleDelete} disabled={deleting}>
               <Ionicons name="trash-outline" size={18} color={Colors.error} />
-              <Text style={styles.deleteLabel}>{deleting ? 'Deleting…' : 'Delete Membership'}</Text>
+              <Text style={styles.deleteLabel}>{deleting ? t('addEditMembership.deleting') : t('addEditMembership.deleteMembership')}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={styles.bottomBar}>
-        <Button label={isEditing ? 'Save Changes' : 'Add Membership'} onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={isEditing ? t('addClient.saveChanges') : t('addEditMembership.addTitle')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
     </SafeAreaView>
   );

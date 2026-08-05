@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createService, deleteService, updateService } from '../../services/services';
 import { Button, FormInput } from '../../components/ui';
@@ -30,6 +31,7 @@ function sanitizeDecimalInput(text: string): string {
 }
 
 export default function AddEditServiceScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const editingService = route.params?.service;
   const isEditing = !!editingService;
 
@@ -76,10 +78,10 @@ export default function AddEditServiceScreen({ navigation, route }: Props) {
 
   const handleDelete = () => {
     if (!editingService) return;
-    Alert.alert('Delete service', `Remove "${editingService.name}" from your services?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('addEditService.deleteConfirmTitle'), t('addEditService.deleteConfirmMessage', { name: editingService.name }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           const uid = auth.currentUser?.uid;
@@ -105,39 +107,39 @@ export default function AddEditServiceScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isEditing ? 'Edit Service' : 'Add Service'}</Text>
+        <Text style={styles.headerTitle}>{isEditing ? t('addEditService.editTitle') : t('addEditService.addTitle')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <FormInput
-            label="SERVICE NAME"
+            label={t('addEditService.serviceName')}
             icon="cut-outline"
-            placeholder="e.g. Manicure"
+            placeholder={t('addEditService.serviceNamePlaceholder')}
             value={name}
             onChangeText={setName}
           />
           <FormInput
-            label="DURATION (MINUTES)"
+            label={t('addEditService.duration')}
             icon="time-outline"
-            placeholder="e.g. 40"
+            placeholder={t('addEditService.durationPlaceholder')}
             keyboardType="number-pad"
             value={durationText}
-            onChangeText={(t) => setDurationText(t.replace(/[^0-9]/g, ''))}
+            onChangeText={(text) => setDurationText(text.replace(/[^0-9]/g, ''))}
           />
           <FormInput
-            label="PRICE"
+            label={t('addEditService.price')}
             placeholder="0.00"
             keyboardType="decimal-pad"
             value={priceText}
-            onChangeText={(t) => setPriceText(sanitizeDecimalInput(t))}
+            onChangeText={(text) => setPriceText(sanitizeDecimalInput(text))}
             leftElement={<Text style={styles.dollarSign}>$</Text>}
           />
           <FormInput
-            label="CATEGORY (OPTIONAL)"
+            label={t('addEditService.category')}
             icon="pricetag-outline"
-            placeholder="e.g. Nails"
+            placeholder={t('addEditService.categoryPlaceholder')}
             value={category}
             onChangeText={setCategory}
           />
@@ -145,14 +147,14 @@ export default function AddEditServiceScreen({ navigation, route }: Props) {
           {isEditing && (
             <TouchableOpacity style={styles.deleteRow} activeOpacity={0.7} onPress={handleDelete} disabled={deleting}>
               <Ionicons name="trash-outline" size={18} color={Colors.error} />
-              <Text style={styles.deleteLabel}>{deleting ? 'Deleting…' : 'Delete Service'}</Text>
+              <Text style={styles.deleteLabel}>{deleting ? t('addEditService.deleting') : t('addEditService.deleteService')}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={styles.bottomBar}>
-        <Button label={isEditing ? 'Save Changes' : 'Add Service'} onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={isEditing ? t('addClient.saveChanges') : t('addEditService.addTitle')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
     </SafeAreaView>
   );

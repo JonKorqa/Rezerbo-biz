@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useMemberships } from '../../hooks/useMemberships';
 import { MembershipRow } from './components/MembershipRow';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -12,6 +13,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'Memberships'>;
 
 export default function MembershipsScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const { data: memberships = [] } = useMemberships();
 
   return (
@@ -20,7 +22,7 @@ export default function MembershipsScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Memberships</Text>
+        <Text style={styles.headerTitle}>{t('memberships.title')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           activeOpacity={0.85}
@@ -42,9 +44,9 @@ export default function MembershipsScreen({ navigation }: Props) {
             <View style={styles.emptyIconWrap}>
               <Ionicons name="ribbon-outline" size={32} color={Colors.teal} />
             </View>
-            <Text style={styles.emptyTitle}>No memberships yet</Text>
+            <Text style={styles.emptyTitle}>{t('memberships.emptyTitle')}</Text>
             <Text style={styles.emptySubtitle}>
-              Offer unlimited visits for specific services with a membership plan.
+              {t('memberships.emptySubtitle')}
             </Text>
           </View>
         }

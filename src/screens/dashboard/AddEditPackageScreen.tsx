@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createPackage, deletePackage, updatePackage } from '../../services/packages';
 import { useServices } from '../../hooks/useServices';
@@ -37,6 +38,7 @@ function toggleInArray(list: string[], value: string): string[] {
 }
 
 export default function AddEditPackageScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const editingPackage = route.params?.pkg;
   const isEditing = !!editingPackage;
   const { data: services = [] } = useServices();
@@ -81,10 +83,10 @@ export default function AddEditPackageScreen({ navigation, route }: Props) {
 
   const handleDelete = () => {
     if (!editingPackage) return;
-    Alert.alert('Delete package', `Remove "${editingPackage.name}" from your packages?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('addEditPackage.deleteConfirmTitle'), t('addEditPackage.deleteConfirmMessage', { name: editingPackage.name }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           const uid = auth.currentUser?.uid;
@@ -110,24 +112,24 @@ export default function AddEditPackageScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isEditing ? 'Edit Package' : 'Add Package'}</Text>
+        <Text style={styles.headerTitle}>{isEditing ? t('addEditPackage.editTitle') : t('addEditPackage.addTitle')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <FormInput
-            label="PACKAGE NAME"
+            label={t('addEditPackage.name')}
             icon="cube-outline"
-            placeholder="e.g. Mani-Pedi Combo"
+            placeholder={t('addEditPackage.namePlaceholder')}
             value={name}
             onChangeText={setName}
           />
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldGroupLabel}>DESCRIPTION (OPTIONAL)</Text>
+            <Text style={styles.fieldGroupLabel}>{t('addEditMembership.description')}</Text>
             <TextInput
               style={styles.textArea}
-              placeholder="What does this package include?"
+              placeholder={t('addEditPackage.descriptionPlaceholder')}
               placeholderTextColor={Light.textMuted}
               multiline
               textAlignVertical="top"
@@ -137,9 +139,9 @@ export default function AddEditPackageScreen({ navigation, route }: Props) {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldGroupLabel}>INCLUDED SERVICES</Text>
+            <Text style={styles.fieldGroupLabel}>{t('addEditMembership.includedServices')}</Text>
             {services.length === 0 ? (
-              <Text style={styles.noServicesText}>Add services first, then bundle them here.</Text>
+              <Text style={styles.noServicesText}>{t('addEditPackage.addServicesFirst')}</Text>
             ) : (
               services.map((service) => {
                 const checked = includedServiceIds.includes(service.id);
@@ -163,16 +165,16 @@ export default function AddEditPackageScreen({ navigation, route }: Props) {
           </View>
 
           <FormInput
-            label="COMBINED PRICE"
+            label={t('addEditPackage.combinedPrice')}
             placeholder="0.00"
             keyboardType="decimal-pad"
             value={priceText}
-            onChangeText={(t) => setPriceText(sanitizeDecimalInput(t))}
+            onChangeText={(text) => setPriceText(sanitizeDecimalInput(text))}
             leftElement={<Text style={styles.dollarSign}>$</Text>}
           />
 
           <View style={styles.activeRow}>
-            <Text style={styles.activeLabel}>Active</Text>
+            <Text style={styles.activeLabel}>{t('addEditStaff.active')}</Text>
             <Switch
               value={active}
               onValueChange={setActive}
@@ -184,14 +186,14 @@ export default function AddEditPackageScreen({ navigation, route }: Props) {
           {isEditing && (
             <TouchableOpacity style={styles.deleteRow} activeOpacity={0.7} onPress={handleDelete} disabled={deleting}>
               <Ionicons name="trash-outline" size={18} color={Colors.error} />
-              <Text style={styles.deleteLabel}>{deleting ? 'Deleting…' : 'Delete Package'}</Text>
+              <Text style={styles.deleteLabel}>{deleting ? t('addEditPackage.deleting') : t('addEditPackage.deletePackage')}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={styles.bottomBar}>
-        <Button label={isEditing ? 'Save Changes' : 'Add Package'} onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={isEditing ? t('addClient.saveChanges') : t('addEditPackage.addTitle')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
     </SafeAreaView>
   );

@@ -340,5 +340,94 @@
     "checkoutsCount_other": "{{count}} checkouts",
     "emptyMessage": "No transactions yet. Checkouts you complete will show up here.",
     "noItemizedDetails": "No itemized details for this charge."
+  },
+  "servicesSetup": {
+    "title": "Services Setup",
+    "emptyTitle": "No services yet",
+    "emptySubtitle": "Add your first service so clients and staff can start booking it."
+  },
+  "addEditService": {
+    "editTitle": "Edit Service",
+    "addTitle": "Add Service",
+    "serviceName": "SERVICE NAME",
+    "serviceNamePlaceholder": "e.g. Manicure",
+    "duration": "DURATION (MINUTES)",
+    "durationPlaceholder": "e.g. 40",
+    "price": "PRICE",
+    "category": "CATEGORY (OPTIONAL)",
+    "categoryPlaceholder": "e.g. Nails",
+    "deleting": "Deleting…",
+    "deleteService": "Delete Service",
+    "deleteConfirmTitle": "Delete service",
+    "deleteConfirmMessage": "Remove \"{{name}}\" from your services?"
+  },
+  "staffManagement": {
+    "title": "Staff Management"
+  },
+  "staff": {
+    "roleOwner": "Owner",
+    "roleStaff": "Staff",
+    "unnamed": "Unnamed",
+    "inactive": "Inactive"
+  },
+  "addEditStaff": {
+    "editTitle": "Edit Staff Member",
+    "addTitle": "Add Staff Member",
+    "name": "NAME",
+    "phone": "PHONE",
+    "email": "EMAIL (OPTIONAL)",
+    "role": "ROLE",
+    "active": "Active",
+    "removing": "Removing…",
+    "removeStaffMember": "Remove Staff Member",
+    "remove": "Remove",
+    "removeConfirmTitle": "Remove staff member",
+    "removeConfirmMessage": "Remove {{name}} from your team?",
+    "thisStaffMember": "this staff member"
+  },
+  "memberships": {
+    "title": "Memberships",
+    "emptyTitle": "No memberships yet",
+    "emptySubtitle": "Offer unlimited visits for specific services with a membership plan.",
+    "billing": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    }
+  },
+  "addEditMembership": {
+    "editTitle": "Edit Membership",
+    "addTitle": "Add Membership",
+    "name": "MEMBERSHIP NAME",
+    "namePlaceholder": "e.g. Monthly Unlimited Manicures",
+    "description": "DESCRIPTION (OPTIONAL)",
+    "descriptionPlaceholder": "What does this membership include?",
+    "billingPeriod": "BILLING PERIOD",
+    "includedServices": "INCLUDED SERVICES",
+    "addServicesFirst": "Add services first, then include them here.",
+    "deleting": "Deleting…",
+    "deleteMembership": "Delete Membership",
+    "deleteConfirmTitle": "Delete membership",
+    "deleteConfirmMessage": "Remove \"{{name}}\" from your memberships?"
+  },
+  "packages": {
+    "title": "Packages",
+    "emptyTitle": "No packages yet",
+    "emptySubtitle": "Bundle services together at a combined price to encourage repeat visits.",
+    "servicesIncluded_one": "{{count}} service included",
+    "servicesIncluded_other": "{{count}} services included"
+  },
+  "addEditPackage": {
+    "editTitle": "Edit Package",
+    "addTitle": "Add Package",
+    "name": "PACKAGE NAME",
+    "namePlaceholder": "e.g. Mani-Pedi Combo",
+    "descriptionPlaceholder": "What does this package include?",
+    "addServicesFirst": "Add services first, then bundle them here.",
+    "combinedPrice": "COMBINED PRICE",
+    "deleting": "Deleting…",
+    "deletePackage": "Delete Package",
+    "deleteConfirmTitle": "Delete package",
+    "deleteConfirmMessage": "Remove \"{{name}}\" from your packages?"
   }
 }
