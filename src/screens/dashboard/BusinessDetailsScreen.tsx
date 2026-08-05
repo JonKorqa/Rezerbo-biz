@@ -27,7 +27,7 @@ import {
 } from '../../services/businesses';
 import { uploadBusinessImage } from '../../services/imageUpload';
 import { Button, FormInput } from '../../components/ui';
-import { PRIMARY_CATEGORIES, OTHER_CATEGORIES, type BusinessCategory } from '../../constants/categories';
+import { BUSINESS_CATEGORIES, type BusinessCategory } from '../../constants/categories';
 import { AMENITIES } from '../../constants/amenities';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
@@ -63,7 +63,7 @@ function CategoryTile({
         <Ionicons name={category.icon} size={20} color={selected ? Colors.white : Colors.teal} />
       </View>
       <Text style={[styles.categoryTileLabel, selected && styles.categoryTileLabelSelected]}>
-        {category.label}
+        {category.label.en}
       </Text>
       {selected && <Ionicons name="checkmark-circle" size={16} color={Colors.teal} style={styles.categoryCheck} />}
     </TouchableOpacity>
@@ -114,7 +114,6 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
   // Section 6 — Business Category
   const [categories, setCategories] = useState<string[]>([]);
-  const [showOtherCategories, setShowOtherCategories] = useState(false);
 
   // Section 7 — Policies & Safety
   const [cancellationPolicy, setCancellationPolicy] = useState('');
@@ -621,7 +620,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             <Text style={styles.sectionSubtitle}>Select all categories that apply to your business.</Text>
 
             <View style={styles.categoryGrid}>
-              {PRIMARY_CATEGORIES.map((category) => (
+              {BUSINESS_CATEGORIES.map((category) => (
                 <CategoryTile
                   key={category.key}
                   category={category}
@@ -630,28 +629,6 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
                 />
               ))}
             </View>
-
-            <TouchableOpacity style={styles.otherToggle} onPress={() => setShowOtherCategories((v) => !v)}>
-              <Text style={styles.otherToggleText}>Other categories</Text>
-              <Ionicons
-                name={showOtherCategories ? 'chevron-up' : 'chevron-down'}
-                size={18}
-                color={Light.textSecondary}
-              />
-            </TouchableOpacity>
-
-            {showOtherCategories && (
-              <View style={styles.categoryGrid}>
-                {OTHER_CATEGORIES.map((category) => (
-                  <CategoryTile
-                    key={category.key}
-                    category={category}
-                    selected={categories.includes(category.key)}
-                    onPress={() => setCategories((prev) => toggleInArray(prev, category.key))}
-                  />
-                ))}
-              </View>
-            )}
 
             <Button
               label="Save"
@@ -1015,16 +992,4 @@ const styles = StyleSheet.create({
   },
   categoryTileLabelSelected: { fontFamily: Typography.fontFamily.bold },
   categoryCheck: { marginLeft: -Spacing.xs },
-  otherToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: Spacing.xs,
-  },
-  otherToggleText: {
-    color: Light.textSecondary,
-    fontSize: Typography.fontSize.sm,
-    fontFamily: Typography.fontFamily.medium,
-  },
 });

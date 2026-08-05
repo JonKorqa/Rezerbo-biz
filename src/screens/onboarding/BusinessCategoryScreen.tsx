@@ -6,7 +6,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
 import { saveBusinessCategory } from '../../services/businesses';
 import { Button, ProgressBar } from '../../components/ui';
-import { PRIMARY_CATEGORIES, OTHER_CATEGORIES, type BusinessCategory } from '../../constants/categories';
+import { BUSINESS_CATEGORIES, type BusinessCategory } from '../../constants/categories';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -31,14 +31,13 @@ function CategoryTile({
       <View style={[styles.tileIconWrap, selected && styles.tileIconWrapSelected]}>
         <Ionicons name={category.icon} size={24} color={selected ? Colors.white : Colors.teal} />
       </View>
-      <Text style={[styles.tileLabel, selected && styles.tileLabelSelected]}>{category.label}</Text>
+      <Text style={[styles.tileLabel, selected && styles.tileLabelSelected]}>{category.label.en}</Text>
     </TouchableOpacity>
   );
 }
 
 export default function BusinessCategoryScreen({ navigation }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [showOther, setShowOther] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -76,7 +75,7 @@ export default function BusinessCategoryScreen({ navigation }: Props) {
         <Text style={styles.subtitle}>Choose the category that best describes your business.</Text>
 
         <View style={styles.grid}>
-          {PRIMARY_CATEGORIES.map((category) => (
+          {BUSINESS_CATEGORIES.map((category) => (
             <CategoryTile
               key={category.key}
               category={category}
@@ -85,24 +84,6 @@ export default function BusinessCategoryScreen({ navigation }: Props) {
             />
           ))}
         </View>
-
-        <TouchableOpacity style={styles.otherToggle} onPress={() => setShowOther((v) => !v)}>
-          <Text style={styles.otherToggleText}>Other categories</Text>
-          <Ionicons name={showOther ? 'chevron-up' : 'chevron-down'} size={18} color={Light.textSecondary} />
-        </TouchableOpacity>
-
-        {showOther && (
-          <View style={styles.grid}>
-            {OTHER_CATEGORIES.map((category) => (
-              <CategoryTile
-                key={category.key}
-                category={category}
-                selected={selected === category.key}
-                onPress={() => setSelected(category.key)}
-              />
-            ))}
-          </View>
-        )}
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -162,19 +143,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   tileLabelSelected: { fontFamily: Typography.fontFamily.bold },
-  otherToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: Spacing.xl,
-    marginBottom: Spacing.md,
-  },
-  otherToggleText: {
-    color: Light.textSecondary,
-    fontSize: Typography.fontSize.sm,
-    fontFamily: Typography.fontFamily.medium,
-  },
   errorText: {
     color: Colors.error,
     fontSize: Typography.fontSize.xs,
