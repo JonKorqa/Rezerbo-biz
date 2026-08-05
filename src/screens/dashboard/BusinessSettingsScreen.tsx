@@ -285,7 +285,11 @@ export default function BusinessSettingsScreen() {
         }
       />
 
-      <TouchableOpacity style={styles.helpButton} activeOpacity={0.85}>
+      <TouchableOpacity
+        style={styles.helpButton}
+        activeOpacity={0.85}
+        onPress={() => navigation.navigate('HelpCenter')}
+      >
         <Ionicons name="help-circle-outline" size={18} color={Colors.white} />
         <Text style={styles.helpButtonLabel}>Help Center</Text>
       </TouchableOpacity>

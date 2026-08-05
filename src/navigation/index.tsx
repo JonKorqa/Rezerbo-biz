@@ -45,6 +45,7 @@ import PersonalSettingsScreen from '../screens/dashboard/PersonalSettingsScreen'
 import NotificationPreferencesScreen from '../screens/dashboard/NotificationPreferencesScreen';
 import AppInfoScreen from '../screens/dashboard/AppInfoScreen';
 import LegalDocumentScreen from '../screens/dashboard/LegalDocumentScreen';
+import HelpCenterScreen from '../screens/dashboard/HelpCenterScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -101,6 +102,7 @@ export default function Navigation() {
         <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} />
         <Stack.Screen name="AppInfo" component={AppInfoScreen} />
         <Stack.Screen name="LegalDocument" component={LegalDocumentScreen} />
+        <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
