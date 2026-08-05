@@ -36,6 +36,8 @@ export type RootStackParamList = {
   CheckoutComplete: { amount: number; clientName?: string };
   ScheduleManagement: undefined;
   Notifications: undefined;
+  CalendarColorSettings: undefined;
+  CalendarImport: undefined;
   SettingsPlaceholder: { title: string; icon: keyof typeof Ionicons.glyphMap };
   BusinessSettings: undefined;
   ServicesSetup: undefined;

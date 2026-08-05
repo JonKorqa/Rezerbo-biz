@@ -25,6 +25,7 @@ interface AgendaListProps {
   appointments: Appointment[];
   hours?: BusinessHours;
   timeOff?: TimeOffEntry[];
+  defaultColor?: string;
   onEditHours: () => void;
 }
 
@@ -32,6 +33,7 @@ export function AgendaList({
   appointments,
   hours = DEFAULT_BUSINESS_HOURS,
   timeOff = [],
+  defaultColor = Colors.teal,
   onEditHours,
 }: AgendaListProps) {
   const days = useMemo(() => {
@@ -85,7 +87,7 @@ export function AgendaList({
                       <View
                         style={[
                           styles.apptColorDot,
-                          { backgroundColor: isReservation ? Light.textMuted : appt.color ?? Colors.teal },
+                          { backgroundColor: isReservation ? Light.textMuted : appt.color ?? defaultColor },
                         ]}
                       />
                       <View style={styles.apptInfo}>

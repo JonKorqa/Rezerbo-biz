@@ -61,6 +61,14 @@ export async function saveBusinessHours(uid: string, hours: BusinessHours) {
   );
 }
 
+export async function saveCalendarColor(uid: string, calendarColor: string) {
+  await setDoc(
+    doc(db, collectionName, uid),
+    { calendarColor, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
 export async function addTimeOff(uid: string, entry: TimeOffEntry) {
   await setDoc(
     doc(db, collectionName, uid),

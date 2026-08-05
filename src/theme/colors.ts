@@ -27,3 +27,7 @@ export const Colors = {
   transparent: 'transparent',
   overlay: 'rgba(0,0,0,0.6)',
 };
+
+// Preset swatches for the business's calendar color scheme — the default color
+// applied to appointment blocks that don't have a service-specific color set.
+export const CalendarPalette = ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#22C55E', '#06B6D4'];

@@ -37,6 +37,7 @@ export interface Business {
   photoUrl?: string;
   portfolio?: string[];
   instagramHandle?: string;
+  calendarColor?: string;
   onboardingComplete?: boolean;
   createdAt?: unknown;
   updatedAt?: unknown;

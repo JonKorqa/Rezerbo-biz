@@ -19,6 +19,8 @@ import ClientDetailScreen from '../screens/dashboard/ClientDetailScreen';
 import CheckoutCompleteScreen from '../screens/dashboard/CheckoutCompleteScreen';
 import ScheduleManagementScreen from '../screens/dashboard/ScheduleManagementScreen';
 import NotificationsScreen from '../screens/dashboard/NotificationsScreen';
+import CalendarColorScreen from '../screens/dashboard/CalendarColorScreen';
+import CalendarImportScreen from '../screens/dashboard/CalendarImportScreen';
 import SettingsPlaceholderScreen from '../screens/dashboard/SettingsPlaceholderScreen';
 import BusinessSettingsScreen from '../screens/dashboard/BusinessSettingsScreen';
 import ServicesSetupScreen from '../screens/dashboard/ServicesSetupScreen';
@@ -53,6 +55,8 @@ export default function Navigation() {
         />
         <Stack.Screen name="ScheduleManagement" component={ScheduleManagementScreen} />
         <Stack.Screen name="Notifications" component={NotificationsScreen} />
+        <Stack.Screen name="CalendarColorSettings" component={CalendarColorScreen} />
+        <Stack.Screen name="CalendarImport" component={CalendarImportScreen} />
         <Stack.Screen name="SettingsPlaceholder" component={SettingsPlaceholderScreen} />
         <Stack.Screen name="BusinessSettings" component={BusinessSettingsScreen} />
         <Stack.Screen name="ServicesSetup" component={ServicesSetupScreen} />

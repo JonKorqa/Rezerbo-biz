@@ -87,8 +87,14 @@ export default function AppointmentsScreen() {
     navigation.navigate('ScheduleManagement');
   };
 
-  const handleCalendarSettingsStub = (label: string) => {
-    console.log(`${label} tapped — not built yet.`);
+  const goToCalendarColorSettings = () => {
+    closeCalendarSettings();
+    navigation.navigate('CalendarColorSettings');
+  };
+
+  const goToCalendarImport = () => {
+    closeCalendarSettings();
+    navigation.navigate('CalendarImport');
   };
 
   const handleNewAppointment = () => {
@@ -142,7 +148,7 @@ export default function AppointmentsScreen() {
               message={`${timeOffEntry?.label ?? 'Day Off'} - Unavailable for Bookings`}
             />
           ) : (
-            <TimeGrid appointments={dayAppointments} />
+            <TimeGrid appointments={dayAppointments} defaultColor={business?.calendarColor} />
           )}
         </>
       ) : (
@@ -150,6 +156,7 @@ export default function AppointmentsScreen() {
           appointments={appointments}
           hours={businessHours}
           timeOff={timeOff}
+          defaultColor={business?.calendarColor}
           onEditHours={goToScheduleManagement}
         />
       )}
@@ -222,20 +229,12 @@ export default function AppointmentsScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              style={styles.sheetRow}
-              activeOpacity={0.7}
-              onPress={() => handleCalendarSettingsStub('Calendar Color Scheme')}
-            >
+            <TouchableOpacity style={styles.sheetRow} activeOpacity={0.7} onPress={goToCalendarColorSettings}>
               <Text style={styles.sheetRowLabel}>Calendar Color Scheme</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.sheetRow}
-              activeOpacity={0.7}
-              onPress={() => handleCalendarSettingsStub('Calendar Import')}
-            >
+            <TouchableOpacity style={styles.sheetRow} activeOpacity={0.7} onPress={goToCalendarImport}>
               <Text style={styles.sheetRowLabel}>Calendar Import</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>

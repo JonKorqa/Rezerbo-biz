@@ -21,9 +21,10 @@ function minutesFromGridStart(date: Date) {
 
 interface TimeGridProps {
   appointments: Appointment[];
+  defaultColor?: string;
 }
 
-export function TimeGrid({ appointments }: TimeGridProps) {
+export function TimeGrid({ appointments, defaultColor = Colors.teal }: TimeGridProps) {
   const gridHeight = (GRID_END_HOUR - GRID_START_HOUR) * HOUR_HEIGHT;
 
   return (
@@ -53,7 +54,7 @@ export function TimeGrid({ appointments }: TimeGridProps) {
               key={appt.id}
               style={[
                 styles.appointmentBlock,
-                isReservation ? styles.reservationBlock : { backgroundColor: appt.color ?? Colors.teal },
+                isReservation ? styles.reservationBlock : { backgroundColor: appt.color ?? defaultColor },
                 { top, height: Math.max(height, 28) },
               ]}
             >
