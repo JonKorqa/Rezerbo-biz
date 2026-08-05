@@ -129,6 +129,8 @@ export default function BusinessSettingsScreen() {
       navigation.navigate('ServicesSetup');
     } else if (row.key === 'payments') {
       navigation.navigate('Transactions');
+    } else if (row.key === 'business-details') {
+      navigation.navigate('BusinessDetails');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
     }

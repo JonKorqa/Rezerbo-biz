@@ -23,13 +23,27 @@ export interface TimeOffEntry {
   label?: string;
 }
 
+export interface BusinessPolicies {
+  cancellationPolicy?: string;
+  noWaitingArea?: boolean;
+  noWaitingAreaNote?: string;
+  noOutsideGuests?: boolean;
+  noOutsideGuestsNote?: string;
+  healthSafetyRules?: string;
+  additionalDetails?: string;
+}
+
 export interface Business {
   ownerUid: string;
   businessName: string;
   ownerName: string;
   phone: string;
   countryCode: string;
+  // Single-select category, still written by onboarding's BusinessCategoryScreen.
   category?: string;
+  // Multi-select categories, written by the Business Details screen.
+  categories?: string[];
+  bio?: string;
   location?: BusinessLocationData;
   hours?: BusinessHours;
   timeOff?: TimeOffEntry[];
@@ -37,6 +51,13 @@ export interface Business {
   photoUrl?: string;
   portfolio?: string[];
   instagramHandle?: string;
+  facebookUrl?: string;
+  websiteUrl?: string;
+  onlineShopUrl?: string;
+  offersMobileServices?: boolean;
+  mobileServiceArea?: string;
+  amenities?: string[];
+  policies?: BusinessPolicies;
   calendarColor?: string;
   onboardingComplete?: boolean;
   createdAt?: unknown;

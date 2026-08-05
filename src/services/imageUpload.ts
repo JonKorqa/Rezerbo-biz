@@ -28,3 +28,30 @@ export async function uploadImageAsync(uri: string, path: string): Promise<strin
   await uploadBytes(storageRef, blob);
   return getDownloadURL(storageRef);
 }
+
+// Shared pick-then-upload-then-save flow for business photos (avatar, cover, portfolio).
+// Used by ProfileScreen and BusinessDetailsScreen so the upload logic lives in one place.
+export async function uploadBusinessImage(options: {
+  uid: string;
+  aspect: [number, number];
+  storagePath: string;
+  save: (uid: string, url: string) => Promise<void>;
+  setUploading: (uploading: boolean) => void;
+  errorLabel: string;
+  errorMessage: string;
+  onSuccess?: () => void;
+}): Promise<void> {
+  const uri = await pickImageAsync(options.aspect);
+  if (!uri) return;
+  options.setUploading(true);
+  try {
+    const url = await uploadImageAsync(uri, options.storagePath);
+    await options.save(options.uid, url);
+    options.onSuccess?.();
+  } catch (err) {
+    console.error(`${options.errorLabel} failed:`, err);
+    Alert.alert('Upload failed', options.errorMessage);
+  } finally {
+    options.setUploading(false);
+  }
+}

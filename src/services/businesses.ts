@@ -21,6 +21,16 @@ export async function getBusiness(uid: string): Promise<Business | null> {
   return snap.exists() ? (snap.data() as Business) : null;
 }
 
+// Generic merge-write for the Business Details screen's sections, which each save a
+// handful of unrelated fields — avoids one single-purpose setter per field.
+export async function updateBusiness(uid: string, data: Partial<Business>) {
+  await setDoc(
+    doc(db, collectionName, uid),
+    { ...data, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
 export async function saveBusinessInfo(
   uid: string,
   data: { businessName: string; ownerName: string; phone: string; countryCode: string },
