@@ -58,6 +58,8 @@ export interface Business {
   mobileServiceArea?: string;
   amenities?: string[];
   policies?: BusinessPolicies;
+  // Whether CheckoutCompleteScreen should prompt to send a receipt after every checkout.
+  alwaysAskReceipt?: boolean;
   calendarColor?: string;
   onboardingComplete?: boolean;
   createdAt?: unknown;

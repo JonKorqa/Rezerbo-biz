@@ -128,7 +128,7 @@ export default function BusinessSettingsScreen() {
     } else if (row.key === 'services') {
       navigation.navigate('ServicesSetup');
     } else if (row.key === 'payments') {
-      navigation.navigate('Transactions');
+      navigation.navigate('PaymentsAndCheckout');
     } else if (row.key === 'business-details') {
       navigation.navigate('BusinessDetails');
     } else {
