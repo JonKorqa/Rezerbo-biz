@@ -40,6 +40,7 @@ import AddEditPackageScreen from '../screens/dashboard/AddEditPackageScreen';
 import ImportInviteClientsScreen from '../screens/dashboard/ImportInviteClientsScreen';
 import ImportContactsScreen from '../screens/dashboard/ImportContactsScreen';
 import OnlineBookingScreen from '../screens/dashboard/OnlineBookingScreen';
+import AdvancedOptionsScreen from '../screens/dashboard/AdvancedOptionsScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -91,6 +92,7 @@ export default function Navigation() {
         <Stack.Screen name="ImportInviteClients" component={ImportInviteClientsScreen} />
         <Stack.Screen name="ImportContacts" component={ImportContactsScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="OnlineBooking" component={OnlineBookingScreen} />
+        <Stack.Screen name="AdvancedOptions" component={AdvancedOptionsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
