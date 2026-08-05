@@ -3,10 +3,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from './firebase';
 
-export async function pickImageAsync(aspect: [number, number] = [1, 1]): Promise<string | null> {
+export async function pickImageAsync(
+  aspect: [number, number] = [1, 1],
+  permissionTitle = 'Permission needed',
+  permissionMessage = 'Enable photo library access to upload photos.',
+): Promise<string | null> {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
-    Alert.alert('Permission needed', 'Enable photo library access to upload photos.');
+    Alert.alert(permissionTitle, permissionMessage);
     return null;
   }
 
@@ -40,8 +44,11 @@ export async function uploadBusinessImage(options: {
   errorLabel: string;
   errorMessage: string;
   onSuccess?: () => void;
+  uploadFailedTitle?: string;
+  permissionTitle?: string;
+  permissionMessage?: string;
 }): Promise<void> {
-  const uri = await pickImageAsync(options.aspect);
+  const uri = await pickImageAsync(options.aspect, options.permissionTitle, options.permissionMessage);
   if (!uri) return;
   options.setUploading(true);
   try {
@@ -50,7 +57,7 @@ export async function uploadBusinessImage(options: {
     options.onSuccess?.();
   } catch (err) {
     console.error(`${options.errorLabel} failed:`, err);
-    Alert.alert('Upload failed', options.errorMessage);
+    Alert.alert(options.uploadFailedTitle ?? 'Upload failed', options.errorMessage);
   } finally {
     options.setUploading(false);
   }

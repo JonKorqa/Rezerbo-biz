@@ -816,5 +816,27 @@
         "answer": "Hap terminin nga kalendari yt ose nga profili i klientit — aty do t'i gjesh opsionet për me e ricaktu ose anulu."
       }
     }
+  },
+  "statsAndReports": {
+    "avg": "mesatare",
+    "revenueLast7Days": "Të ardhurat, 7 ditët e fundit",
+    "topServices": "Shërbimet Kryesore",
+    "noBookingsYet": "Ende nuk ka rezervime — shërbimet kryesore do të shfaqen këtu.",
+    "bookingsCount_one": "{{count}} rezervim",
+    "bookingsCount_other": "{{count}} rezervime",
+    "totalClients": "Total klientë",
+    "newThisMonth": "Të rinj këtë muaj",
+    "appointmentsThisMonth": "Terminet Këtë Muaj",
+    "total": "Total",
+    "completed": "Të Kryeme"
+  },
+  "dashboardTabs": {
+    "appointments": "Terminet",
+    "profile": "Profili"
+  },
+  "imageUpload": {
+    "permissionTitle": "Nevojitet leje",
+    "permissionMessage": "Aktivizo qasjen te biblioteka e fotove për me ngarku foto.",
+    "uploadFailedTitle": "Ngarkimi dështoi"
   }
 }

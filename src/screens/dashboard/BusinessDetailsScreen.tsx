@@ -227,6 +227,9 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       errorLabel: 'uploadAvatar',
       errorMessage: t('businessDetails.uploadLogoError'),
       onSuccess: invalidateBusiness,
+      uploadFailedTitle: t('imageUpload.uploadFailedTitle'),
+      permissionTitle: t('imageUpload.permissionTitle'),
+      permissionMessage: t('imageUpload.permissionMessage'),
     });
   };
 
@@ -241,6 +244,9 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       errorLabel: 'uploadCover',
       errorMessage: t('profile.uploadCoverError'),
       onSuccess: invalidateBusiness,
+      uploadFailedTitle: t('imageUpload.uploadFailedTitle'),
+      permissionTitle: t('imageUpload.permissionTitle'),
+      permissionMessage: t('imageUpload.permissionMessage'),
     });
   };
 

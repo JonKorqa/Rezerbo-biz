@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useClients } from '../../hooks/useClients';
@@ -17,22 +18,25 @@ import {
 import { EmptyState } from '../../components/EmptyState';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 
 const CHART_HEIGHT = 100;
 
-function avgTicket(total: number, count: number): string {
-  return count > 0 ? `$${(total / count).toFixed(2)} avg` : '—';
+function avgTicket(total: number, count: number, avgLabel: string): string {
+  return count > 0 ? `$${(total / count).toFixed(2)} ${avgLabel}` : '—';
 }
 
 export default function StatsAndReportsScreen() {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: transactions = [] } = useTransactions();
   const { data: appointments = [] } = useAppointments();
   const { data: clients = [] } = useClients();
 
   const summary = useMemo(() => computeRevenueSummary(transactions), [transactions]);
-  const last7Days = useMemo(() => computeLast7DaysRevenue(transactions), [transactions]);
+  const last7Days = useMemo(() => computeLast7DaysRevenue(transactions, new Date(), locale), [transactions, locale]);
   const topServices = useMemo(() => computeTopServices(appointments), [appointments]);
   const clientStats = useMemo(() => computeClientStats(clients), [clients]);
   const appointmentStats = useMemo(() => computeAppointmentStats(appointments), [appointments]);
@@ -45,7 +49,7 @@ export default function StatsAndReportsScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Stats & Reports</Text>
+        <Text style={styles.headerTitle}>{t('profile.statsAndReports')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -53,30 +57,30 @@ export default function StatsAndReportsScreen() {
         {/* Revenue summary */}
         <View style={styles.summaryCard}>
           <View style={styles.summaryColumn}>
-            <Text style={styles.summaryLabel}>Today</Text>
+            <Text style={styles.summaryLabel}>{t('common.today')}</Text>
             <Text style={styles.summaryAmount}>${summary.today.total.toFixed(2)}</Text>
-            <Text style={styles.summaryCount}>{summary.today.count} checkouts</Text>
-            <Text style={styles.summaryDetail}>{avgTicket(summary.today.total, summary.today.count)}</Text>
+            <Text style={styles.summaryCount}>{t('transactions.checkoutsCount', { count: summary.today.count })}</Text>
+            <Text style={styles.summaryDetail}>{avgTicket(summary.today.total, summary.today.count, t('statsAndReports.avg'))}</Text>
           </View>
           <View style={styles.summaryDivider} />
           <View style={styles.summaryColumn}>
-            <Text style={styles.summaryLabel}>This Week</Text>
+            <Text style={styles.summaryLabel}>{t('transactions.thisWeek')}</Text>
             <Text style={styles.summaryAmount}>${summary.week.total.toFixed(2)}</Text>
-            <Text style={styles.summaryCount}>{summary.week.count} checkouts</Text>
-            <Text style={styles.summaryDetail}>{avgTicket(summary.week.total, summary.week.count)}</Text>
+            <Text style={styles.summaryCount}>{t('transactions.checkoutsCount', { count: summary.week.count })}</Text>
+            <Text style={styles.summaryDetail}>{avgTicket(summary.week.total, summary.week.count, t('statsAndReports.avg'))}</Text>
           </View>
           <View style={styles.summaryDivider} />
           <View style={styles.summaryColumn}>
-            <Text style={styles.summaryLabel}>This Month</Text>
+            <Text style={styles.summaryLabel}>{t('transactions.thisMonth')}</Text>
             <Text style={styles.summaryAmount}>${summary.month.total.toFixed(2)}</Text>
-            <Text style={styles.summaryCount}>{summary.month.count} checkouts</Text>
-            <Text style={styles.summaryDetail}>{avgTicket(summary.month.total, summary.month.count)}</Text>
+            <Text style={styles.summaryCount}>{t('transactions.checkoutsCount', { count: summary.month.count })}</Text>
+            <Text style={styles.summaryDetail}>{avgTicket(summary.month.total, summary.month.count, t('statsAndReports.avg'))}</Text>
           </View>
         </View>
 
         {/* 7-day revenue chart */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Revenue, last 7 days</Text>
+          <Text style={styles.sectionTitle}>{t('statsAndReports.revenueLast7Days')}</Text>
           <View style={styles.chartCard}>
             <View style={styles.chartBars}>
               {last7Days.map((day) => {
@@ -97,9 +101,9 @@ export default function StatsAndReportsScreen() {
 
         {/* Top services */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Top Services</Text>
+          <Text style={styles.sectionTitle}>{t('statsAndReports.topServices')}</Text>
           {topServices.length === 0 ? (
-            <EmptyState variant="cards" icon="cut-outline" message="No bookings yet — top services will show up here." compact />
+            <EmptyState variant="cards" icon="cut-outline" message={t('statsAndReports.noBookingsYet')} compact />
           ) : (
             <View style={styles.listCard}>
               {topServices.map((service, index) => (
@@ -109,7 +113,7 @@ export default function StatsAndReportsScreen() {
                     {service.label}
                   </Text>
                   <Text style={styles.listValue}>
-                    {service.count} booking{service.count === 1 ? '' : 's'}
+                    {t('statsAndReports.bookingsCount', { count: service.count })}
                   </Text>
                 </View>
               ))}
@@ -119,34 +123,34 @@ export default function StatsAndReportsScreen() {
 
         {/* Client stats */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Clients</Text>
+          <Text style={styles.sectionTitle}>{t('clients.title')}</Text>
           <View style={styles.statTilesRow}>
             <View style={styles.statTile}>
               <Text style={styles.statTileValue}>{clientStats.total}</Text>
-              <Text style={styles.statTileLabel}>Total clients</Text>
+              <Text style={styles.statTileLabel}>{t('statsAndReports.totalClients')}</Text>
             </View>
             <View style={styles.statTile}>
               <Text style={styles.statTileValue}>{clientStats.newThisMonth}</Text>
-              <Text style={styles.statTileLabel}>New this month</Text>
+              <Text style={styles.statTileLabel}>{t('statsAndReports.newThisMonth')}</Text>
             </View>
           </View>
         </View>
 
         {/* Appointment stats */}
         <View style={[styles.section, styles.lastSection]}>
-          <Text style={styles.sectionTitle}>Appointments This Month</Text>
+          <Text style={styles.sectionTitle}>{t('statsAndReports.appointmentsThisMonth')}</Text>
           <View style={styles.statTilesRow}>
             <View style={styles.statTile}>
               <Text style={styles.statTileValue}>{appointmentStats.totalThisMonth}</Text>
-              <Text style={styles.statTileLabel}>Total</Text>
+              <Text style={styles.statTileLabel}>{t('statsAndReports.total')}</Text>
             </View>
             <View style={styles.statTile}>
               <Text style={styles.statTileValue}>{appointmentStats.completed}</Text>
-              <Text style={styles.statTileLabel}>Completed</Text>
+              <Text style={styles.statTileLabel}>{t('statsAndReports.completed')}</Text>
             </View>
             <View style={styles.statTile}>
               <Text style={styles.statTileValue}>{appointmentStats.upcoming}</Text>
-              <Text style={styles.statTileLabel}>Upcoming</Text>
+              <Text style={styles.statTileLabel}>{t('clientDetail.upcoming')}</Text>
             </View>
           </View>
         </View>

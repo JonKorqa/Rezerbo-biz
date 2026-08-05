@@ -78,6 +78,9 @@ export default function ProfileScreen() {
       errorLabel: 'uploadCover',
       errorMessage: t('profile.uploadCoverError'),
       onSuccess: invalidateBusiness,
+      uploadFailedTitle: t('imageUpload.uploadFailedTitle'),
+      permissionTitle: t('imageUpload.permissionTitle'),
+      permissionMessage: t('imageUpload.permissionMessage'),
     });
   };
 
@@ -92,6 +95,9 @@ export default function ProfileScreen() {
       errorLabel: 'uploadAvatar',
       errorMessage: t('profile.uploadAvatarError'),
       onSuccess: invalidateBusiness,
+      uploadFailedTitle: t('imageUpload.uploadFailedTitle'),
+      permissionTitle: t('imageUpload.permissionTitle'),
+      permissionMessage: t('imageUpload.permissionMessage'),
     });
   };
 
@@ -106,6 +112,9 @@ export default function ProfileScreen() {
       errorLabel: 'addPortfolioPhoto',
       errorMessage: t('profile.uploadPortfolioError'),
       onSuccess: invalidateBusiness,
+      uploadFailedTitle: t('imageUpload.uploadFailedTitle'),
+      permissionTitle: t('imageUpload.permissionTitle'),
+      permissionMessage: t('imageUpload.permissionMessage'),
     });
   };
 

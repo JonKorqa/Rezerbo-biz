@@ -63,15 +63,17 @@ export interface DayRevenue {
   total: number;
 }
 
-const SHORT_WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 // Oldest-to-newest, 7 entries including today.
-export function computeLast7DaysRevenue(transactions: Transaction[], now: Date = new Date()): DayRevenue[] {
+export function computeLast7DaysRevenue(
+  transactions: Transaction[],
+  now: Date = new Date(),
+  locale = 'en-US',
+): DayRevenue[] {
   const days: DayRevenue[] = [];
   for (let i = 6; i >= 0; i--) {
     const date = startOfDay(new Date(now));
     date.setDate(date.getDate() - i);
-    days.push({ label: SHORT_WEEKDAYS[date.getDay()], date, total: 0 });
+    days.push({ label: date.toLocaleDateString(locale, { weekday: 'short' }), date, total: 0 });
   }
   for (const t of transactions) {
     const day = startOfDay(t.createdAt).getTime();

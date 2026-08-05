@@ -76,8 +76,8 @@ export default function BusinessCategoryScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <ProgressBar step={3} totalSteps={4} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>What's your specialty?</Text>
-        <Text style={styles.subtitle}>Choose the category that best describes your business.</Text>
+        <Text style={styles.title}>{t('onboarding.businessCategory.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding.businessCategory.subtitle')}</Text>
 
         <View style={styles.grid}>
           {BUSINESS_CATEGORIES.map((category) => (
@@ -92,7 +92,7 @@ export default function BusinessCategoryScreen({ navigation }: Props) {
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <Button label="Continue" onPress={handleContinue} loading={loading} style={styles.continueButton} />
+        <Button label={t('common.continue')} onPress={handleContinue} loading={loading} style={styles.continueButton} />
       </ScrollView>
     </SafeAreaView>
   );

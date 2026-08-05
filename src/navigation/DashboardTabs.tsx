@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import AppointmentsScreen from '../screens/dashboard/AppointmentsScreen';
 import ClientsScreen from '../screens/dashboard/ClientsScreen';
 import CheckoutScreen from '../screens/dashboard/CheckoutScreen';
@@ -20,7 +21,16 @@ const TAB_ICONS: Record<keyof DashboardTabParamList, { filled: keyof typeof Ioni
   Profile: { filled: 'storefront', outline: 'storefront-outline' },
 };
 
+const TAB_LABEL_KEYS: Record<keyof DashboardTabParamList, string> = {
+  Appointments: 'dashboardTabs.appointments',
+  Clients: 'clients.title',
+  Checkout: 'checkout.title',
+  Marketing: 'marketing.title',
+  Profile: 'dashboardTabs.profile',
+};
+
 export default function DashboardTabs() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       initialRouteName="Appointments"
@@ -29,6 +39,7 @@ export default function DashboardTabs() {
         tabBarActiveTintColor: Colors.teal,
         tabBarInactiveTintColor: Light.textMuted,
         tabBarStyle: { borderTopColor: Light.border },
+        tabBarLabel: t(TAB_LABEL_KEYS[route.name as keyof DashboardTabParamList]),
         tabBarIcon: ({ color, size, focused }) => {
           const icons = TAB_ICONS[route.name as keyof DashboardTabParamList];
           return <Ionicons name={focused ? icons.filled : icons.outline} size={size} color={color} />;

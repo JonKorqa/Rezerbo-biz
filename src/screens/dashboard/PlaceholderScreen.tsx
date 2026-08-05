@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Colors, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 
@@ -11,6 +12,7 @@ interface PlaceholderScreenProps {
 }
 
 export function PlaceholderScreen({ title, icon }: PlaceholderScreenProps) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.content}>
@@ -18,7 +20,7 @@ export function PlaceholderScreen({ title, icon }: PlaceholderScreenProps) {
           <Ionicons name={icon} size={32} color={Colors.teal} />
         </View>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>Coming soon</Text>
+        <Text style={styles.subtitle}>{t('common.comingSoon')}</Text>
       </View>
     </SafeAreaView>
   );

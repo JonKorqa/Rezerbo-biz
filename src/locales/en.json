@@ -816,5 +816,27 @@
         "answer": "Open the appointment from your calendar or the client's profile — you'll find options to reschedule or cancel from there."
       }
     }
+  },
+  "statsAndReports": {
+    "avg": "avg",
+    "revenueLast7Days": "Revenue, last 7 days",
+    "topServices": "Top Services",
+    "noBookingsYet": "No bookings yet — top services will show up here.",
+    "bookingsCount_one": "{{count}} booking",
+    "bookingsCount_other": "{{count}} bookings",
+    "totalClients": "Total clients",
+    "newThisMonth": "New this month",
+    "appointmentsThisMonth": "Appointments This Month",
+    "total": "Total",
+    "completed": "Completed"
+  },
+  "dashboardTabs": {
+    "appointments": "Appointments",
+    "profile": "Profile"
+  },
+  "imageUpload": {
+    "permissionTitle": "Permission needed",
+    "permissionMessage": "Enable photo library access to upload photos.",
+    "uploadFailedTitle": "Upload failed"
   }
 }
