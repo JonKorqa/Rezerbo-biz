@@ -219,5 +219,81 @@
     "reservation": "Rezervim",
     "noAppointments": "Nuk ka termine të planifikume për {{range}}.",
     "scheduleFor": "Orari për {{range}}:"
+  },
+  "clients": {
+    "title": "Klientët",
+    "searchPlaceholder": "Kërko me emër ose telefon",
+    "emptyTitle": "Ende nuk ka klientë",
+    "emptySubtitle": "Shto klientin tënd të parë për me fillu rezervimin e termineve për ta.",
+    "defaultName": "Klient"
+  },
+  "addClient": {
+    "editTitle": "Ndrysho Klientin",
+    "addTitle": "Shto Klient të Ri",
+    "phoneNumber": "NUMRI I TELEFONIT",
+    "phonePlaceholder": "p.sh. 44 123 456",
+    "firstName": "Emri",
+    "firstNamePlaceholder": "p.sh. Arta",
+    "lastName": "Mbiemri",
+    "lastNamePlaceholder": "p.sh. Krasniqi",
+    "moreDetails": "Më shumë detaje",
+    "moreFieldsComingSoon": "Fusha shtesë po vijnë së shpejti.",
+    "deleting": "Duke fshi…",
+    "deleteClient": "Fshij Klientin",
+    "deleteConfirmTitle": "Fshij klientin",
+    "deleteConfirmMessage": "Me e hjek {{name}} nga klientët e tu?",
+    "thisClient": "këtë klient",
+    "saveChanges": "Ruaj Ndryshimet",
+    "addAndInvite": "Shto & Fto",
+    "add": "Shto"
+  },
+  "clientPicker": {
+    "title": "Zgjedh klientin",
+    "continueAsWalkIn": "Vazhdo pa rezervim",
+    "addNewClient": "Shto klient të ri",
+    "noSavedClients": "Ende nuk ka klientë të ruajtun."
+  },
+  "clientDetail": {
+    "notFound": "Ky klient nuk u gjet.",
+    "contactInfo": "Të Dhënat e Kontaktit",
+    "noPhone": "Nuk ka numër telefoni të ruajtun.",
+    "appointmentHistory": "Historiku i Termineve",
+    "noAppointmentsYet": "Ende nuk ka termine",
+    "noAppointmentsSubtitle": "Ky klient ende nuk ka rezervu asnjë termin. Fillo njërin me \"Termin i Ri\" poshtë.",
+    "upcoming": "Të Ardhshme",
+    "past": "Të Kaluara"
+  },
+  "importContacts": {
+    "title": "Importo nga Kontaktet",
+    "loading": "Duke i ngarku kontaktet…",
+    "accessNeededTitle": "Nevojitet qasje te kontaktet",
+    "accessNeededText": "Lejo qasjen te kontaktet e tua për me importu klientë nga telefoni.",
+    "openSettings": "Hap Cilësimet",
+    "searchPlaceholder": "Kërko kontakte",
+    "selectedCount": "{{count}} të zgjedhun",
+    "selectAll": "Zgjedhi të gjitha",
+    "deselectAll": "Hiq zgjedhjen",
+    "noneFound": "Nuk u gjetën kontakte me numra telefoni.",
+    "importSelected": "Importo të Zgjedhurat ({{count}})",
+    "importCompleteTitle": "Importimi përfundoi",
+    "importedCount_one": "{{count}} kontakt u importue.",
+    "importedCount_other": "{{count}} kontakte u importuen.",
+    "duplicatesSkipped_one": "{{count}} kopje u anashkalue.",
+    "duplicatesSkipped_other": "{{count}} kopje u anashkaluen.",
+    "ok": "OK"
+  },
+  "importInvite": {
+    "title": "Importo & Fto Klientë",
+    "importCardSubtitle": "Shto shumë klientë njëherësh nga lista e kontakteve të telefonit",
+    "yourClients": "Klientët e Tu",
+    "invite": "Fto",
+    "noPhoneTitle": "Nuk ka numër telefoni",
+    "noPhoneMessage": "Ky klient nuk ka numër telefoni të ruajtun.",
+    "inviteMessage": "Përshëndetje {{name}}, rezervo terminin tënd të radhës me {{business}} online: {{url}}",
+    "couldNotOpenTitle": "Nuk u hap dot Mesazhet",
+    "couldNotOpenMessage": "Nuk ka aplikacion mesazhesh të disponueshëm në pajisjen tënde.",
+    "defaultBusinessName": "Biznesi Yt",
+    "defaultRecipientName": "aty",
+    "emptyText": "Ende nuk ka klientë — importo nga kontaktet ose shto njërin manualisht."
   }
 }

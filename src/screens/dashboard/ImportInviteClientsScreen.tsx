@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { useClients } from '../../hooks/useClients';
@@ -25,6 +26,7 @@ function getInitials(name: string) {
 }
 
 export default function ImportInviteClientsScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const uid = auth.currentUser?.uid;
   const { data: business } = useQuery({
     queryKey: ['business', uid],
@@ -33,22 +35,22 @@ export default function ImportInviteClientsScreen({ navigation }: Props) {
   });
   const { data: clients = [] } = useClients();
 
-  const businessName = business?.businessName ?? 'Your Business';
+  const businessName = business?.businessName ?? t('importInvite.defaultBusinessName');
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
 
   const handleInvite = async (client: Client) => {
     if (!client.phone) {
-      Alert.alert('No phone number', 'This client has no phone number on file.');
+      Alert.alert(t('importInvite.noPhoneTitle'), t('importInvite.noPhoneMessage'));
       return;
     }
-    const name = getClientDisplayName(client) || 'there';
-    const message = `Hi ${name}, book your next appointment with ${businessName} online: ${profileUrl}`;
+    const name = getClientDisplayName(client) || t('importInvite.defaultRecipientName');
+    const message = t('importInvite.inviteMessage', { name, business: businessName, url: profileUrl });
     const separator = Platform.OS === 'ios' ? '&' : '?';
     const url = `sms:${client.phone}${separator}body=${encodeURIComponent(message)}`;
     try {
       await Linking.openURL(url);
     } catch {
-      Alert.alert('Could not open Messages', 'No messaging app is available to handle this on your device.');
+      Alert.alert(t('importInvite.couldNotOpenTitle'), t('importInvite.couldNotOpenMessage'));
     }
   };
 
@@ -58,7 +60,7 @@ export default function ImportInviteClientsScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Import & Invite Clients</Text>
+        <Text style={styles.headerTitle}>{t('importInvite.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -77,17 +79,17 @@ export default function ImportInviteClientsScreen({ navigation }: Props) {
                 <Ionicons name="people-outline" size={22} color={Colors.white} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.importTitle}>Import from Contacts</Text>
-                <Text style={styles.importSubtitle}>Bulk-add clients from your phone's contact list</Text>
+                <Text style={styles.importTitle}>{t('importContacts.title')}</Text>
+                <Text style={styles.importSubtitle}>{t('importInvite.importCardSubtitle')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={Colors.white} />
             </TouchableOpacity>
 
-            <Text style={styles.sectionTitle}>Your Clients</Text>
+            <Text style={styles.sectionTitle}>{t('importInvite.yourClients')}</Text>
           </>
         }
         renderItem={({ item }) => {
-          const name = getClientDisplayName(item) || 'Client';
+          const name = getClientDisplayName(item) || t('clients.defaultName');
           return (
             <View style={styles.clientRow}>
               <View style={styles.avatar}>
@@ -99,14 +101,14 @@ export default function ImportInviteClientsScreen({ navigation }: Props) {
               </View>
               <TouchableOpacity style={styles.inviteButton} activeOpacity={0.8} onPress={() => handleInvite(item)}>
                 <Ionicons name="paper-plane-outline" size={14} color={Colors.teal} />
-                <Text style={styles.inviteButtonLabel}>Invite</Text>
+                <Text style={styles.inviteButtonLabel}>{t('importInvite.invite')}</Text>
               </TouchableOpacity>
             </View>
           );
         }}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>No clients yet — import from contacts or add one manually.</Text>
+            <Text style={styles.emptyText}>{t('importInvite.emptyText')}</Text>
           </View>
         }
       />

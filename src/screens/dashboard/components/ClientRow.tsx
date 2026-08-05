@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
 import { getClientDisplayName } from '../../../types/client';
@@ -20,7 +21,8 @@ function getInitials(name: string) {
 }
 
 export function ClientRow({ client, onPress }: ClientRowProps) {
-  const name = getClientDisplayName(client) || 'Client';
+  const { t } = useTranslation();
+  const name = getClientDisplayName(client) || t('clients.defaultName');
 
   const content = (
     <>

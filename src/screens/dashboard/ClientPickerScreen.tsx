@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CommonActions } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useClients } from '../../hooks/useClients';
 import { filterClients, getClientDisplayName } from '../../types/client';
 import { ClientRow } from './components/ClientRow';
@@ -14,6 +15,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'ClientPicker'>;
 
 export default function ClientPickerScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const { data: clients = [] } = useClients();
 
@@ -34,7 +36,7 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
     navigation.goBack();
   };
 
-  const selectWalkIn = () => returnToCaller({ id: null, name: 'Walk-in' });
+  const selectWalkIn = () => returnToCaller({ id: null, name: t('newAppointment.walkIn') });
 
   const selectClient = (id: string, name: string) => returnToCaller({ id, name });
 
@@ -44,7 +46,7 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Select client</Text>
+        <Text style={styles.headerTitle}>{t('clientPicker.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -52,7 +54,7 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
         <Ionicons name="search-outline" size={18} color={Light.textMuted} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search by name or phone"
+          placeholder={t('clients.searchPlaceholder')}
           placeholderTextColor={Light.textMuted}
           value={search}
           onChangeText={setSearch}
@@ -71,7 +73,7 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
                 <View style={styles.rowIconWrap}>
                   <Ionicons name="walk-outline" size={20} color={Colors.teal} />
                 </View>
-                <Text style={styles.rowLabel}>Continue as walk-in</Text>
+                <Text style={styles.rowLabel}>{t('clientPicker.continueAsWalkIn')}</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
@@ -82,7 +84,7 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
               <View style={styles.rowIconWrap}>
                 <Ionicons name="person-add-outline" size={20} color={Colors.teal} />
               </View>
-              <Text style={styles.rowLabel}>Add new client</Text>
+              <Text style={styles.rowLabel}>{t('clientPicker.addNewClient')}</Text>
             </TouchableOpacity>
           </>
         }
@@ -91,7 +93,7 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>No saved clients yet.</Text>
+            <Text style={styles.emptyText}>{t('clientPicker.noSavedClients')}</Text>
           </View>
         }
         contentContainerStyle={styles.listContent}

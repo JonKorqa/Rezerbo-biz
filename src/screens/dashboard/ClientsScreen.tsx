@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useClients } from '../../hooks/useClients';
 import { filterClients } from '../../types/client';
 import { ClientRow } from './components/ClientRow';
@@ -12,6 +13,7 @@ import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
 
 export default function ClientsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [search, setSearch] = useState('');
   const { data: clients = [] } = useClients();
@@ -21,7 +23,7 @@ export default function ClientsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Clients</Text>
+        <Text style={styles.headerTitle}>{t('clients.title')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           activeOpacity={0.85}
@@ -35,7 +37,7 @@ export default function ClientsScreen() {
         <Ionicons name="search-outline" size={18} color={Light.textMuted} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search by name or phone"
+          placeholder={t('clients.searchPlaceholder')}
           placeholderTextColor={Light.textMuted}
           value={search}
           onChangeText={setSearch}
@@ -54,9 +56,9 @@ export default function ClientsScreen() {
             <View style={styles.emptyIconWrap}>
               <Ionicons name="people-outline" size={32} color={Colors.teal} />
             </View>
-            <Text style={styles.emptyTitle}>No clients yet</Text>
+            <Text style={styles.emptyTitle}>{t('clients.emptyTitle')}</Text>
             <Text style={styles.emptySubtitle}>
-              Add your first client to start booking appointments for them.
+              {t('clients.emptySubtitle')}
             </Text>
           </View>
         }

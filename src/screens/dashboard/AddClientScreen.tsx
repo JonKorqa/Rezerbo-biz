@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createClient, deleteClient, updateClient } from '../../services/clients';
 import { getClientDisplayName } from '../../types/client';
@@ -24,6 +25,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'AddClient'>;
 
 export default function AddClientScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const editingClient = route.params?.client;
   const isEditing = !!editingClient;
 
@@ -62,10 +64,13 @@ export default function AddClientScreen({ navigation, route }: Props) {
 
   const handleDelete = () => {
     if (!editingClient) return;
-    Alert.alert('Delete client', `Remove ${getClientDisplayName(editingClient) || 'this client'} from your clients?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(
+      t('addClient.deleteConfirmTitle'),
+      t('addClient.deleteConfirmMessage', { name: getClientDisplayName(editingClient) || t('addClient.thisClient') }),
+      [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           const uid = auth.currentUser?.uid;
@@ -91,35 +96,35 @@ export default function AddClientScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isEditing ? 'Edit Client' : 'Add New Client'}</Text>
+        <Text style={styles.headerTitle}>{isEditing ? t('addClient.editTitle') : t('addClient.addTitle')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <FormInput
-            label="PHONE NUMBER"
+            label={t('addClient.phoneNumber')}
             icon="call-outline"
-            placeholder="e.g. 44 123 456"
+            placeholder={t('addClient.phonePlaceholder')}
             keyboardType="phone-pad"
             value={phone}
             onChangeText={setPhone}
           />
           <FormInput
-            label="First Name"
+            label={t('addClient.firstName')}
             icon="person-outline"
-            placeholder="e.g. Arta"
+            placeholder={t('addClient.firstNamePlaceholder')}
             value={firstName}
             onChangeText={setFirstName}
           />
-          <FormInput label="Last Name" placeholder="e.g. Krasniqi" value={lastName} onChangeText={setLastName} />
+          <FormInput label={t('addClient.lastName')} placeholder={t('addClient.lastNamePlaceholder')} value={lastName} onChangeText={setLastName} />
 
           <TouchableOpacity
             style={styles.moreDetailsRow}
             activeOpacity={0.7}
             onPress={() => setMoreDetailsExpanded((v) => !v)}
           >
-            <Text style={styles.moreDetailsLabel}>More details</Text>
+            <Text style={styles.moreDetailsLabel}>{t('addClient.moreDetails')}</Text>
             <Ionicons
               name={moreDetailsExpanded ? 'chevron-up' : 'chevron-down'}
               size={18}
@@ -128,13 +133,13 @@ export default function AddClientScreen({ navigation, route }: Props) {
           </TouchableOpacity>
           {moreDetailsExpanded && (
             // TODO: email, birthday, notes, tags, etc. once the client data model grows.
-            <Text style={styles.moreDetailsPlaceholder}>More fields coming soon.</Text>
+            <Text style={styles.moreDetailsPlaceholder}>{t('addClient.moreFieldsComingSoon')}</Text>
           )}
 
           {isEditing && (
             <TouchableOpacity style={styles.deleteRow} activeOpacity={0.7} onPress={handleDelete} disabled={deleting}>
               <Ionicons name="trash-outline" size={18} color={Colors.error} />
-              <Text style={styles.deleteLabel}>{deleting ? 'Deleting…' : 'Delete Client'}</Text>
+              <Text style={styles.deleteLabel}>{deleting ? t('addClient.deleting') : t('addClient.deleteClient')}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
@@ -142,17 +147,17 @@ export default function AddClientScreen({ navigation, route }: Props) {
 
       <View style={styles.bottomBar}>
         {isEditing ? (
-          <Button label="Save Changes" onPress={() => handleSave(false)} disabled={!canSave} loading={savingAction === 'edit'} />
+          <Button label={t('addClient.saveChanges')} onPress={() => handleSave(false)} disabled={!canSave} loading={savingAction === 'edit'} />
         ) : (
           <>
             <Button
-              label="Add & Invite"
+              label={t('addClient.addAndInvite')}
               onPress={() => handleSave(true)}
               disabled={!canSave}
               loading={savingAction === 'invite'}
             />
             <Button
-              label="Add"
+              label={t('addClient.add')}
               onPress={() => handleSave(false)}
               disabled={!canSave}
               loading={savingAction === 'plain'}

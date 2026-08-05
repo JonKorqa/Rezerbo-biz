@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createClient } from '../../services/clients';
 import { useClients } from '../../hooks/useClients';
@@ -34,6 +35,7 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
 type LoadState = 'loading' | 'denied' | 'ready';
 
 export default function ImportContactsScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [contacts, setContacts] = useState<ImportableContact[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -144,12 +146,16 @@ export default function ImportContactsScreen({ navigation }: Props) {
     setImporting(false);
     queryClient.invalidateQueries({ queryKey: ['clients'] });
 
-    Alert.alert(
-      'Import complete',
+    const importedMessage = t('importContacts.importedCount', { count: imported });
+    const message =
       duplicates > 0
-        ? `${imported} contact${imported === 1 ? '' : 's'} imported, ${duplicates} duplicate${duplicates === 1 ? '' : 's'} skipped.`
-        : `${imported} contact${imported === 1 ? '' : 's'} imported.`,
-      [{ text: 'OK', onPress: () => navigation.goBack() }],
+        ? `${importedMessage}, ${t('importContacts.duplicatesSkipped', { count: duplicates })}`
+        : importedMessage;
+
+    Alert.alert(
+      t('importContacts.importCompleteTitle'),
+      message,
+      [{ text: t('importContacts.ok'), onPress: () => navigation.goBack() }],
     );
   };
 
@@ -159,26 +165,26 @@ export default function ImportContactsScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="close" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Import from Contacts</Text>
+        <Text style={styles.headerTitle}>{t('importContacts.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       {loadState === 'loading' && (
         <View style={styles.centerState}>
           <ActivityIndicator color={Colors.teal} />
-          <Text style={styles.centerStateText}>Loading contacts…</Text>
+          <Text style={styles.centerStateText}>{t('importContacts.loading')}</Text>
         </View>
       )}
 
       {loadState === 'denied' && (
         <View style={styles.centerState}>
           <Ionicons name="lock-closed-outline" size={32} color={Light.textMuted} />
-          <Text style={styles.centerStateTitle}>Contacts access needed</Text>
+          <Text style={styles.centerStateTitle}>{t('importContacts.accessNeededTitle')}</Text>
           <Text style={styles.centerStateText}>
-            Allow access to your contacts to import clients from your phone.
+            {t('importContacts.accessNeededText')}
           </Text>
           <TouchableOpacity style={styles.settingsButton} activeOpacity={0.85} onPress={() => Linking.openSettings()}>
-            <Text style={styles.settingsButtonLabel}>Open Settings</Text>
+            <Text style={styles.settingsButtonLabel}>{t('importContacts.openSettings')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -189,7 +195,7 @@ export default function ImportContactsScreen({ navigation }: Props) {
             <Ionicons name="search-outline" size={18} color={Light.textMuted} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search contacts"
+              placeholder={t('importContacts.searchPlaceholder')}
               placeholderTextColor={Light.textMuted}
               value={search}
               onChangeText={setSearch}
@@ -197,9 +203,9 @@ export default function ImportContactsScreen({ navigation }: Props) {
           </View>
 
           <View style={styles.selectAllRow}>
-            <Text style={styles.selectedCount}>{selectedIds.size} selected</Text>
+            <Text style={styles.selectedCount}>{t('importContacts.selectedCount', { count: selectedIds.size })}</Text>
             <TouchableOpacity onPress={toggleSelectAll} hitSlop={8}>
-              <Text style={styles.selectAllLabel}>{allSelected ? 'Deselect all' : 'Select all'}</Text>
+              <Text style={styles.selectAllLabel}>{allSelected ? t('importContacts.deselectAll') : t('importContacts.selectAll')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -225,7 +231,7 @@ export default function ImportContactsScreen({ navigation }: Props) {
             }}
             ListEmptyComponent={
               <View style={styles.centerState}>
-                <Text style={styles.centerStateText}>No contacts with phone numbers found.</Text>
+                <Text style={styles.centerStateText}>{t('importContacts.noneFound')}</Text>
               </View>
             }
           />
@@ -240,7 +246,7 @@ export default function ImportContactsScreen({ navigation }: Props) {
               {importing ? (
                 <ActivityIndicator color={Colors.white} />
               ) : (
-                <Text style={styles.importButtonLabel}>Import Selected ({selectedIds.size})</Text>
+                <Text style={styles.importButtonLabel}>{t('importContacts.importSelected', { count: selectedIds.size })}</Text>
               )}
             </TouchableOpacity>
           </View>

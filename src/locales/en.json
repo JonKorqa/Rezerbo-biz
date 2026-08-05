@@ -219,5 +219,81 @@
     "reservation": "Reservation",
     "noAppointments": "No appointments scheduled for {{range}}.",
     "scheduleFor": "Schedule for {{range}}:"
+  },
+  "clients": {
+    "title": "Clients",
+    "searchPlaceholder": "Search by name or phone",
+    "emptyTitle": "No clients yet",
+    "emptySubtitle": "Add your first client to start booking appointments for them.",
+    "defaultName": "Client"
+  },
+  "addClient": {
+    "editTitle": "Edit Client",
+    "addTitle": "Add New Client",
+    "phoneNumber": "PHONE NUMBER",
+    "phonePlaceholder": "e.g. 44 123 456",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "e.g. Arta",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "e.g. Krasniqi",
+    "moreDetails": "More details",
+    "moreFieldsComingSoon": "More fields coming soon.",
+    "deleting": "Deleting…",
+    "deleteClient": "Delete Client",
+    "deleteConfirmTitle": "Delete client",
+    "deleteConfirmMessage": "Remove {{name}} from your clients?",
+    "thisClient": "this client",
+    "saveChanges": "Save Changes",
+    "addAndInvite": "Add & Invite",
+    "add": "Add"
+  },
+  "clientPicker": {
+    "title": "Select client",
+    "continueAsWalkIn": "Continue as walk-in",
+    "addNewClient": "Add new client",
+    "noSavedClients": "No saved clients yet."
+  },
+  "clientDetail": {
+    "notFound": "This client could not be found.",
+    "contactInfo": "Contact Info",
+    "noPhone": "No phone number on file.",
+    "appointmentHistory": "Appointment History",
+    "noAppointmentsYet": "No appointments yet",
+    "noAppointmentsSubtitle": "This client hasn't booked an appointment yet. Start one with \"New Appointment\" below.",
+    "upcoming": "Upcoming",
+    "past": "Past"
+  },
+  "importContacts": {
+    "title": "Import from Contacts",
+    "loading": "Loading contacts…",
+    "accessNeededTitle": "Contacts access needed",
+    "accessNeededText": "Allow access to your contacts to import clients from your phone.",
+    "openSettings": "Open Settings",
+    "searchPlaceholder": "Search contacts",
+    "selectedCount": "{{count}} selected",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "noneFound": "No contacts with phone numbers found.",
+    "importSelected": "Import Selected ({{count}})",
+    "importCompleteTitle": "Import complete",
+    "importedCount_one": "{{count}} contact imported.",
+    "importedCount_other": "{{count}} contacts imported.",
+    "duplicatesSkipped_one": "{{count}} duplicate skipped.",
+    "duplicatesSkipped_other": "{{count}} duplicates skipped.",
+    "ok": "OK"
+  },
+  "importInvite": {
+    "title": "Import & Invite Clients",
+    "importCardSubtitle": "Bulk-add clients from your phone's contact list",
+    "yourClients": "Your Clients",
+    "invite": "Invite",
+    "noPhoneTitle": "No phone number",
+    "noPhoneMessage": "This client has no phone number on file.",
+    "inviteMessage": "Hi {{name}}, book your next appointment with {{business}} online: {{url}}",
+    "couldNotOpenTitle": "Could not open Messages",
+    "couldNotOpenMessage": "No messaging app is available to handle this on your device.",
+    "defaultBusinessName": "Your Business",
+    "defaultRecipientName": "there",
+    "emptyText": "No clients yet — import from contacts or add one manually."
   }
 }

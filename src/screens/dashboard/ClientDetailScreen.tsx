@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useClients } from '../../hooks/useClients';
 import { useAppointments } from '../../hooks/useAppointments';
 import { getClientDisplayName } from '../../types/client';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 import type { Appointment } from '../../types/appointment';
 
@@ -22,26 +24,28 @@ function getInitials(name: string) {
     .join('');
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+function formatDate(date: Date, locale: string) {
+  return date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
-function formatTime(date: Date) {
-  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+function formatTime(date: Date, locale: string) {
+  return date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
 }
 
 function AppointmentRow({ appointment, upcoming }: { appointment: Appointment; upcoming: boolean }) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   return (
     <View style={[styles.apptRow, { borderLeftColor: appointment.color ?? Colors.teal }]}>
       <View style={{ flex: 1 }}>
         <Text style={styles.apptService}>{appointment.serviceLabel}</Text>
         <Text style={styles.apptMeta}>
-          {formatDate(appointment.start)} · {formatTime(appointment.start)}
+          {formatDate(appointment.start, locale)} · {formatTime(appointment.start, locale)}
         </Text>
       </View>
       <View style={[styles.statusBadge, upcoming ? styles.statusBadgeUpcoming : styles.statusBadgePast]}>
         <Text style={[styles.statusBadgeLabel, upcoming ? styles.statusBadgeLabelUpcoming : styles.statusBadgeLabelPast]}>
-          {upcoming ? 'Upcoming' : 'Past'}
+          {upcoming ? t('clientDetail.upcoming') : t('clientDetail.past')}
         </Text>
       </View>
     </View>
@@ -49,6 +53,7 @@ function AppointmentRow({ appointment, upcoming }: { appointment: Appointment; u
 }
 
 export default function ClientDetailScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { clientId } = route.params;
   const { data: clients = [] } = useClients();
   const { data: appointments = [] } = useAppointments();
@@ -74,17 +79,17 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
           <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
             <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Client</Text>
+          <Text style={styles.headerTitle}>{t('clients.defaultName')}</Text>
           <View style={{ width: 22 }} />
         </View>
         <View style={styles.empty}>
-          <Text style={styles.emptySubtitle}>This client could not be found.</Text>
+          <Text style={styles.emptySubtitle}>{t('clientDetail.notFound')}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  const name = getClientDisplayName(client) || 'Client';
+  const name = getClientDisplayName(client) || t('clients.defaultName');
   const hasHistory = upcoming.length > 0 || past.length > 0;
 
   const handleCall = () => {
@@ -121,7 +126,7 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
           <Text style={styles.profileName}>{name}</Text>
         </View>
 
-        <Text style={styles.sectionTitle}>Contact Info</Text>
+        <Text style={styles.sectionTitle}>{t('clientDetail.contactInfo')}</Text>
         {client.phone ? (
           <TouchableOpacity style={styles.contactRow} activeOpacity={0.7} onPress={handleCall}>
             <View style={styles.contactIconWrap}>
@@ -131,25 +136,25 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
         ) : (
-          <Text style={styles.emptySubtitle}>No phone number on file.</Text>
+          <Text style={styles.emptySubtitle}>{t('clientDetail.noPhone')}</Text>
         )}
 
-        <Text style={styles.sectionTitle}>Appointment History</Text>
+        <Text style={styles.sectionTitle}>{t('clientDetail.appointmentHistory')}</Text>
         {!hasHistory ? (
           <View style={styles.historyEmpty}>
             <View style={styles.emptyIconWrap}>
               <Ionicons name="calendar-outline" size={28} color={Colors.teal} />
             </View>
-            <Text style={styles.emptyTitle}>No appointments yet</Text>
+            <Text style={styles.emptyTitle}>{t('clientDetail.noAppointmentsYet')}</Text>
             <Text style={styles.emptySubtitle}>
-              This client hasn't booked an appointment yet. Start one with "New Appointment" below.
+              {t('clientDetail.noAppointmentsSubtitle')}
             </Text>
           </View>
         ) : (
           <>
             {upcoming.length > 0 && (
               <>
-                <Text style={styles.subsectionTitle}>Upcoming</Text>
+                <Text style={styles.subsectionTitle}>{t('clientDetail.upcoming')}</Text>
                 {upcoming.map((appt) => (
                   <AppointmentRow key={appt.id} appointment={appt} upcoming />
                 ))}
@@ -157,7 +162,7 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
             )}
             {past.length > 0 && (
               <>
-                <Text style={styles.subsectionTitle}>Past</Text>
+                <Text style={styles.subsectionTitle}>{t('clientDetail.past')}</Text>
                 {past.map((appt) => (
                   <AppointmentRow key={appt.id} appointment={appt} upcoming={false} />
                 ))}
@@ -170,7 +175,7 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.newApptButton} activeOpacity={0.85} onPress={handleNewAppointment}>
           <Ionicons name="add" size={20} color={Colors.white} />
-          <Text style={styles.newApptButtonLabel}>New Appointment</Text>
+          <Text style={styles.newApptButtonLabel}>{t('newAppointment.title')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
