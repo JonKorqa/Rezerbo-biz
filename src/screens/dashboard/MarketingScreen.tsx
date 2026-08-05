@@ -5,54 +5,56 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Stop, Rect } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
 
 interface FeatureCard {
   key: string;
-  status: string;
-  title: string;
-  description: string;
+  statusKey: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: keyof typeof Ionicons.glyphMap;
 }
 
 const FEATURE_CARDS: FeatureCard[] = [
   {
     key: 'invite',
-    status: 'Not invited',
-    title: 'Import & Invite Clients',
-    description: 'Invite your clients to book online 24/7',
+    statusKey: 'marketing.cards.invite.status',
+    titleKey: 'marketing.cards.invite.title',
+    descriptionKey: 'marketing.cards.invite.description',
     icon: 'mail-outline',
   },
   {
     key: 'social',
-    status: 'Inactive',
-    title: 'Social Media Marketing',
-    description: 'Create and share custom posts and graphics',
+    statusKey: 'marketing.cards.social.status',
+    titleKey: 'marketing.cards.social.title',
+    descriptionKey: 'marketing.cards.social.description',
     icon: 'share-social-outline',
   },
   {
     key: 'textEmail',
-    status: 'Inactive',
-    title: 'Text & Email Marketing',
-    description: 'Automate campaigns or send one time messages.',
+    statusKey: 'marketing.cards.textEmail.status',
+    titleKey: 'marketing.cards.textEmail.title',
+    descriptionKey: 'marketing.cards.textEmail.description',
     icon: 'paper-plane-outline',
   },
   {
     key: 'promotions',
-    status: 'Inactive',
-    title: 'Promotions',
-    description: 'Use promotional tools to engage your clients',
+    statusKey: 'marketing.cards.promotions.status',
+    titleKey: 'marketing.cards.promotions.title',
+    descriptionKey: 'marketing.cards.promotions.description',
     icon: 'pricetag-outline',
   },
 ];
 
 export default function MarketingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleComingSoon = (title: string) => {
-    Alert.alert('Coming soon', `${title} is not built yet.`);
+    Alert.alert(t('common.comingSoon'), t('marketing.notBuiltYet', { title }));
   };
 
   const handleCardPress = (card: FeatureCard) => {
@@ -63,14 +65,14 @@ export default function MarketingScreen() {
     } else if (card.key === 'textEmail') {
       navigation.navigate('TextAndEmailMarketing');
     } else {
-      handleComingSoon(card.title);
+      handleComingSoon(t(card.titleKey));
     }
   };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.headerTitle}>Marketing</Text>
+        <Text style={styles.headerTitle}>{t('marketing.title')}</Text>
 
         <View style={styles.banner}>
           <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
@@ -85,16 +87,16 @@ export default function MarketingScreen() {
 
           <View style={styles.bannerContent}>
             <View style={styles.bannerText}>
-              <Text style={styles.bannerHeadline}>More bookings from Google?</Text>
+              <Text style={styles.bannerHeadline}>{t('marketing.bannerHeadline')}</Text>
               <Text style={styles.bannerSubtext}>
-                Turn on your free Business Profile and get discovered by new clients.
+                {t('marketing.bannerSubtext')}
               </Text>
               <TouchableOpacity
                 style={styles.bannerButton}
                 activeOpacity={0.85}
                 onPress={() => handleComingSoon('Google Business Profile')}
               >
-                <Text style={styles.bannerButtonLabel}>Check now →</Text>
+                <Text style={styles.bannerButtonLabel}>{t('marketing.bannerButton')}</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.bannerIconWrap}>
@@ -114,10 +116,10 @@ export default function MarketingScreen() {
               <View style={styles.cardBody}>
                 <View style={styles.statusRow}>
                   <View style={styles.statusDot} />
-                  <Text style={styles.statusLabel}>{card.status}</Text>
+                  <Text style={styles.statusLabel}>{t(card.statusKey)}</Text>
                 </View>
-                <Text style={styles.cardTitle}>{card.title}</Text>
-                <Text style={styles.cardDescription}>{card.description}</Text>
+                <Text style={styles.cardTitle}>{t(card.titleKey)}</Text>
+                <Text style={styles.cardDescription}>{t(card.descriptionKey)}</Text>
               </View>
               <View style={styles.cardIconWrap}>
                 <Ionicons name={card.icon} size={22} color={Colors.teal} />

@@ -429,5 +429,124 @@
     "deletePackage": "Delete Package",
     "deleteConfirmTitle": "Delete package",
     "deleteConfirmMessage": "Remove \"{{name}}\" from your packages?"
+  },
+  "marketing": {
+    "title": "Marketing",
+    "notBuiltYet": "{{title}} is not built yet.",
+    "bannerHeadline": "More bookings from Google?",
+    "bannerSubtext": "Turn on your free Business Profile and get discovered by new clients.",
+    "bannerButton": "Check now →",
+    "cards": {
+      "invite": {
+        "status": "Not invited",
+        "title": "Import & Invite Clients",
+        "description": "Invite your clients to book online 24/7"
+      },
+      "social": {
+        "status": "Inactive",
+        "title": "Social Media Marketing",
+        "description": "Create and share custom posts and graphics"
+      },
+      "textEmail": {
+        "status": "Inactive",
+        "title": "Text & Email Marketing",
+        "description": "Automate campaigns or send one time messages."
+      },
+      "promotions": {
+        "status": "Inactive",
+        "title": "Promotions",
+        "description": "Use promotional tools to engage your clients"
+      }
+    }
+  },
+  "socialMediaMarketing": {
+    "title": "Social Media Marketing",
+    "subtitle": "Tap a category to generate a caption and share it to Instagram, Facebook, or anywhere else.",
+    "tiles": {
+      "bookingLink": "Share Your Booking Link",
+      "quickShares": "Quick Shares",
+      "holidays": "Holidays & Special Occasions",
+      "encourageBookings": "Encourage Bookings",
+      "portfolio": "Share Your Portfolio",
+      "reviews": "Share Reviews",
+      "quotes": "Quotes & Inspiration",
+      "businessInfo": "Business Info",
+      "services": "Promote Services"
+    },
+    "bookingLinkMessage": "Book your next appointment with {{businessName}} today!",
+    "portfolioMessage": "Check out our work at {{businessName}}!",
+    "serviceMessage": "Book your {{serviceName}} today!",
+    "bookNow": "Book now",
+    "noPortfolioTitle": "No portfolio photos yet",
+    "noPortfolioMessage": "Add some photos to your Portfolio from your Profile first.",
+    "noServicesTitle": "No services yet",
+    "noServicesMessage": "Add services from Services Setup first.",
+    "choosePhoto": "Choose a photo",
+    "templates": {
+      "quickShares": [
+        "We have appointments available this week — grab your spot! {link}",
+        "Treat yourself today. Book your next appointment here: {link}",
+        "Spots are filling up fast — book now before they're gone! {link}"
+      ],
+      "holidays": [
+        "🎄 The holidays are almost here — book your appointment before we're fully booked! {link}",
+        "🎉 New year, new look! Book your first appointment of the year: {link}",
+        "❤️ Treat yourself or someone you love — book an appointment: {link}",
+        "☀️ Summer is here! Book your appointment and get ready to shine: {link}"
+      ],
+      "encourageBookings": [
+        "It's been a while! Let's get you back in the chair — book your next visit: {link}",
+        "Don't wait too long between visits — book your next appointment today: {link}",
+        "Your next appointment is one tap away: {link}"
+      ],
+      "reviews": [
+        "Loved your last visit? We'd love to hear about it — and we'd love to see you again! {link}",
+        "Thank you to all our amazing clients! Book your next appointment with us: {link}",
+        "⭐️⭐️⭐️⭐️⭐️ We are grateful for every client. Book your next visit: {link}"
+      ],
+      "quotes": [
+        "\"Take care of your body, it's the only place you have to live.\" Book your next appointment: {link}",
+        "\"Self-care isn't selfish.\" Treat yourself — book here: {link}",
+        "\"Beauty begins the moment you decide to be yourself.\" Book your appointment: {link}"
+      ]
+    }
+  },
+  "textAndEmailMarketing": {
+    "title": "Text & Email Marketing",
+    "note": "Send messages directly from your phone — no automated campaigns yet.",
+    "messageTemplates": "Message Templates",
+    "writeOwnMessage": "Write your own message from scratch",
+    "writeYourMessage": "Write your message",
+    "typeYourMessagePlaceholder": "Type your message…",
+    "chooseClient": "Choose client",
+    "sendTo": "Send to {{name}}",
+    "sendMessage": "Send message",
+    "sendViaText": "Send via Text Message",
+    "sendViaEmail": "Send via Email",
+    "emailSubject": "A message from {{businessName}}",
+    "couldNotOpenMailTitle": "Could not open Mail",
+    "couldNotOpenMailMessage": "No email app is available to handle this on your device.",
+    "templates": {
+      "welcome": {
+        "title": "Welcome a new client",
+        "description": "Send a friendly welcome after their first visit",
+        "body": "Hi {clientName}, thank you for choosing {businessName}! We're so glad you came in and can't wait to see you again."
+      },
+      "rebook": {
+        "title": "Remind clients to rebook",
+        "description": "Nudge clients who haven't booked in a while",
+        "body": "Hi {clientName}, it's been a while since your last visit to {businessName}! We'd love to see you again — book your next appointment whenever you're ready: {link}"
+      },
+      "onlineBooking": {
+        "title": "Let clients know you're now bookable online",
+        "description": "Announce your new online booking link",
+        "body": "Hi {clientName}, exciting news — you can now book your appointments with {businessName} online anytime! {link}"
+      },
+      "askReview": {
+        "title": "Ask for a review",
+        "description": "Politely request feedback after a visit",
+        "body": "Hi {clientName}, thank you for visiting {businessName}! If you enjoyed your visit, we would really appreciate a quick review."
+      }
+    }
   }
 }

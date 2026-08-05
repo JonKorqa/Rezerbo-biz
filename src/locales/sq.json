@@ -429,5 +429,124 @@
     "deletePackage": "Fshij Paketën",
     "deleteConfirmTitle": "Fshij paketën",
     "deleteConfirmMessage": "Me e hjek \"{{name}}\" nga paketat e tua?"
+  },
+  "marketing": {
+    "title": "Marketingu",
+    "notBuiltYet": "{{title}} nuk është gati ende.",
+    "bannerHeadline": "Ma shumë rezervime nga Google?",
+    "bannerSubtext": "Aktivizo Profilin tënd falas të Biznesit dhe gjete nga klientë të rinj.",
+    "bannerButton": "Shiko tani →",
+    "cards": {
+      "invite": {
+        "status": "Pa ftesë",
+        "title": "Importo & Fto Klientë",
+        "description": "Fto klientët e tu me rezervu online 24/7"
+      },
+      "social": {
+        "status": "Joaktiv",
+        "title": "Marketing në Rrjete Sociale",
+        "description": "Krijo dhe ndaj postime e grafika të personalizuara"
+      },
+      "textEmail": {
+        "status": "Joaktiv",
+        "title": "Marketing me SMS & Email",
+        "description": "Automatizo fushata ose dërgo mesazhe njëherëshe."
+      },
+      "promotions": {
+        "status": "Joaktiv",
+        "title": "Promocione",
+        "description": "Përdor mjete promocionale për me angazhu klientët e tu"
+      }
+    }
+  },
+  "socialMediaMarketing": {
+    "title": "Marketing në Rrjete Sociale",
+    "subtitle": "Prek një kategori për me krijue një tekst dhe me e ndanë në Instagram, Facebook, ose kudo tjetër.",
+    "tiles": {
+      "bookingLink": "Ndaj Linkun Tënd të Rezervimit",
+      "quickShares": "Ndarje të Shpejta",
+      "holidays": "Festat & Raste Speciale",
+      "encourageBookings": "Nxit Rezervime",
+      "portfolio": "Ndaj Portofolin Tënd",
+      "reviews": "Ndaj Vlerësimet",
+      "quotes": "Citate & Frymëzim",
+      "businessInfo": "Të Dhënat e Biznesit",
+      "services": "Promovo Shërbimet"
+    },
+    "bookingLinkMessage": "Rezervo terminin tënd të radhës me {{businessName}} sot!",
+    "portfolioMessage": "Shiko punën tonë te {{businessName}}!",
+    "serviceMessage": "Rezervo {{serviceName}} tënd sot!",
+    "bookNow": "Rezervo tani",
+    "noPortfolioTitle": "Ende nuk ka foto portofoli",
+    "noPortfolioMessage": "Shto disa foto te Portofoli yt nga Profili së pari.",
+    "noServicesTitle": "Ende nuk ka shërbime",
+    "noServicesMessage": "Shto shërbime nga Konfigurimi i Shërbimeve së pari.",
+    "choosePhoto": "Zgjedh një foto",
+    "templates": {
+      "quickShares": [
+        "Kemi termine të lira këtë javë — kap vendin tënd! {link}",
+        "Trajto veten sot. Rezervo terminin tënd të radhës këtu: {link}",
+        "Vendet po mbushen shpejt — rezervo tani para se me u mbush! {link}"
+      ],
+      "holidays": [
+        "🎄 Festat po vijnë — rezervo terminin para se me u mbush fare! {link}",
+        "🎉 Vit i ri, look i ri! Rezervo terminin tënd të parë të vitit: {link}",
+        "❤️ Trajto veten ose dikë që e do — rezervo një termin: {link}",
+        "☀️ Vera erdhi! Rezervo terminin dhe bahu gati me shkëlqy: {link}"
+      ],
+      "encourageBookings": [
+        "Ka kohë që s'jemi pa u pa! Eja prap — rezervo terminin tënd të radhës: {link}",
+        "Mos prit shumë mes vizitave — rezervo terminin tënd sot: {link}",
+        "Termini yt i radhës është vetëm një prekje larg: {link}"
+      ],
+      "reviews": [
+        "E dashke vizitën e fundit? Na thuaj për të — dhe na pëlqen shumë me të pa prap! {link}",
+        "Faleminderit të gjithë klientëve tanë të mrekullueshëm! Rezervo terminin tënd të radhës me ne: {link}",
+        "⭐️⭐️⭐️⭐️⭐️ Jemi mirënjohës për çdo klient. Rezervo vizitën tënde të radhës: {link}"
+      ],
+      "quotes": [
+        "\"Kujdesu për trupin tënd, është vendi i vetëm ku ke me jetu.\" Rezervo terminin tënd: {link}",
+        "\"Kujdesi për veten nuk është egoizëm.\" Trajto veten — rezervo këtu: {link}",
+        "\"Bukuria fillon në momentin kur vendos me qenë vetja.\" Rezervo terminin tënd: {link}"
+      ]
+    }
+  },
+  "textAndEmailMarketing": {
+    "title": "Marketing me SMS & Email",
+    "note": "Dërgo mesazhe direkt nga telefoni yt — ende pa fushata të automatizuara.",
+    "messageTemplates": "Shabllone Mesazhesh",
+    "writeOwnMessage": "Shkruaj mesazhin tënd nga fillimi",
+    "writeYourMessage": "Shkruaj mesazhin tënd",
+    "typeYourMessagePlaceholder": "Shkruaj mesazhin tënd…",
+    "chooseClient": "Zgjedh klientin",
+    "sendTo": "Dërgo te {{name}}",
+    "sendMessage": "Dërgo mesazh",
+    "sendViaText": "Dërgo me SMS",
+    "sendViaEmail": "Dërgo me Email",
+    "emailSubject": "Një mesazh nga {{businessName}}",
+    "couldNotOpenMailTitle": "Nuk u hap dot Emaili",
+    "couldNotOpenMailMessage": "Nuk ka aplikacion emaili të disponueshëm në pajisjen tënde.",
+    "templates": {
+      "welcome": {
+        "title": "Përshëndet një klient të ri",
+        "description": "Dërgo një përshëndetje miqësore pas vizitës së parë",
+        "body": "Përshëndetje {clientName}, faleminderit që zgjodhe {businessName}! Jemi shumë të lumtur që erdhe dhe s'shohim orën me të pa prap."
+      },
+      "rebook": {
+        "title": "Kujto klientët me rezervu prap",
+        "description": "Kujto klientët që s'kanë rezervu prej kohësh",
+        "body": "Përshëndetje {clientName}, ka kohë prej vizitës tënde të fundit te {businessName}! Do të donim me të pa prap — rezervo terminin tënd të radhës kurdo që je gati: {link}"
+      },
+      "onlineBooking": {
+        "title": "Njofto klientët se tani rezervohesh online",
+        "description": "Njofto për linkun e ri të rezervimit online",
+        "body": "Përshëndetje {clientName}, lajm i mirë — tani mundesh me i rezervu terminet me {businessName} online kurdo! {link}"
+      },
+      "askReview": {
+        "title": "Kërko një vlerësim",
+        "description": "Kërko me mirësjellje reagim pas një vizite",
+        "body": "Përshëndetje {clientName}, faleminderit që na vizitove në {businessName}! Nëse e ke pëlqy vizitën, do të na gëzonte shumë një vlerësim i shpejtë."
+      }
+    }
   }
 }

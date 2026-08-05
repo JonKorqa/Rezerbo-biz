@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { useClients } from '../../hooks/useClients';
@@ -29,41 +30,41 @@ type Props = NativeStackScreenProps<RootStackParamList, 'TextAndEmailMarketing'>
 
 interface MessageTemplate {
   key: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: keyof typeof Ionicons.glyphMap;
-  body: string;
+  bodyKey: string;
 }
 
 // {clientName}, {businessName}, {link} get substituted once a client is picked.
 const MESSAGE_TEMPLATES: MessageTemplate[] = [
   {
     key: 'welcome',
-    title: 'Welcome a new client',
-    description: 'Send a friendly welcome after their first visit',
+    titleKey: 'textAndEmailMarketing.templates.welcome.title',
+    descriptionKey: 'textAndEmailMarketing.templates.welcome.description',
     icon: 'hand-left-outline',
-    body: "Hi {clientName}, thank you for choosing {businessName}! We're so glad you came in and can't wait to see you again.",
+    bodyKey: 'textAndEmailMarketing.templates.welcome.body',
   },
   {
     key: 'rebook',
-    title: 'Remind clients to rebook',
-    description: "Nudge clients who haven't booked in a while",
+    titleKey: 'textAndEmailMarketing.templates.rebook.title',
+    descriptionKey: 'textAndEmailMarketing.templates.rebook.description',
     icon: 'refresh-outline',
-    body: "Hi {clientName}, it's been a while since your last visit to {businessName}! We'd love to see you again — book your next appointment whenever you're ready: {link}",
+    bodyKey: 'textAndEmailMarketing.templates.rebook.body',
   },
   {
     key: 'online-booking',
-    title: "Let clients know you're now bookable online",
-    description: 'Announce your new online booking link',
+    titleKey: 'textAndEmailMarketing.templates.onlineBooking.title',
+    descriptionKey: 'textAndEmailMarketing.templates.onlineBooking.description',
     icon: 'globe-outline',
-    body: 'Hi {clientName}, exciting news — you can now book your appointments with {businessName} online anytime! {link}',
+    bodyKey: 'textAndEmailMarketing.templates.onlineBooking.body',
   },
   {
     key: 'ask-review',
-    title: 'Ask for a review',
-    description: 'Politely request feedback after a visit',
+    titleKey: 'textAndEmailMarketing.templates.askReview.title',
+    descriptionKey: 'textAndEmailMarketing.templates.askReview.description',
     icon: 'star-outline',
-    body: 'Hi {clientName}, thank you for visiting {businessName}! If you enjoyed your visit, we would really appreciate a quick review.',
+    bodyKey: 'textAndEmailMarketing.templates.askReview.body',
   },
 ];
 
@@ -75,6 +76,7 @@ function fillTemplate(body: string, vars: { clientName: string; businessName: st
 }
 
 export default function TextAndEmailMarketingScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const uid = auth.currentUser?.uid;
   const { data: business } = useQuery({
     queryKey: ['business', uid],
@@ -83,7 +85,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
   });
   const { data: clients = [] } = useClients();
 
-  const businessName = business?.businessName ?? 'Your Business';
+  const businessName = business?.businessName ?? t('importInvite.defaultBusinessName');
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
 
   const [pendingBody, setPendingBody] = useState<string | null>(null);
@@ -111,7 +113,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
   }, [selectedClientParam]);
 
   const startTemplateFlow = (template: MessageTemplate) => {
-    setPendingBody(template.body);
+    setPendingBody(t(template.bodyKey));
     navigation.navigate('ClientPicker', { returnTo: 'TextAndEmailMarketing' });
   };
 
@@ -131,7 +133,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
   const handleSendText = async () => {
     const client = clients.find((c) => c.id === sendChooserClient?.id);
     if (!client?.phone) {
-      Alert.alert('No phone number', 'This client has no phone number on file.');
+      Alert.alert(t('importInvite.noPhoneTitle'), t('importInvite.noPhoneMessage'));
       return;
     }
     const separator = Platform.OS === 'ios' ? '&' : '?';
@@ -140,20 +142,20 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
       await Linking.openURL(url);
       closeSendChooser();
     } catch {
-      Alert.alert('Could not open Messages', 'No messaging app is available to handle this on your device.');
+      Alert.alert(t('importInvite.couldNotOpenTitle'), t('importInvite.couldNotOpenMessage'));
     }
   };
 
   const handleSendEmail = async () => {
     // Clients don't have a stored email address yet, so this opens the mail composer
     // with the message pre-filled and lets the owner fill in (or paste) the recipient.
-    const subject = `A message from ${businessName}`;
+    const subject = t('textAndEmailMarketing.emailSubject', { businessName });
     const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(sendChooserMessage)}`;
     try {
       await Linking.openURL(url);
       closeSendChooser();
     } catch {
-      Alert.alert('Could not open Mail', 'No email app is available to handle this on your device.');
+      Alert.alert(t('textAndEmailMarketing.couldNotOpenMailTitle'), t('textAndEmailMarketing.couldNotOpenMailMessage'));
     }
   };
 
@@ -163,7 +165,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Text & Email Marketing</Text>
+        <Text style={styles.headerTitle}>{t('textAndEmailMarketing.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -171,11 +173,11 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
         <View style={styles.noteBanner}>
           <Ionicons name="information-circle-outline" size={18} color={Colors.teal} />
           <Text style={styles.noteText}>
-            Send messages directly from your phone — no automated campaigns yet.
+            {t('textAndEmailMarketing.note')}
           </Text>
         </View>
 
-        <Text style={styles.sectionTitle}>Message Templates</Text>
+        <Text style={styles.sectionTitle}>{t('textAndEmailMarketing.messageTemplates')}</Text>
         <View style={styles.list}>
           {MESSAGE_TEMPLATES.map((template) => (
             <TouchableOpacity
@@ -188,8 +190,8 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
                 <Ionicons name={template.icon} size={18} color={Colors.teal} />
               </View>
               <View style={styles.templateBody}>
-                <Text style={styles.templateTitle}>{template.title}</Text>
-                <Text style={styles.templateDescription}>{template.description}</Text>
+                <Text style={styles.templateTitle}>{t(template.titleKey)}</Text>
+                <Text style={styles.templateDescription}>{t(template.descriptionKey)}</Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
@@ -207,7 +209,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
           <View style={styles.rowIconWrap}>
             <Ionicons name="create-outline" size={18} color={Colors.teal} />
           </View>
-          <Text style={styles.customRowLabel}>Write your own message from scratch</Text>
+          <Text style={styles.customRowLabel}>{t('textAndEmailMarketing.writeOwnMessage')}</Text>
           <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
         </TouchableOpacity>
       </ScrollView>
@@ -223,14 +225,14 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setCustomComposerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Write your message</Text>
+              <Text style={styles.modalTitle}>{t('textAndEmailMarketing.writeYourMessage')}</Text>
               <TouchableOpacity onPress={() => setCustomComposerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
             </View>
             <TextInput
               style={styles.customTextArea}
-              placeholder="Type your message…"
+              placeholder={t('textAndEmailMarketing.typeYourMessagePlaceholder')}
               placeholderTextColor={Light.textMuted}
               value={customText}
               onChangeText={setCustomText}
@@ -238,7 +240,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
               textAlignVertical="top"
               autoFocus
             />
-            <Button label="Choose client" onPress={startCustomFlow} disabled={!customText.trim()} />
+            <Button label={t('textAndEmailMarketing.chooseClient')} onPress={startCustomFlow} disabled={!customText.trim()} />
           </View>
         </KeyboardAvoidingView>
       </Modal>
@@ -250,7 +252,7 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
-                {sendChooserClient ? `Send to ${sendChooserClient.name}` : 'Send message'}
+                {sendChooserClient ? t('textAndEmailMarketing.sendTo', { name: sendChooserClient.name }) : t('textAndEmailMarketing.sendMessage')}
               </Text>
               <TouchableOpacity onPress={closeSendChooser} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
@@ -259,8 +261,8 @@ export default function TextAndEmailMarketingScreen({ navigation, route }: Props
             <View style={styles.messagePreview}>
               <Text style={styles.messagePreviewText}>{sendChooserMessage}</Text>
             </View>
-            <Button label="Send via Text Message" onPress={handleSendText} style={styles.sendButton} />
-            <Button label="Send via Email" onPress={handleSendEmail} variant="secondary" />
+            <Button label={t('textAndEmailMarketing.sendViaText')} onPress={handleSendText} style={styles.sendButton} />
+            <Button label={t('textAndEmailMarketing.sendViaEmail')} onPress={handleSendEmail} variant="secondary" />
           </View>
         </View>
       </Modal>

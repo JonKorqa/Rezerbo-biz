@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { useServices } from '../../hooks/useServices';
@@ -20,53 +21,22 @@ function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-const QUICK_SHARE_TEMPLATES = [
-  'We have appointments available this week — grab your spot! {link}',
-  'Treat yourself today. Book your next appointment here: {link}',
-  "Spots are filling up fast — book now before they're gone! {link}",
-];
-
-const HOLIDAY_TEMPLATES = [
-  "🎄 The holidays are almost here — book your appointment before we're fully booked! {link}",
-  '🎉 New year, new look! Book your first appointment of the year: {link}',
-  "❤️ Treat yourself or someone you love — book an appointment: {link}",
-  '☀️ Summer is here! Book your appointment and get ready to shine: {link}',
-];
-
-const ENCOURAGE_BOOKING_TEMPLATES = [
-  "It's been a while! Let's get you back in the chair — book your next visit: {link}",
-  "Don't wait too long between visits — book your next appointment today: {link}",
-  'Your next appointment is one tap away: {link}',
-];
-
-const REVIEW_TEMPLATES = [
-  "Loved your last visit? We'd love to hear about it — and we'd love to see you again! {link}",
-  'Thank you to all our amazing clients! Book your next appointment with us: {link}',
-  '⭐️⭐️⭐️⭐️⭐️ We are grateful for every client. Book your next visit: {link}',
-];
-
-const QUOTE_TEMPLATES = [
-  '"Take care of your body, it\'s the only place you have to live." Book your next appointment: {link}',
-  '"Self-care isn\'t selfish." Treat yourself — book here: {link}',
-  '"Beauty begins the moment you decide to be yourself." Book your appointment: {link}',
-];
-
 interface MarketingTile {
   key: string;
-  title: string;
+  titleKey: string;
   icon: keyof typeof Ionicons.glyphMap;
 }
 
 const TILES: MarketingTile[] = [
-  { key: 'booking-link', title: 'Share Your Booking Link', icon: 'link-outline' },
-  { key: 'quick-shares', title: 'Quick Shares', icon: 'flash-outline' },
-  { key: 'holidays', title: 'Holidays & Special Occasions', icon: 'gift-outline' },
-  { key: 'encourage-bookings', title: 'Encourage Bookings', icon: 'calendar-outline' },
-  { key: 'portfolio', title: 'Share Your Portfolio', icon: 'images-outline' },
-  { key: 'reviews', title: 'Share Reviews', icon: 'star-outline' },
-  { key: 'quotes', title: 'Quotes & Inspiration', icon: 'chatbubble-ellipses-outline' },
-  { key: 'business-info', title: 'Business Info', icon: 'information-circle-outline' },
-  { key: 'services', title: 'Promote Services', icon: 'pricetag-outline' },
+  { key: 'booking-link', titleKey: 'socialMediaMarketing.tiles.bookingLink', icon: 'link-outline' },
+  { key: 'quick-shares', titleKey: 'socialMediaMarketing.tiles.quickShares', icon: 'flash-outline' },
+  { key: 'holidays', titleKey: 'socialMediaMarketing.tiles.holidays', icon: 'gift-outline' },
+  { key: 'encourage-bookings', titleKey: 'socialMediaMarketing.tiles.encourageBookings', icon: 'calendar-outline' },
+  { key: 'portfolio', titleKey: 'socialMediaMarketing.tiles.portfolio', icon: 'images-outline' },
+  { key: 'reviews', titleKey: 'socialMediaMarketing.tiles.reviews', icon: 'star-outline' },
+  { key: 'quotes', titleKey: 'socialMediaMarketing.tiles.quotes', icon: 'chatbubble-ellipses-outline' },
+  { key: 'business-info', titleKey: 'socialMediaMarketing.tiles.businessInfo', icon: 'information-circle-outline' },
+  { key: 'services', titleKey: 'socialMediaMarketing.tiles.services', icon: 'pricetag-outline' },
 ];
 
 async function shareText(message: string, url?: string) {
@@ -78,6 +48,7 @@ async function shareText(message: string, url?: string) {
 }
 
 export default function SocialMediaMarketingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const uid = auth.currentUser?.uid;
 
@@ -92,20 +63,21 @@ export default function SocialMediaMarketingScreen() {
   const [servicePickerVisible, setServicePickerVisible] = useState(false);
 
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
-  const businessName = business?.businessName ?? 'Your Business';
+  const businessName = business?.businessName ?? t('importInvite.defaultBusinessName');
 
-  const shareTemplate = (templates: string[]) => {
+  const shareTemplate = (templatesKey: string) => {
+    const templates = t(templatesKey, { returnObjects: true }) as string[];
     const message = pickRandom(templates).replace('{link}', profileUrl);
     shareText(message);
   };
 
   const handleShareBookingLink = () => {
-    shareText(`Book your next appointment with ${businessName} today!`, profileUrl);
+    shareText(t('socialMediaMarketing.bookingLinkMessage', { businessName }), profileUrl);
   };
 
   const handleSharePortfolio = () => {
     if (!business?.portfolio || business.portfolio.length === 0) {
-      Alert.alert('No portfolio photos yet', 'Add some photos to your Portfolio from your Profile first.');
+      Alert.alert(t('socialMediaMarketing.noPortfolioTitle'), t('socialMediaMarketing.noPortfolioMessage'));
       return;
     }
     setPortfolioPickerVisible(true);
@@ -113,7 +85,7 @@ export default function SocialMediaMarketingScreen() {
 
   const handlePickPortfolioPhoto = (url: string) => {
     setPortfolioPickerVisible(false);
-    shareText(`Check out our work at ${businessName}!`, url);
+    shareText(t('socialMediaMarketing.portfolioMessage', { businessName }), url);
   };
 
   const handleShareBusinessInfo = () => {
@@ -122,12 +94,12 @@ export default function SocialMediaMarketingScreen() {
       : business?.category ?? '';
     const address = business?.location?.address;
     const lines = [businessName, categories, address].filter(Boolean);
-    shareText(`${lines.join(' — ')}\nBook now: ${profileUrl}`);
+    shareText(`${lines.join(' — ')}\n${t('socialMediaMarketing.bookNow')}: ${profileUrl}`);
   };
 
   const handlePromoteServices = () => {
     if (services.length === 0) {
-      Alert.alert('No services yet', 'Add services from Services Setup first.');
+      Alert.alert(t('socialMediaMarketing.noServicesTitle'), t('socialMediaMarketing.noServicesMessage'));
       return;
     }
     setServicePickerVisible(true);
@@ -135,7 +107,7 @@ export default function SocialMediaMarketingScreen() {
 
   const handlePickService = (service: Service) => {
     setServicePickerVisible(false);
-    shareText(`Book your ${service.name} today!`, profileUrl);
+    shareText(t('socialMediaMarketing.serviceMessage', { serviceName: service.name }), profileUrl);
   };
 
   const handleTilePress = (key: string) => {
@@ -143,17 +115,17 @@ export default function SocialMediaMarketingScreen() {
       case 'booking-link':
         return handleShareBookingLink();
       case 'quick-shares':
-        return shareTemplate(QUICK_SHARE_TEMPLATES);
+        return shareTemplate('socialMediaMarketing.templates.quickShares');
       case 'holidays':
-        return shareTemplate(HOLIDAY_TEMPLATES);
+        return shareTemplate('socialMediaMarketing.templates.holidays');
       case 'encourage-bookings':
-        return shareTemplate(ENCOURAGE_BOOKING_TEMPLATES);
+        return shareTemplate('socialMediaMarketing.templates.encourageBookings');
       case 'portfolio':
         return handleSharePortfolio();
       case 'reviews':
-        return shareTemplate(REVIEW_TEMPLATES);
+        return shareTemplate('socialMediaMarketing.templates.reviews');
       case 'quotes':
-        return shareTemplate(QUOTE_TEMPLATES);
+        return shareTemplate('socialMediaMarketing.templates.quotes');
       case 'business-info':
         return handleShareBusinessInfo();
       case 'services':
@@ -169,13 +141,13 @@ export default function SocialMediaMarketingScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Social Media Marketing</Text>
+        <Text style={styles.headerTitle}>{t('socialMediaMarketing.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.subtitle}>
-          Tap a category to generate a caption and share it to Instagram, Facebook, or anywhere else.
+          {t('socialMediaMarketing.subtitle')}
         </Text>
 
         <View style={styles.grid}>
@@ -189,7 +161,7 @@ export default function SocialMediaMarketingScreen() {
               <View style={styles.tileIconWrap}>
                 <Ionicons name={tile.icon} size={22} color={Colors.teal} />
               </View>
-              <Text style={styles.tileLabel}>{tile.title}</Text>
+              <Text style={styles.tileLabel}>{t(tile.titleKey)}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -205,7 +177,7 @@ export default function SocialMediaMarketingScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setPortfolioPickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Choose a photo</Text>
+              <Text style={styles.modalTitle}>{t('socialMediaMarketing.choosePhoto')}</Text>
               <TouchableOpacity onPress={() => setPortfolioPickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -235,7 +207,7 @@ export default function SocialMediaMarketingScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setServicePickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Choose a service</Text>
+              <Text style={styles.modalTitle}>{t('servicePicker.title')}</Text>
               <TouchableOpacity onPress={() => setServicePickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
