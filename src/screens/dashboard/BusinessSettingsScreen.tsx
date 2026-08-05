@@ -131,6 +131,12 @@ export default function BusinessSettingsScreen() {
       navigation.navigate('PaymentsAndCheckout');
     } else if (row.key === 'business-details') {
       navigation.navigate('BusinessDetails');
+    } else if (row.key === 'staff') {
+      navigation.navigate('StaffManagement');
+    } else if (row.key === 'memberships') {
+      navigation.navigate('Memberships');
+    } else if (row.key === 'packages') {
+      navigation.navigate('Packages');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
     }

@@ -2,6 +2,9 @@ import type { Ionicons } from '@expo/vector-icons';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { Service } from './service';
 import type { Client } from './client';
+import type { StaffMember } from './staff';
+import type { Membership } from './membership';
+import type { ServicePackage } from './package';
 
 export type SelectedClientParam = { id: string | null; name: string };
 
@@ -57,6 +60,14 @@ export type RootStackParamList = {
   PaymentsAndCheckout: undefined;
   SocialMediaMarketing: undefined;
   TextAndEmailMarketing: { selectedClient?: SelectedClientParam } | undefined;
+  StaffManagement: undefined;
+  AddEditStaff: { staff?: StaffMember } | undefined;
+  Memberships: undefined;
+  AddEditMembership: { membership?: Membership } | undefined;
+  Packages: undefined;
+  AddEditPackage: { pkg?: ServicePackage } | undefined;
+  ImportInviteClients: undefined;
+  ImportContacts: undefined;
 };
 
 export type DashboardTabParamList = {

@@ -31,6 +31,14 @@ import StatsAndReportsScreen from '../screens/dashboard/StatsAndReportsScreen';
 import PaymentsAndCheckoutScreen from '../screens/dashboard/PaymentsAndCheckoutScreen';
 import SocialMediaMarketingScreen from '../screens/dashboard/SocialMediaMarketingScreen';
 import TextAndEmailMarketingScreen from '../screens/dashboard/TextAndEmailMarketingScreen';
+import StaffManagementScreen from '../screens/dashboard/StaffManagementScreen';
+import AddEditStaffScreen from '../screens/dashboard/AddEditStaffScreen';
+import MembershipsScreen from '../screens/dashboard/MembershipsScreen';
+import AddEditMembershipScreen from '../screens/dashboard/AddEditMembershipScreen';
+import PackagesScreen from '../screens/dashboard/PackagesScreen';
+import AddEditPackageScreen from '../screens/dashboard/AddEditPackageScreen';
+import ImportInviteClientsScreen from '../screens/dashboard/ImportInviteClientsScreen';
+import ImportContactsScreen from '../screens/dashboard/ImportContactsScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -73,6 +81,14 @@ export default function Navigation() {
         <Stack.Screen name="PaymentsAndCheckout" component={PaymentsAndCheckoutScreen} />
         <Stack.Screen name="SocialMediaMarketing" component={SocialMediaMarketingScreen} />
         <Stack.Screen name="TextAndEmailMarketing" component={TextAndEmailMarketingScreen} />
+        <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
+        <Stack.Screen name="AddEditStaff" component={AddEditStaffScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="Memberships" component={MembershipsScreen} />
+        <Stack.Screen name="AddEditMembership" component={AddEditMembershipScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="Packages" component={PackagesScreen} />
+        <Stack.Screen name="AddEditPackage" component={AddEditPackageScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="ImportInviteClients" component={ImportInviteClientsScreen} />
+        <Stack.Screen name="ImportContacts" component={ImportContactsScreen} options={{ presentation: 'modal' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

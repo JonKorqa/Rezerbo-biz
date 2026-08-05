@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal, Pressable, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { createAppointment } from '../../services/appointments';
 import { createNotification } from '../../services/notifications';
+import { useStaff } from '../../hooks/useStaff';
 import { Button } from '../../components/ui';
 import { DateTimePickerSheet } from '../../components/DateTimePickerSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -37,6 +38,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
     queryFn: () => (uid ? getBusiness(uid) : Promise.resolve(null)),
     enabled: !!uid,
   });
+  const { data: staffList = [] } = useStaff();
 
   const [client, setClient] = useState<SelectedClientParam | null>(null);
   const [service, setService] = useState<SelectedServiceParam | null>(null);
@@ -50,6 +52,8 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
   const [pickerTarget, setPickerTarget] = useState<'start' | 'end' | null>(null);
   const [pickerDay, setPickerDay] = useState<Date>(() => new Date());
   const [saving, setSaving] = useState(false);
+  const [staffId, setStaffId] = useState<string | null>(null);
+  const [staffPickerVisible, setStaffPickerVisible] = useState(false);
 
   const selectedClientParam = route.params?.selectedClient;
   const selectedServiceParam = route.params?.selectedService;
@@ -70,7 +74,8 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [service]);
 
-  const staffName = business?.ownerName ?? auth.currentUser?.email ?? 'You';
+  const selectedStaff = staffList.find((s) => s.id === staffId) ?? staffList[0] ?? null;
+  const staffName = selectedStaff?.name ?? business?.ownerName ?? auth.currentUser?.email ?? 'You';
 
   const canSave = !!service && !saving;
 
@@ -97,7 +102,13 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
   };
 
   const handleStaffPress = () => {
-    Alert.alert('Coming soon', 'Multi-staff assignment is not available yet.');
+    if (staffList.length <= 1) return;
+    setStaffPickerVisible(true);
+  };
+
+  const selectStaff = (id: string) => {
+    setStaffId(id);
+    setStaffPickerVisible(false);
   };
 
   const handleStubAction = (label: string) => {
@@ -119,7 +130,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         clientName: clientLabel,
         serviceId: service.id,
         serviceLabel: service.name,
-        staffId: uid,
+        staffId: selectedStaff && !selectedStaff.isOwner ? selectedStaff.id : uid,
         start: startTime,
         end: endTime,
         color: service.color,
@@ -236,6 +247,9 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
               <Text style={styles.staffAvatarLabel}>{getInitials(staffName)}</Text>
             </View>
             <Text style={styles.staffName}>{staffName}</Text>
+            {staffList.length > 1 && (
+              <Ionicons name="chevron-forward" size={16} color={Light.textMuted} style={{ marginLeft: 'auto' }} />
+            )}
           </View>
         </TouchableOpacity>
 
@@ -276,6 +290,44 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         onSelectTime={selectTimeSlot}
         onClose={() => setPickerTarget(null)}
       />
+
+      <Modal
+        visible={staffPickerVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setStaffPickerVisible(false)}
+      >
+        <View style={styles.staffModalBackdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setStaffPickerVisible(false)} />
+          <View style={styles.staffModalSheet}>
+            <View style={styles.staffModalHeader}>
+              <Text style={styles.staffModalTitle}>Select staff</Text>
+              <TouchableOpacity onPress={() => setStaffPickerVisible(false)} hitSlop={12}>
+                <Ionicons name="close" size={22} color={Light.textPrimary} />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={staffList}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.staffOptionRow}
+                  activeOpacity={0.7}
+                  onPress={() => selectStaff(item.id)}
+                >
+                  <View style={styles.staffAvatar}>
+                    <Text style={styles.staffAvatarLabel}>{getInitials(item.name)}</Text>
+                  </View>
+                  <Text style={styles.staffOptionName}>{item.name}</Text>
+                  {(selectedStaff?.id ?? staffList[0]?.id) === item.id && (
+                    <Ionicons name="checkmark" size={18} color={Colors.teal} />
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -409,6 +461,41 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.bold,
   },
   staffName: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.medium,
+  },
+  staffModalBackdrop: { flex: 1, backgroundColor: Colors.overlay, justifyContent: 'flex-end' },
+  staffModalSheet: {
+    maxHeight: '70%',
+    backgroundColor: Light.background,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing['2xl'],
+  },
+  staffModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.md,
+  },
+  staffModalTitle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.lg,
+    fontFamily: Typography.fontFamily.heading,
+  },
+  staffOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Light.border,
+  },
+  staffOptionName: {
+    flex: 1,
     color: Light.textPrimary,
     fontSize: Typography.fontSize.base,
     fontFamily: Typography.fontFamily.medium,
