@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { createAppointment } from '../../services/appointments';
@@ -14,6 +15,7 @@ import { DateTimePickerSheet } from '../../components/DateTimePickerSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import { formatDateTime, getDefaultStartTime } from '../../utils/scheduling';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList, SelectedClientParam, SelectedServiceParam } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewAppointment'>;
@@ -30,6 +32,8 @@ function getInitials(name: string) {
 }
 
 export default function NewAppointmentScreen({ navigation, route }: Props) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
 
@@ -75,7 +79,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
   }, [service]);
 
   const selectedStaff = staffList.find((s) => s.id === staffId) ?? staffList[0] ?? null;
-  const staffName = selectedStaff?.name ?? business?.ownerName ?? auth.currentUser?.email ?? 'You';
+  const staffName = selectedStaff?.name ?? business?.ownerName ?? auth.currentUser?.email ?? t('newAppointment.you');
 
   const canSave = !!service && !saving;
 
@@ -123,7 +127,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
     // stays testable — once rules are deployed, remove this try/catch and let a failed save
     // block navigation (with retry) like it did before.
     try {
-      const clientLabel = client?.name ?? 'Walk-in';
+      const clientLabel = client?.name ?? t('newAppointment.walkIn');
       const appointmentId = await createAppointment({
         businessId: uid,
         clientId: client?.id ?? null,
@@ -135,11 +139,11 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         end: endTime,
         color: service.color,
       });
-      const timeLabel = startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const timeLabel = startTime.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
       await createNotification(uid, {
         type: 'new_booking',
-        title: 'New Appointment',
-        message: `${clientLabel} - ${service.name} at ${timeLabel}`,
+        title: t('newAppointment.notificationTitle'),
+        message: t('newAppointment.notificationMessage', { client: clientLabel, service: service.name, time: timeLabel }),
         appointmentId,
       });
     } catch (err) {
@@ -160,7 +164,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Appointment</Text>
+        <Text style={styles.headerTitle}>{t('newAppointment.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -172,7 +176,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         >
           <Ionicons name="person-outline" size={18} color={Light.textSecondary} />
           <Text style={styles.clientRowLabel} numberOfLines={1}>
-            {client ? client.name : 'Select a client or leave empty for walk-in'}
+            {client ? client.name : t('newAppointment.selectClientPlaceholder')}
           </Text>
           <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
         </TouchableOpacity>
@@ -195,7 +199,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
             activeOpacity={0.7}
             onPress={() => navigation.navigate('ServicePicker', { currentClient: client ?? undefined })}
           >
-            <Text style={styles.servicePlaceholderLabel}>Choose a Service</Text>
+            <Text style={styles.servicePlaceholderLabel}>{t('newAppointment.chooseService')}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
         )}
@@ -208,7 +212,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
               onPress={() => handleStubAction('Add a service')}
             >
               <Ionicons name="add-circle-outline" size={16} color={Light.textMuted} />
-              <Text style={styles.inlineActionLabel}>Add a service</Text>
+              <Text style={styles.inlineActionLabel}>{t('newAppointment.addService')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.inlineAction}
@@ -216,7 +220,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
               onPress={() => handleStubAction('Recurring service')}
             >
               <Ionicons name="repeat-outline" size={16} color={Light.textMuted} />
-              <Text style={styles.inlineActionLabel}>Recurring service</Text>
+              <Text style={styles.inlineActionLabel}>{t('newAppointment.recurringService')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.inlineAction}
@@ -224,24 +228,24 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
               onPress={() => handleStubAction('Group')}
             >
               <Ionicons name="people-outline" size={16} color={Light.textMuted} />
-              <Text style={styles.inlineActionLabel}>Group</Text>
+              <Text style={styles.inlineActionLabel}>{t('newAppointment.group')}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         <View style={styles.timeRow}>
           <TouchableOpacity style={styles.timeField} activeOpacity={0.7} onPress={() => openPicker('start')}>
-            <Text style={styles.fieldLabel}>START DATE & TIME</Text>
-            <Text style={styles.fieldValue}>{formatDateTime(startTime)}</Text>
+            <Text style={styles.fieldLabel}>{t('newAppointment.startDateTime')}</Text>
+            <Text style={styles.fieldValue}>{formatDateTime(startTime, locale, t('common.today'))}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.timeField} activeOpacity={0.7} onPress={() => openPicker('end')}>
-            <Text style={styles.fieldLabel}>END</Text>
-            <Text style={styles.fieldValue}>{formatDateTime(endTime)}</Text>
+            <Text style={styles.fieldLabel}>{t('newAppointment.end')}</Text>
+            <Text style={styles.fieldValue}>{formatDateTime(endTime, locale, t('common.today'))}</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.staffRow} activeOpacity={0.7} onPress={handleStaffPress}>
-          <Text style={styles.fieldLabel}>STAFF</Text>
+          <Text style={styles.fieldLabel}>{t('newAppointment.staff')}</Text>
           <View style={styles.staffValueRow}>
             <View style={styles.staffAvatar}>
               <Text style={styles.staffAvatarLabel}>{getInitials(staffName)}</Text>
@@ -258,13 +262,13 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
           activeOpacity={0.7}
           onPress={() => setNotesExpanded((v) => !v)}
         >
-          <Text style={styles.notesLabel}>Notes & Questions</Text>
+          <Text style={styles.notesLabel}>{t('newAppointment.notesAndQuestions')}</Text>
           <Ionicons name={notesExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={Light.textMuted} />
         </TouchableOpacity>
         {notesExpanded && (
           <TextInput
             style={styles.notesInput}
-            placeholder="Add notes or questions for this appointment"
+            placeholder={t('newAppointment.notesPlaceholder')}
             placeholderTextColor={Light.textMuted}
             multiline
             value={notes}
@@ -275,15 +279,15 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
 
       <View style={styles.bottomBar}>
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalLabel}>{t('newAppointment.total')}</Text>
           <Text style={styles.totalValue}>${(service?.price ?? 0).toFixed(2)}</Text>
         </View>
-        <Button label="Save" onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={t('common.save')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
 
       <DateTimePickerSheet
         visible={pickerTarget !== null}
-        title={pickerTarget === 'start' ? 'Start date & time' : 'End time'}
+        title={pickerTarget === 'start' ? t('newAppointment.startDateTimeSheetTitle') : t('newAppointment.endTimeSheetTitle')}
         pickerDay={pickerDay}
         onSelectDay={setPickerDay}
         activeTime={activeFieldValue}
@@ -301,7 +305,7 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setStaffPickerVisible(false)} />
           <View style={styles.staffModalSheet}>
             <View style={styles.staffModalHeader}>
-              <Text style={styles.staffModalTitle}>Select staff</Text>
+              <Text style={styles.staffModalTitle}>{t('newAppointment.selectStaff')}</Text>
               <TouchableOpacity onPress={() => setStaffPickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>

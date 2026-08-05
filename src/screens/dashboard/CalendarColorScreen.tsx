@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, saveCalendarColor } from '../../services/businesses';
 import { Button } from '../../components/ui';
@@ -14,6 +15,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'CalendarColorSettings'>;
 
 export default function CalendarColorScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
 
@@ -50,14 +52,13 @@ export default function CalendarColorScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={10}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Calendar Color Scheme</Text>
+        <Text style={styles.headerTitle}>{t('calendarColor.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <View style={styles.content}>
         <Text style={styles.description}>
-          Choose the default color used for appointment blocks on your calendar. Services with
-          their own color will still use that instead.
+          {t('calendarColor.description')}
         </Text>
 
         <View style={styles.swatchGrid}>
@@ -78,7 +79,7 @@ export default function CalendarColorScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.bottomBar}>
-        <Button label="Save" onPress={handleSave} loading={saving} />
+        <Button label={t('common.save')} onPress={handleSave} loading={saving} />
       </View>
     </SafeAreaView>
   );

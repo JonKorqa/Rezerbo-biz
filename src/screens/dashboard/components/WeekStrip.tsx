@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
-
-const DAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+import { localeTag } from '../../../utils/locale';
 
 interface WeekStripProps {
   selectedDate: Date;
@@ -15,6 +15,7 @@ function isSameDay(a: Date, b: Date) {
 }
 
 export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
+  const { i18n } = useTranslation();
   const today = useMemo(() => new Date(), []);
 
   const weekDates = useMemo(() => {
@@ -29,7 +30,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
 
   return (
     <View style={styles.row}>
-      {weekDates.map((date, i) => {
+      {weekDates.map((date) => {
         const selected = isSameDay(date, selectedDate);
         const isToday = isSameDay(date, today);
         return (
@@ -39,7 +40,9 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
             onPress={() => onSelectDate(date)}
             activeOpacity={0.7}
           >
-            <Text style={styles.dayLabel}>{DAY_LABELS[i]}</Text>
+            <Text style={styles.dayLabel}>
+              {date.toLocaleDateString(localeTag(i18n.language), { weekday: 'short' }).toUpperCase()}
+            </Text>
             <View style={[styles.dateCircle, selected && styles.dateCircleSelected]}>
               <Text
                 style={[

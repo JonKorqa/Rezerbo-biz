@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useNotifications } from '../../hooks/useNotifications';
@@ -18,6 +19,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor, findTimeOffForDate } from '../../constants/businessHours';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 
 // Placeholder until the business profile stores real opening hours.
@@ -27,13 +29,14 @@ function isSameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-function formatHeaderDate(date: Date) {
+function formatHeaderDate(date: Date, locale: string, todayLabel: string) {
   const today = new Date();
-  if (isSameDay(date, today)) return 'Today';
-  return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  if (isSameDay(date, today)) return todayLabel;
+  return date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 export default function AppointmentsScreen() {
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -128,7 +131,7 @@ export default function AppointmentsScreen() {
 
         <View style={styles.headerCenter}>
           <View style={styles.headerDateRow}>
-            <Text style={styles.headerDate}>{formatHeaderDate(selectedDate)}</Text>
+            <Text style={styles.headerDate}>{formatHeaderDate(selectedDate, localeTag(i18n.language), t('appointments.today'))}</Text>
             <Ionicons name="chevron-down" size={16} color={Light.textSecondary} />
           </View>
           <Text style={styles.headerHours}>{BUSINESS_HOURS}</Text>
@@ -145,7 +148,7 @@ export default function AppointmentsScreen() {
           {isDayOff ? (
             <EmptyState
               variant="closed"
-              message={`${timeOffEntry?.label ?? 'Day Off'} - Unavailable for Bookings`}
+              message={t('appointments.dayOffUnavailable', { label: timeOffEntry?.label ?? t('appointments.dayOff') })}
             />
           ) : (
             <TimeGrid appointments={dayAppointments} defaultColor={business?.calendarColor} />
@@ -173,7 +176,7 @@ export default function AppointmentsScreen() {
         <Pressable style={styles.sheetBackdrop} onPress={closeAddSheet}>
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Add new</Text>
+              <Text style={styles.sheetTitle}>{t('appointments.addSheet.title')}</Text>
               <TouchableOpacity onPress={closeAddSheet} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -183,7 +186,7 @@ export default function AppointmentsScreen() {
               <View style={styles.sheetIconWrap}>
                 <Ionicons name="person-add-outline" size={20} color={Colors.teal} />
               </View>
-              <Text style={styles.sheetRowLabel}>New Appointment</Text>
+              <Text style={styles.sheetRowLabel}>{t('appointments.addSheet.newAppointment')}</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
 
@@ -195,7 +198,7 @@ export default function AppointmentsScreen() {
               <View style={styles.sheetIconWrap}>
                 <Ionicons name="time-outline" size={20} color={Colors.teal} />
               </View>
-              <Text style={styles.sheetRowLabel}>Add Time Reservation</Text>
+              <Text style={styles.sheetRowLabel}>{t('appointments.addSheet.addReservation')}</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
 
@@ -207,7 +210,7 @@ export default function AppointmentsScreen() {
               <View style={styles.sheetIconWrap}>
                 <Ionicons name="airplane-outline" size={20} color={Colors.teal} />
               </View>
-              <Text style={styles.sheetRowLabel}>Add Time Off</Text>
+              <Text style={styles.sheetRowLabel}>{t('appointments.addSheet.addTimeOff')}</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
           </Pressable>
@@ -223,24 +226,24 @@ export default function AppointmentsScreen() {
         <Pressable style={styles.sheetBackdrop} onPress={closeCalendarSettings}>
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Calendar Settings</Text>
+              <Text style={styles.sheetTitle}>{t('appointments.calendarSettings.title')}</Text>
               <TouchableOpacity onPress={closeCalendarSettings} hitSlop={12}>
-                <Text style={styles.sheetDoneLink}>Done</Text>
+                <Text style={styles.sheetDoneLink}>{t('appointments.calendarSettings.done')}</Text>
               </TouchableOpacity>
             </View>
 
             <TouchableOpacity style={styles.sheetRow} activeOpacity={0.7} onPress={goToCalendarColorSettings}>
-              <Text style={styles.sheetRowLabel}>Calendar Color Scheme</Text>
+              <Text style={styles.sheetRowLabel}>{t('appointments.calendarSettings.colorScheme')}</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.sheetRow} activeOpacity={0.7} onPress={goToCalendarImport}>
-              <Text style={styles.sheetRowLabel}>Calendar Import</Text>
+              <Text style={styles.sheetRowLabel}>{t('appointments.calendarSettings.calendarImport')}</Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
 
             <Button
-              label="Schedule Management"
+              label={t('appointments.calendarSettings.scheduleManagement')}
               variant="secondary"
               onPress={goToScheduleManagement}
               style={styles.scheduleButton}

@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
+import { localeTag } from '../../../utils/locale';
 import type { Appointment } from '../../../types/appointment';
 
 const GRID_START_HOUR = 7;
@@ -9,10 +11,10 @@ const GRID_END_HOUR = 21;
 const HOUR_HEIGHT = 64;
 const HOURS = Array.from({ length: GRID_END_HOUR - GRID_START_HOUR + 1 }, (_, i) => GRID_START_HOUR + i);
 
-function formatHour(hour: number) {
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const display = hour % 12 === 0 ? 12 : hour % 12;
-  return `${display}:00 ${period}`;
+function formatHour(hour: number, locale: string) {
+  const d = new Date();
+  d.setHours(hour, 0, 0, 0);
+  return d.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
 }
 
 function minutesFromGridStart(date: Date) {
@@ -25,6 +27,8 @@ interface TimeGridProps {
 }
 
 export function TimeGrid({ appointments, defaultColor = Colors.teal }: TimeGridProps) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const gridHeight = (GRID_END_HOUR - GRID_START_HOUR) * HOUR_HEIGHT;
 
   return (
@@ -32,7 +36,7 @@ export function TimeGrid({ appointments, defaultColor = Colors.teal }: TimeGridP
       <View style={[styles.grid, { height: gridHeight }]}>
         {HOURS.map((hour, i) => (
           <View key={hour} style={[styles.hourRow, { top: i * HOUR_HEIGHT, height: HOUR_HEIGHT }]}>
-            <Text style={styles.hourLabel}>{formatHour(hour)}</Text>
+            <Text style={styles.hourLabel}>{formatHour(hour, locale)}</Text>
             <View style={styles.hourLines}>
               <View style={styles.hourLine} />
               <View style={styles.quarterLine} />
@@ -59,11 +63,11 @@ export function TimeGrid({ appointments, defaultColor = Colors.teal }: TimeGridP
               ]}
             >
               <Text style={styles.appointmentTime} numberOfLines={1}>
-                {appt.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} –{' '}
-                {appt.end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                {appt.start.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })} –{' '}
+                {appt.end.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
               </Text>
               <Text style={styles.appointmentLabel} numberOfLines={1}>
-                {isReservation ? appt.label || 'Reserved' : appt.serviceLabel}
+                {isReservation ? appt.label || t('appointments.reserved') : appt.serviceLabel}
               </Text>
             </View>
           );

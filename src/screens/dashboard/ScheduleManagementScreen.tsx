@@ -4,27 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, saveBusinessHours } from '../../services/businesses';
 import { Button } from '../../components/ui';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 import type { BusinessHours, DayHours, DayOfWeek } from '../../types/business';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ScheduleManagement'>;
 
 const DAY_ORDER: DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-const DAY_LABELS: Record<DayOfWeek, string> = {
-  monday: 'Monday',
-  tuesday: 'Tuesday',
-  wednesday: 'Wednesday',
-  thursday: 'Thursday',
-  friday: 'Friday',
-  saturday: 'Saturday',
-  sunday: 'Sunday',
-};
 
 const DEFAULT_DAY_HOURS: DayHours = { closed: false, start: '09:00', end: '18:00' };
 
@@ -45,18 +37,29 @@ function buildTimeSlots(): string[] {
 
 const TIME_SLOTS = buildTimeSlots();
 
-function formatTime(hhmm: string): string {
+function formatTime(hhmm: string, locale: string): string {
   const [h, m] = hhmm.split(':').map(Number);
-  const period = h >= 12 ? 'PM' : 'AM';
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return `${hour12}:${m.toString().padStart(2, '0')} ${period}`;
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
 }
 
-function formatDayHours(day: DayHours): string {
-  return day.closed ? 'Closed' : `${formatTime(day.start)} - ${formatTime(day.end)}`;
+function formatDayHours(day: DayHours, locale: string, closedLabel: string): string {
+  return day.closed ? closedLabel : `${formatTime(day.start, locale)} - ${formatTime(day.end, locale)}`;
 }
 
 export default function ScheduleManagementScreen({ navigation }: Props) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
+  const dayLabels: Record<DayOfWeek, string> = {
+    monday: t('common.days.monday'),
+    tuesday: t('common.days.tuesday'),
+    wednesday: t('common.days.wednesday'),
+    thursday: t('common.days.thursday'),
+    friday: t('common.days.friday'),
+    saturday: t('common.days.saturday'),
+    sunday: t('common.days.sunday'),
+  };
   const uid = auth.currentUser?.uid;
 
   const { data: business } = useQuery({
@@ -123,18 +126,18 @@ export default function ScheduleManagementScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={10}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Your Business Hours</Text>
+        <Text style={styles.headerTitle}>{t('scheduleManagement.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
-      <Text style={styles.subtext}>When can clients book with you?</Text>
+      <Text style={styles.subtext}>{t('scheduleManagement.subtitle')}</Text>
 
       <ScrollView contentContainerStyle={styles.listContent}>
         {DAY_ORDER.map((day) => (
           <TouchableOpacity key={day} style={styles.dayRow} activeOpacity={0.7} onPress={() => openDay(day)}>
-            <Text style={styles.dayName}>{DAY_LABELS[day]}</Text>
+            <Text style={styles.dayName}>{dayLabels[day]}</Text>
             <View style={styles.dayValueRow}>
               <Text style={[styles.dayHours, hours[day].closed && styles.dayHoursClosed]}>
-                {formatDayHours(hours[day])}
+                {formatDayHours(hours[day], locale, t('scheduleManagement.closed'))}
               </Text>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </View>
@@ -143,14 +146,14 @@ export default function ScheduleManagementScreen({ navigation }: Props) {
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <Button label="Continue" onPress={handleContinue} loading={saving} />
+        <Button label={t('common.continue')} onPress={handleContinue} loading={saving} />
       </View>
 
       <Modal visible={editingDay !== null} transparent animationType="slide" onRequestClose={closeDay}>
         <Pressable style={styles.backdrop} onPress={closeDay}>
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>{editingDay ? DAY_LABELS[editingDay] : ''}</Text>
+              <Text style={styles.sheetTitle}>{editingDay ? dayLabels[editingDay] : ''}</Text>
               <TouchableOpacity onPress={closeDay} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -159,7 +162,7 @@ export default function ScheduleManagementScreen({ navigation }: Props) {
             {draft && (
               <>
                 <View style={styles.closedRow}>
-                  <Text style={styles.closedLabel}>Closed</Text>
+                  <Text style={styles.closedLabel}>{t('scheduleManagement.closed')}</Text>
                   <Switch
                     value={draft.closed}
                     onValueChange={(value) => setDraft({ ...draft, closed: value })}
@@ -175,16 +178,16 @@ export default function ScheduleManagementScreen({ navigation }: Props) {
                       activeOpacity={0.7}
                       onPress={() => setActiveTimeField(activeTimeField === 'start' ? null : 'start')}
                     >
-                      <Text style={styles.fieldLabel}>OPENS</Text>
-                      <Text style={styles.fieldValue}>{formatTime(draft.start)}</Text>
+                      <Text style={styles.fieldLabel}>{t('scheduleManagement.opens')}</Text>
+                      <Text style={styles.fieldValue}>{formatTime(draft.start, locale)}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.timeField}
                       activeOpacity={0.7}
                       onPress={() => setActiveTimeField(activeTimeField === 'end' ? null : 'end')}
                     >
-                      <Text style={styles.fieldLabel}>CLOSES</Text>
-                      <Text style={styles.fieldValue}>{formatTime(draft.end)}</Text>
+                      <Text style={styles.fieldLabel}>{t('scheduleManagement.closes')}</Text>
+                      <Text style={styles.fieldValue}>{formatTime(draft.end, locale)}</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -200,7 +203,7 @@ export default function ScheduleManagementScreen({ navigation }: Props) {
                           onPress={() => selectTimeSlot(slot)}
                         >
                           <Text style={[styles.timeSlotLabel, active && styles.timeSlotLabelActive]}>
-                            {formatTime(slot)}
+                            {formatTime(slot, locale)}
                           </Text>
                           {active && <Ionicons name="checkmark" size={18} color={Colors.teal} />}
                         </TouchableOpacity>
@@ -209,7 +212,7 @@ export default function ScheduleManagementScreen({ navigation }: Props) {
                   </ScrollView>
                 )}
 
-                <Button label="Save" onPress={saveDay} style={styles.sheetSaveButton} />
+                <Button label={t('common.save')} onPress={saveDay} style={styles.sheetSaveButton} />
               </>
             )}
           </Pressable>

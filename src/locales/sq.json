@@ -10,7 +10,18 @@
     "comingSoon": "Së shpejti",
     "loading": "Duke u ngarkuar…",
     "error": "Gabim",
-    "unknownAddress": "Adresë e panjohur"
+    "unknownAddress": "Adresë e panjohur",
+    "today": "Sot",
+    "tomorrow": "Nesër",
+    "days": {
+      "monday": "E hënë",
+      "tuesday": "E martë",
+      "wednesday": "E mërkurë",
+      "thursday": "E enjte",
+      "friday": "E premte",
+      "saturday": "E shtunë",
+      "sunday": "E diel"
+    }
   },
   "auth": {
     "tagline": "për pronarë biznesesh",
@@ -128,5 +139,85 @@
     "language": {
       "label": "Gjuha"
     }
+  },
+  "appointments": {
+    "today": "Sot",
+    "dayOff": "Ditë Pushimi",
+    "dayOffUppercase": "DITË PUSHIMI",
+    "dayOffUnavailable": "{{label}} - Nuk pranon rezervime",
+    "reserved": "E rezervume",
+    "noUpcoming": "Nuk ka termine të ardhshme",
+    "addSheet": {
+      "title": "Shto të re",
+      "newAppointment": "Termin i Ri",
+      "addReservation": "Shto Rezervim Kohe",
+      "addTimeOff": "Shto Ditë Pushimi"
+    },
+    "calendarSettings": {
+      "title": "Cilësimet e Kalendarit",
+      "done": "U krye",
+      "colorScheme": "Ngjyrat e Kalendarit",
+      "calendarImport": "Importo Kalendarin",
+      "scheduleManagement": "Menaxho Orarin"
+    }
+  },
+  "newAppointment": {
+    "title": "Termin i Ri",
+    "you": "Ti",
+    "walkIn": "Pa rezervim",
+    "notificationTitle": "Termin i Ri",
+    "notificationMessage": "{{client}} - {{service}} në {{time}}",
+    "selectClientPlaceholder": "Zgjedh një klient ose lëre bosh për klient pa rezervim",
+    "chooseService": "Zgjedh një Shërbim",
+    "addService": "Shto shërbim",
+    "recurringService": "Shërbim periodik",
+    "group": "Grup",
+    "startDateTime": "DATA & KOHA E FILLIMIT",
+    "end": "MBARIMI",
+    "staff": "STAFI",
+    "notesAndQuestions": "Shënime & Pyetje",
+    "notesPlaceholder": "Shto shënime ose pyetje për këtë termin",
+    "total": "Totali",
+    "startDateTimeSheetTitle": "Data & koha e fillimit",
+    "endTimeSheetTitle": "Koha e mbarimit",
+    "selectStaff": "Zgjedh stafin"
+  },
+  "addReservation": {
+    "title": "Rezervim Kohe",
+    "helperText": "E bllokon këtë hapësirë kohore në kalendar pa i bashkangjitë klient a shërbim.",
+    "label": "ETIKETA",
+    "start": "FILLIMI"
+  },
+  "addTimeOff": {
+    "title": "Ditë Pushimi",
+    "defaultLabel": "Ditë Pushimi",
+    "helperTextSingle": "E shënon këtë ditë si të papranueshme për rezervime në kalendar.",
+    "helperTextRange": "E shënon këtë periudhë ditësh si të papranueshme për rezervime në kalendar.",
+    "startDate": "DATA E FILLIMIT",
+    "endDate": "DATA E MBARIMIT"
+  },
+  "scheduleManagement": {
+    "title": "Orari i Biznesit Tënd",
+    "subtitle": "Kur mundet klientët me rezervu te ti?",
+    "closed": "Mbyllur",
+    "opens": "HAPET",
+    "closes": "MBYLLET"
+  },
+  "calendarColor": {
+    "title": "Ngjyrat e Kalendarit",
+    "description": "Zgjedh ngjyrën parazgjedhur për blloqet e termineve në kalendar. Shërbimet që kanë ngjyrën e vet do ta përdorin atë."
+  },
+  "calendarImport": {
+    "title": "Importo Kalendarin",
+    "description": "Ndaje orarin tënd si përmbledhje teksti që mundesh me e dërgu vetes ose me e ngjit në cilëndo aplikacion kalendari.",
+    "shareToday": "Ndaj Orarin e Sotëm",
+    "shareTodaySubtitle": "Dërgo terminet e sotme përmes menysë së ndarjes",
+    "shareWeek": "Ndaj Orarin e Kësaj Jave",
+    "shareWeekSubtitle": "Dërgo terminet e 7 ditëve të ardhshme",
+    "note": "Importimi nga Google, Outlook dhe kalendarë të tjerë të jashtëm po vjen së shpejti. Për tani mundesh me eksportu orarin duke përdorë opsionet lart.",
+    "thisWeek": "Këtë Javë",
+    "reservation": "Rezervim",
+    "noAppointments": "Nuk ka termine të planifikume për {{range}}.",
+    "scheduleFor": "Orari për {{range}}:"
   }
 }

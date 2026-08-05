@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createReservation } from '../../services/appointments';
 import { Button } from '../../components/ui';
@@ -11,18 +12,21 @@ import { DateTimePickerSheet } from '../../components/DateTimePickerSheet';
 import { Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import { formatDateTime, getDefaultStartTime } from '../../utils/scheduling';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddReservation'>;
 
 const DEFAULT_DURATION_MINUTES = 30;
-const DEFAULT_LABEL = 'Reserved';
 
 export default function AddReservationScreen({ navigation }: Props) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
+  const defaultLabel = t('appointments.reserved');
 
-  const [label, setLabel] = useState(DEFAULT_LABEL);
+  const [label, setLabel] = useState(defaultLabel);
   const [startTime, setStartTime] = useState<Date>(getDefaultStartTime);
   const [endTime, setEndTime] = useState<Date>(
     () => new Date(getDefaultStartTime().getTime() + DEFAULT_DURATION_MINUTES * 60000),
@@ -75,20 +79,20 @@ export default function AddReservationScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Time Reservation</Text>
+        <Text style={styles.headerTitle}>{t('addReservation.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.helperText}>
-          Blocks off this time slot on your calendar without attaching a client or service.
+          {t('addReservation.helperText')}
         </Text>
 
         <View style={styles.labelField}>
-          <Text style={styles.fieldLabel}>LABEL</Text>
+          <Text style={styles.fieldLabel}>{t('addReservation.label')}</Text>
           <TextInput
             style={styles.labelInput}
-            placeholder="Reserved"
+            placeholder={defaultLabel}
             placeholderTextColor={Light.textMuted}
             value={label}
             onChangeText={setLabel}
@@ -97,23 +101,23 @@ export default function AddReservationScreen({ navigation }: Props) {
 
         <View style={styles.timeRow}>
           <TouchableOpacity style={styles.timeField} activeOpacity={0.7} onPress={() => openPicker('start')}>
-            <Text style={styles.fieldLabel}>START</Text>
-            <Text style={styles.fieldValue}>{formatDateTime(startTime)}</Text>
+            <Text style={styles.fieldLabel}>{t('addReservation.start')}</Text>
+            <Text style={styles.fieldValue}>{formatDateTime(startTime, locale, t('common.today'))}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.timeField} activeOpacity={0.7} onPress={() => openPicker('end')}>
-            <Text style={styles.fieldLabel}>END</Text>
-            <Text style={styles.fieldValue}>{formatDateTime(endTime)}</Text>
+            <Text style={styles.fieldLabel}>{t('newAppointment.end')}</Text>
+            <Text style={styles.fieldValue}>{formatDateTime(endTime, locale, t('common.today'))}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <Button label="Save" onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={t('common.save')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
 
       <DateTimePickerSheet
         visible={pickerTarget !== null}
-        title={pickerTarget === 'start' ? 'Start date & time' : 'End time'}
+        title={pickerTarget === 'start' ? t('newAppointment.startDateTimeSheetTitle') : t('newAppointment.endTimeSheetTitle')}
         pickerDay={pickerDay}
         onSelectDay={setPickerDay}
         activeTime={activeFieldValue}

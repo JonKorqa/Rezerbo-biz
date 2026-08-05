@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../theme';
 import { Light } from '../theme/light';
 import { buildDayOptions, buildTimeSlots, formatDayChip, isSameDay } from '../utils/scheduling';
+import { localeTag } from '../utils/locale';
 
 const DAY_OPTIONS = buildDayOptions();
 const TIME_SLOTS = buildTimeSlots();
@@ -31,6 +33,8 @@ export function DateTimePickerSheet({
   onClose,
   daysAhead,
 }: DateTimePickerSheetProps) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const dayOptions = daysAhead ? buildDayOptions(daysAhead) : DAY_OPTIONS;
 
   const handleSelectDay = (day: Date) => {
@@ -64,7 +68,7 @@ export function DateTimePickerSheet({
                   onPress={() => handleSelectDay(day)}
                 >
                   <Text style={[styles.dayChipLabel, selected && styles.dayChipLabelSelected]}>
-                    {formatDayChip(day)}
+                    {formatDayChip(day, locale, t('common.today'), t('common.tomorrow'))}
                   </Text>
                 </TouchableOpacity>
               );
@@ -88,7 +92,7 @@ export function DateTimePickerSheet({
                     onPress={() => onSelectTime?.(hour, minute)}
                   >
                     <Text style={[styles.timeSlotLabel, active && styles.timeSlotLabelActive]}>
-                      {slotDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                      {slotDate.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
                     </Text>
                     {active && <Ionicons name="checkmark" size={18} color={Colors.teal} />}
                   </TouchableOpacity>

@@ -23,21 +23,21 @@ export function getDefaultStartTime(): Date {
   return rounded;
 }
 
-export function formatDateTime(date: Date) {
+export function formatDateTime(date: Date, locale: string, todayLabel: string) {
   const dayLabel = isSameDay(date, new Date())
-    ? 'Today'
-    : date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-  const timeLabel = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    ? todayLabel
+    : date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
+  const timeLabel = date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
   return `${dayLabel}, ${timeLabel}`;
 }
 
-export function formatDayChip(date: Date) {
+export function formatDayChip(date: Date, locale: string, todayLabel: string, tomorrowLabel: string) {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-  if (isSameDay(date, today)) return 'Today';
-  if (isSameDay(date, tomorrow)) return 'Tomorrow';
-  return date.toLocaleDateString([], { weekday: 'short', day: 'numeric' });
+  if (isSameDay(date, today)) return todayLabel;
+  if (isSameDay(date, tomorrow)) return tomorrowLabel;
+  return date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' });
 }
 
 export function buildDayOptions(daysAhead = 14): Date[] {

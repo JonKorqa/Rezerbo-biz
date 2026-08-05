@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { addTimeOff } from '../../services/businesses';
 import { Button } from '../../components/ui';
@@ -11,15 +12,15 @@ import { DateTimePickerSheet } from '../../components/DateTimePickerSheet';
 import { Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import { isSameDay, toDateKey } from '../../utils/scheduling';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddTimeOff'>;
 
 const DAYS_AHEAD = 60;
-const DEFAULT_LABEL = 'Time Off';
 
-function formatDayLabel(date: Date) {
-  return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+function formatDayLabel(date: Date, locale: string) {
+  return date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 function generateId() {
@@ -27,10 +28,13 @@ function generateId() {
 }
 
 export default function AddTimeOffScreen({ navigation }: Props) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
+  const defaultLabel = t('addTimeOff.defaultLabel');
 
-  const [label, setLabel] = useState(DEFAULT_LABEL);
+  const [label, setLabel] = useState(defaultLabel);
   const [startDate, setStartDate] = useState<Date>(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -63,7 +67,7 @@ export default function AddTimeOffScreen({ navigation }: Props) {
         id: generateId(),
         startDate: toDateKey(startDate),
         endDate: toDateKey(endDate),
-        label: label.trim() || DEFAULT_LABEL,
+        label: label.trim() || defaultLabel,
       });
       queryClient.invalidateQueries({ queryKey: ['business', uid] });
       navigation.goBack();
@@ -83,20 +87,20 @@ export default function AddTimeOffScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Time Off</Text>
+        <Text style={styles.headerTitle}>{t('addTimeOff.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.helperText}>
-          Marks this day{isSingleDay ? '' : ' range'} as unavailable for bookings on your calendar.
+          {isSingleDay ? t('addTimeOff.helperTextSingle') : t('addTimeOff.helperTextRange')}
         </Text>
 
         <View style={styles.labelField}>
-          <Text style={styles.fieldLabel}>LABEL</Text>
+          <Text style={styles.fieldLabel}>{t('addReservation.label')}</Text>
           <TextInput
             style={styles.labelInput}
-            placeholder={DEFAULT_LABEL}
+            placeholder={defaultLabel}
             placeholderTextColor={Light.textMuted}
             value={label}
             onChangeText={setLabel}
@@ -109,25 +113,25 @@ export default function AddTimeOffScreen({ navigation }: Props) {
             activeOpacity={0.7}
             onPress={() => setPickerTarget('start')}
           >
-            <Text style={styles.fieldLabel}>START DATE</Text>
-            <Text style={styles.fieldValue}>{formatDayLabel(startDate)}</Text>
+            <Text style={styles.fieldLabel}>{t('addTimeOff.startDate')}</Text>
+            <Text style={styles.fieldValue}>{formatDayLabel(startDate, locale)}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.timeField} activeOpacity={0.7} onPress={() => setPickerTarget('end')}>
-            <Text style={styles.fieldLabel}>END DATE</Text>
-            <Text style={styles.fieldValue}>{formatDayLabel(endDate)}</Text>
+            <Text style={styles.fieldLabel}>{t('addTimeOff.endDate')}</Text>
+            <Text style={styles.fieldValue}>{formatDayLabel(endDate, locale)}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <Button label="Save" onPress={handleSave} disabled={!canSave} loading={saving} />
+        <Button label={t('common.save')} onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
 
       <DateTimePickerSheet
         visible={pickerTarget !== null}
         mode="date"
         daysAhead={DAYS_AHEAD}
-        title={pickerTarget === 'start' ? 'Start date' : 'End date'}
+        title={pickerTarget === 'start' ? t('addTimeOff.startDate') : t('addTimeOff.endDate')}
         pickerDay={pickerDay}
         onSelectDay={handleSelectDay}
         onClose={() => setPickerTarget(null)}

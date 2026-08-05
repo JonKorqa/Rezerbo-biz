@@ -10,7 +10,18 @@
     "comingSoon": "Coming soon",
     "loading": "Loading…",
     "error": "Error",
-    "unknownAddress": "Unknown address"
+    "unknownAddress": "Unknown address",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
   },
   "auth": {
     "tagline": "for business owners",
@@ -128,5 +139,85 @@
     "language": {
       "label": "Language"
     }
+  },
+  "appointments": {
+    "today": "Today",
+    "dayOff": "Day Off",
+    "dayOffUppercase": "DAY OFF",
+    "dayOffUnavailable": "{{label}} - Unavailable for Bookings",
+    "reserved": "Reserved",
+    "noUpcoming": "No upcoming appointments",
+    "addSheet": {
+      "title": "Add new",
+      "newAppointment": "New Appointment",
+      "addReservation": "Add Time Reservation",
+      "addTimeOff": "Add Time Off"
+    },
+    "calendarSettings": {
+      "title": "Calendar Settings",
+      "done": "Done",
+      "colorScheme": "Calendar Color Scheme",
+      "calendarImport": "Calendar Import",
+      "scheduleManagement": "Schedule Management"
+    }
+  },
+  "newAppointment": {
+    "title": "New Appointment",
+    "you": "You",
+    "walkIn": "Walk-in",
+    "notificationTitle": "New Appointment",
+    "notificationMessage": "{{client}} - {{service}} at {{time}}",
+    "selectClientPlaceholder": "Select a client or leave empty for walk-in",
+    "chooseService": "Choose a Service",
+    "addService": "Add a service",
+    "recurringService": "Recurring service",
+    "group": "Group",
+    "startDateTime": "START DATE & TIME",
+    "end": "END",
+    "staff": "STAFF",
+    "notesAndQuestions": "Notes & Questions",
+    "notesPlaceholder": "Add notes or questions for this appointment",
+    "total": "Total",
+    "startDateTimeSheetTitle": "Start date & time",
+    "endTimeSheetTitle": "End time",
+    "selectStaff": "Select staff"
+  },
+  "addReservation": {
+    "title": "Time Reservation",
+    "helperText": "Blocks off this time slot on your calendar without attaching a client or service.",
+    "label": "LABEL",
+    "start": "START"
+  },
+  "addTimeOff": {
+    "title": "Time Off",
+    "defaultLabel": "Time Off",
+    "helperTextSingle": "Marks this day as unavailable for bookings on your calendar.",
+    "helperTextRange": "Marks this day range as unavailable for bookings on your calendar.",
+    "startDate": "START DATE",
+    "endDate": "END DATE"
+  },
+  "scheduleManagement": {
+    "title": "Your Business Hours",
+    "subtitle": "When can clients book with you?",
+    "closed": "Closed",
+    "opens": "OPENS",
+    "closes": "CLOSES"
+  },
+  "calendarColor": {
+    "title": "Calendar Color Scheme",
+    "description": "Choose the default color used for appointment blocks on your calendar. Services with their own color will still use that instead."
+  },
+  "calendarImport": {
+    "title": "Calendar Import",
+    "description": "Share your schedule as a text summary you can send to yourself or paste into any calendar app.",
+    "shareToday": "Share Today's Schedule",
+    "shareTodaySubtitle": "Send today's appointments via the share sheet",
+    "shareWeek": "Share This Week's Schedule",
+    "shareWeekSubtitle": "Send the next 7 days of appointments",
+    "note": "Import from Google, Outlook, and other external calendars is coming soon. For now you can export your schedule using the options above.",
+    "thisWeek": "This Week",
+    "reservation": "Reservation",
+    "noAppointments": "No appointments scheduled for {{range}}.",
+    "scheduleFor": "Schedule for {{range}}:"
   }
 }

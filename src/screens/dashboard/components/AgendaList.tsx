@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
 import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor, findTimeOffForDate } from '../../../constants/businessHours';
+import { localeTag } from '../../../utils/locale';
 import type { Appointment } from '../../../types/appointment';
 import type { BusinessHours, TimeOffEntry } from '../../../types/business';
 import { EmptyState } from '../../../components/EmptyState';
@@ -14,10 +16,10 @@ function isSameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-function formatDateLabel(date: Date, today: Date) {
-  if (isSameDay(date, today)) return 'Today';
-  const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
-  const month = date.toLocaleDateString('en-US', { month: 'short' });
+function formatDateLabel(date: Date, today: Date, locale: string, todayLabel: string) {
+  if (isSameDay(date, today)) return todayLabel;
+  const weekday = date.toLocaleDateString(locale, { weekday: 'short' });
+  const month = date.toLocaleDateString(locale, { month: 'short' });
   return `${weekday}, ${date.getDate()} ${month}`;
 }
 
@@ -36,6 +38,8 @@ export function AgendaList({
   defaultColor = Colors.teal,
   onEditHours,
 }: AgendaListProps) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const days = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -61,10 +65,10 @@ export function AgendaList({
         return (
           <View key={date.toISOString()} style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.dateLabel}>{formatDateLabel(date, today)}</Text>
+              <Text style={styles.dateLabel}>{formatDateLabel(date, today, locale, t('appointments.today'))}</Text>
               <TouchableOpacity style={styles.hoursPill} activeOpacity={0.7} onPress={onEditHours}>
                 <Text style={[styles.hoursPillText, isClosed && styles.hoursPillTextClosed]}>
-                  {isClosed ? 'DAY OFF' : `${dayHours.start} - ${dayHours.end}`}
+                  {isClosed ? t('appointments.dayOffUppercase') : `${dayHours.start} - ${dayHours.end}`}
                 </Text>
                 <Ionicons name="pencil" size={12} color={Light.textMuted} />
               </TouchableOpacity>
@@ -73,11 +77,11 @@ export function AgendaList({
             {isClosed ? (
               <EmptyState
                 variant="closed"
-                message={`${dayTimeOff?.label ?? 'Day Off'} - Unavailable for Bookings`}
+                message={t('appointments.dayOffUnavailable', { label: dayTimeOff?.label ?? t('appointments.dayOff') })}
                 compact
               />
             ) : dayAppointments.length === 0 ? (
-              <EmptyState variant="cards" icon="calendar-outline" message="No upcoming appointments" compact />
+              <EmptyState variant="cards" icon="calendar-outline" message={t('appointments.noUpcoming')} compact />
             ) : (
               <View style={styles.apptList}>
                 {dayAppointments.map((appt) => {
@@ -92,7 +96,7 @@ export function AgendaList({
                       />
                       <View style={styles.apptInfo}>
                         <Text style={styles.apptService} numberOfLines={1}>
-                          {isReservation ? appt.label || 'Reserved' : appt.serviceLabel}
+                          {isReservation ? appt.label || t('appointments.reserved') : appt.serviceLabel}
                         </Text>
                         {!isReservation && (
                           <Text style={styles.apptClient} numberOfLines={1}>
@@ -101,7 +105,7 @@ export function AgendaList({
                         )}
                       </View>
                       <Text style={styles.apptTime}>
-                        {appt.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                        {appt.start.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
                       </Text>
                     </View>
                   );
