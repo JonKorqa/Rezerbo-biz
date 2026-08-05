@@ -27,6 +27,8 @@ export type RootStackParamList = {
         selectedService?: SelectedServiceParam;
       }
     | undefined;
+  AddReservation: undefined;
+  AddTimeOff: undefined;
   ClientPicker: { currentService?: SelectedServiceParam } | undefined;
   ServicePicker: { currentClient?: SelectedClientParam } | undefined;
   AddClient: { client?: Client } | undefined;

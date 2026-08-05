@@ -1,4 +1,5 @@
-import type { BusinessHours, DayHours, DayOfWeek } from '../types/business';
+import type { BusinessHours, DayHours, DayOfWeek, TimeOffEntry } from '../types/business';
+import { toDateKey } from '../utils/scheduling';
 
 export const DAY_ORDER: DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
@@ -14,4 +15,10 @@ export const DEFAULT_BUSINESS_HOURS: BusinessHours = DAY_ORDER.reduce((acc, day)
 
 export function dayOfWeekFor(date: Date): DayOfWeek {
   return JS_DAY_ORDER[date.getDay()];
+}
+
+// Single-day time-off entries have startDate === endDate; ranges are inclusive on both ends.
+export function findTimeOffForDate(date: Date, timeOff: TimeOffEntry[] = []): TimeOffEntry | undefined {
+  const key = toDateKey(date);
+  return timeOff.find((entry) => key >= entry.startDate && key <= entry.endDate);
 }

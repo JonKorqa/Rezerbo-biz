@@ -1,15 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-  Pressable,
-  TextInput,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -18,74 +8,15 @@ import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { createAppointment } from '../../services/appointments';
 import { Button } from '../../components/ui';
+import { DateTimePickerSheet } from '../../components/DateTimePickerSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { formatDateTime, getDefaultStartTime } from '../../utils/scheduling';
 import type { RootStackParamList, SelectedClientParam, SelectedServiceParam } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewAppointment'>;
 
-const BUSINESS_OPEN_HOUR = 10;
-const BUSINESS_CLOSE_HOUR = 19;
 const DEFAULT_DURATION_MINUTES = 30;
-
-function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
-
-function getDefaultStartTime(): Date {
-  const now = new Date();
-  const minutes = now.getMinutes();
-  const remainder = minutes % 15;
-  const rounded = new Date(now);
-  if (remainder !== 0 || now.getSeconds() > 0) {
-    rounded.setMinutes(minutes - remainder + 15, 0, 0);
-  } else {
-    rounded.setSeconds(0, 0);
-  }
-  if (rounded.getHours() < BUSINESS_OPEN_HOUR) {
-    rounded.setHours(BUSINESS_OPEN_HOUR, 0, 0, 0);
-  } else if (rounded.getHours() >= BUSINESS_CLOSE_HOUR) {
-    rounded.setHours(BUSINESS_CLOSE_HOUR - 1, 0, 0, 0);
-  }
-  return rounded;
-}
-
-function formatDateTime(date: Date) {
-  const dayLabel = isSameDay(date, new Date())
-    ? 'Today'
-    : date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-  const timeLabel = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  return `${dayLabel}, ${timeLabel}`;
-}
-
-function formatDayChip(date: Date) {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  if (isSameDay(date, today)) return 'Today';
-  if (isSameDay(date, tomorrow)) return 'Tomorrow';
-  return date.toLocaleDateString([], { weekday: 'short', day: 'numeric' });
-}
-
-function buildDayOptions(): Date[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    return d;
-  });
-}
-
-function buildTimeSlots(): { hour: number; minute: number }[] {
-  const slots: { hour: number; minute: number }[] = [];
-  for (let h = BUSINESS_OPEN_HOUR; h < BUSINESS_CLOSE_HOUR; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      slots.push({ hour: h, minute: m });
-    }
-  }
-  return slots;
-}
 
 function getInitials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -95,9 +26,6 @@ function getInitials(name: string) {
     .map((p) => p[0]?.toUpperCase())
     .join('');
 }
-
-const DAY_OPTIONS = buildDayOptions();
-const TIME_SLOTS = buildTimeSlots();
 
 export default function NewAppointmentScreen({ navigation, route }: Props) {
   const uid = auth.currentUser?.uid;
@@ -329,68 +257,15 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         <Button label="Save" onPress={handleSave} disabled={!canSave} loading={saving} />
       </View>
 
-      <Modal
+      <DateTimePickerSheet
         visible={pickerTarget !== null}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setPickerTarget(null)}
-      >
-        <Pressable style={styles.pickerBackdrop} onPress={() => setPickerTarget(null)}>
-          <Pressable style={styles.pickerSheet} onPress={() => {}}>
-            <View style={styles.pickerHeader}>
-              <Text style={styles.pickerTitle}>{pickerTarget === 'start' ? 'Start date & time' : 'End time'}</Text>
-              <TouchableOpacity onPress={() => setPickerTarget(null)} hitSlop={12}>
-                <Ionicons name="close" size={22} color={Light.textPrimary} />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.dayRow}
-              contentContainerStyle={styles.dayRowContent}
-            >
-              {DAY_OPTIONS.map((day) => {
-                const selected = isSameDay(day, pickerDay);
-                return (
-                  <TouchableOpacity
-                    key={day.toISOString()}
-                    style={[styles.dayChip, selected && styles.dayChipSelected]}
-                    onPress={() => setPickerDay(day)}
-                  >
-                    <Text style={[styles.dayChipLabel, selected && styles.dayChipLabelSelected]}>
-                      {formatDayChip(day)}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            <ScrollView style={styles.timeList} contentContainerStyle={styles.timeListContent}>
-              {TIME_SLOTS.map(({ hour, minute }) => {
-                const active =
-                  isSameDay(activeFieldValue, pickerDay) &&
-                  activeFieldValue.getHours() === hour &&
-                  activeFieldValue.getMinutes() === minute;
-                const slotDate = new Date(pickerDay);
-                slotDate.setHours(hour, minute, 0, 0);
-                return (
-                  <TouchableOpacity
-                    key={`${hour}-${minute}`}
-                    style={[styles.timeSlotRow, active && styles.timeSlotRowActive]}
-                    onPress={() => selectTimeSlot(hour, minute)}
-                  >
-                    <Text style={[styles.timeSlotLabel, active && styles.timeSlotLabelActive]}>
-                      {slotDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                    </Text>
-                    {active && <Ionicons name="checkmark" size={18} color={Colors.teal} />}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
+        title={pickerTarget === 'start' ? 'Start date & time' : 'End time'}
+        pickerDay={pickerDay}
+        onSelectDay={setPickerDay}
+        activeTime={activeFieldValue}
+        onSelectTime={selectTimeSlot}
+        onClose={() => setPickerTarget(null)}
+      />
     </SafeAreaView>
   );
 }
@@ -571,58 +446,4 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
     fontFamily: Typography.fontFamily.heading,
   },
-  pickerBackdrop: { flex: 1, backgroundColor: Colors.overlay, justifyContent: 'flex-end' },
-  pickerSheet: {
-    backgroundColor: Light.background,
-    borderTopLeftRadius: Radius.xl,
-    borderTopRightRadius: Radius.xl,
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.lg,
-    maxHeight: '75%',
-  },
-  pickerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.md,
-  },
-  pickerTitle: {
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.lg,
-    fontFamily: Typography.fontFamily.heading,
-  },
-  dayRow: { flexGrow: 0, marginBottom: Spacing.md },
-  dayRowContent: { gap: Spacing.sm, paddingRight: Spacing.xl },
-  dayChip: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.full,
-    backgroundColor: Light.fieldBg,
-    borderWidth: 1.5,
-    borderColor: Light.border,
-  },
-  dayChipSelected: { backgroundColor: Colors.teal, borderColor: Colors.teal },
-  dayChipLabel: {
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.sm,
-    fontFamily: Typography.fontFamily.medium,
-  },
-  dayChipLabelSelected: { color: Colors.white, fontFamily: Typography.fontFamily.bold },
-  timeList: { marginBottom: Spacing.xl },
-  timeListContent: { paddingBottom: Spacing.xl },
-  timeSlotRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Light.border,
-  },
-  timeSlotRowActive: { backgroundColor: Light.fieldBgFocused },
-  timeSlotLabel: {
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.base,
-    fontFamily: Typography.fontFamily.regular,
-  },
-  timeSlotLabelActive: { color: Colors.teal, fontFamily: Typography.fontFamily.bold },
 });

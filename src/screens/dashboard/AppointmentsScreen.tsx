@@ -12,9 +12,10 @@ import { WeekStrip } from './components/WeekStrip';
 import { TimeGrid } from './components/TimeGrid';
 import { AgendaList } from './components/AgendaList';
 import { Button } from '../../components/ui';
+import { EmptyState } from '../../components/EmptyState';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
-import { DEFAULT_BUSINESS_HOURS } from '../../constants/businessHours';
+import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor, findTimeOffForDate } from '../../constants/businessHours';
 import type { RootStackParamList } from '../../types/navigation';
 
 // Placeholder until the business profile stores real opening hours.
@@ -47,11 +48,15 @@ export default function AppointmentsScreen() {
   });
 
   const businessHours = { ...DEFAULT_BUSINESS_HOURS, ...business?.hours };
+  const timeOff = business?.timeOff ?? [];
 
   const dayAppointments = useMemo(
     () => appointments.filter((appt) => isSameDay(appt.start, selectedDate)),
     [appointments, selectedDate],
   );
+
+  const timeOffEntry = findTimeOffForDate(selectedDate, timeOff);
+  const isDayOff = businessHours[dayOfWeekFor(selectedDate)].closed || !!timeOffEntry;
 
   const openAddSheet = () => setShowAddSheet(true);
   const closeAddSheet = () => setShowAddSheet(false);
@@ -75,9 +80,14 @@ export default function AppointmentsScreen() {
     navigation.navigate('NewAppointment');
   };
 
-  const handleStub = (label: string) => {
+  const handleAddReservation = () => {
     closeAddSheet();
-    console.log(`${label} tapped — not built yet.`);
+    navigation.navigate('AddReservation');
+  };
+
+  const handleAddTimeOff = () => {
+    closeAddSheet();
+    navigation.navigate('AddTimeOff');
   };
 
   return (
@@ -103,10 +113,22 @@ export default function AppointmentsScreen() {
       {viewMode === 'grid' ? (
         <>
           <WeekStrip selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-          <TimeGrid appointments={dayAppointments} />
+          {isDayOff ? (
+            <EmptyState
+              variant="closed"
+              message={`${timeOffEntry?.label ?? 'Day Off'} - Unavailable for Bookings`}
+            />
+          ) : (
+            <TimeGrid appointments={dayAppointments} />
+          )}
         </>
       ) : (
-        <AgendaList appointments={appointments} hours={businessHours} onEditHours={goToScheduleManagement} />
+        <AgendaList
+          appointments={appointments}
+          hours={businessHours}
+          timeOff={timeOff}
+          onEditHours={goToScheduleManagement}
+        />
       )}
 
       <TouchableOpacity style={styles.viewToggleButton} activeOpacity={0.85} onPress={toggleViewMode}>
@@ -138,7 +160,7 @@ export default function AppointmentsScreen() {
             <TouchableOpacity
               style={styles.sheetRow}
               activeOpacity={0.7}
-              onPress={() => handleStub('Add Time Reservation')}
+              onPress={handleAddReservation}
             >
               <View style={styles.sheetIconWrap}>
                 <Ionicons name="time-outline" size={20} color={Colors.teal} />
@@ -150,7 +172,7 @@ export default function AppointmentsScreen() {
             <TouchableOpacity
               style={styles.sheetRow}
               activeOpacity={0.7}
-              onPress={() => handleStub('Add Time Off')}
+              onPress={handleAddTimeOff}
             >
               <View style={styles.sheetIconWrap}>
                 <Ionicons name="airplane-outline" size={20} color={Colors.teal} />

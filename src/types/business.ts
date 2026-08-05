@@ -15,6 +15,14 @@ export interface DayHours {
 
 export type BusinessHours = Record<DayOfWeek, DayHours>;
 
+export interface TimeOffEntry {
+  id: string;
+  // Local YYYY-MM-DD dates, inclusive on both ends. A single day off has startDate === endDate.
+  startDate: string;
+  endDate: string;
+  label?: string;
+}
+
 export interface Business {
   ownerUid: string;
   businessName: string;
@@ -24,6 +32,7 @@ export interface Business {
   category?: string;
   location?: BusinessLocationData;
   hours?: BusinessHours;
+  timeOff?: TimeOffEntry[];
   coverPhotoUrl?: string;
   photoUrl?: string;
   portfolio?: string[];

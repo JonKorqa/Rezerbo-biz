@@ -1,6 +1,18 @@
-import { arrayRemove, arrayUnion, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import {
+  arrayRemove,
+  arrayUnion,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { db } from './firebase';
-import type { Business, BusinessHours, BusinessLocationData } from '../types/business';
+import type { Business, BusinessHours, BusinessLocationData, TimeOffEntry } from '../types/business';
 
 const collectionName = 'businesses';
 
@@ -47,6 +59,35 @@ export async function saveBusinessHours(uid: string, hours: BusinessHours) {
     { hours, updatedAt: serverTimestamp() },
     { merge: true },
   );
+}
+
+export async function addTimeOff(uid: string, entry: TimeOffEntry) {
+  await setDoc(
+    doc(db, collectionName, uid),
+    { timeOff: arrayUnion(entry), updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
+// Deletes everything Firestore doesn't cascade-delete on its own: the clients/services
+// subcollections, and the top-level appointments/transactions docs scoped by businessId.
+// The business doc itself (and any fields on it, e.g. timeOff) is removed last.
+export async function deleteBusinessAccount(uid: string): Promise<void> {
+  const [clients, services, appointments, transactions] = await Promise.all([
+    getDocs(collection(db, collectionName, uid, 'clients')),
+    getDocs(collection(db, collectionName, uid, 'services')),
+    getDocs(query(collection(db, 'appointments'), where('businessId', '==', uid))),
+    getDocs(query(collection(db, 'transactions'), where('businessId', '==', uid))),
+  ]);
+
+  await Promise.all([
+    ...clients.docs.map((d) => deleteDoc(d.ref)),
+    ...services.docs.map((d) => deleteDoc(d.ref)),
+    ...appointments.docs.map((d) => deleteDoc(d.ref)),
+    ...transactions.docs.map((d) => deleteDoc(d.ref)),
+  ]);
+
+  await deleteDoc(doc(db, collectionName, uid));
 }
 
 export async function saveBusinessCoverPhoto(uid: string, coverPhotoUrl: string) {

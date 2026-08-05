@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
-import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor } from '../../../constants/businessHours';
+import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor, findTimeOffForDate } from '../../../constants/businessHours';
 import type { Appointment } from '../../../types/appointment';
-import type { BusinessHours } from '../../../types/business';
+import type { BusinessHours, TimeOffEntry } from '../../../types/business';
 import { EmptyState } from '../../../components/EmptyState';
 
 const DAYS_AHEAD = 14;
@@ -24,10 +24,16 @@ function formatDateLabel(date: Date, today: Date) {
 interface AgendaListProps {
   appointments: Appointment[];
   hours?: BusinessHours;
+  timeOff?: TimeOffEntry[];
   onEditHours: () => void;
 }
 
-export function AgendaList({ appointments, hours = DEFAULT_BUSINESS_HOURS, onEditHours }: AgendaListProps) {
+export function AgendaList({
+  appointments,
+  hours = DEFAULT_BUSINESS_HOURS,
+  timeOff = [],
+  onEditHours,
+}: AgendaListProps) {
   const days = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -44,6 +50,8 @@ export function AgendaList({ appointments, hours = DEFAULT_BUSINESS_HOURS, onEdi
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {days.map((date) => {
         const dayHours = hours[dayOfWeekFor(date)];
+        const dayTimeOff = findTimeOffForDate(date, timeOff);
+        const isClosed = dayHours.closed || !!dayTimeOff;
         const dayAppointments = appointments
           .filter((appt) => isSameDay(appt.start, date))
           .sort((a, b) => a.start.getTime() - b.start.getTime());
@@ -53,35 +61,49 @@ export function AgendaList({ appointments, hours = DEFAULT_BUSINESS_HOURS, onEdi
             <View style={styles.sectionHeader}>
               <Text style={styles.dateLabel}>{formatDateLabel(date, today)}</Text>
               <TouchableOpacity style={styles.hoursPill} activeOpacity={0.7} onPress={onEditHours}>
-                <Text style={[styles.hoursPillText, dayHours.closed && styles.hoursPillTextClosed]}>
-                  {dayHours.closed ? 'DAY OFF' : `${dayHours.start} - ${dayHours.end}`}
+                <Text style={[styles.hoursPillText, isClosed && styles.hoursPillTextClosed]}>
+                  {isClosed ? 'DAY OFF' : `${dayHours.start} - ${dayHours.end}`}
                 </Text>
                 <Ionicons name="pencil" size={12} color={Light.textMuted} />
               </TouchableOpacity>
             </View>
 
-            {dayHours.closed ? (
-              <EmptyState variant="closed" message="Day Off - Unavailable for Bookings" compact />
+            {isClosed ? (
+              <EmptyState
+                variant="closed"
+                message={`${dayTimeOff?.label ?? 'Day Off'} - Unavailable for Bookings`}
+                compact
+              />
             ) : dayAppointments.length === 0 ? (
               <EmptyState variant="cards" icon="calendar-outline" message="No upcoming appointments" compact />
             ) : (
               <View style={styles.apptList}>
-                {dayAppointments.map((appt) => (
-                  <View key={appt.id} style={styles.apptRow}>
-                    <View style={[styles.apptColorDot, { backgroundColor: appt.color ?? Colors.teal }]} />
-                    <View style={styles.apptInfo}>
-                      <Text style={styles.apptService} numberOfLines={1}>
-                        {appt.serviceLabel}
-                      </Text>
-                      <Text style={styles.apptClient} numberOfLines={1}>
-                        {appt.clientName}
+                {dayAppointments.map((appt) => {
+                  const isReservation = appt.type === 'reservation';
+                  return (
+                    <View key={appt.id} style={styles.apptRow}>
+                      <View
+                        style={[
+                          styles.apptColorDot,
+                          { backgroundColor: isReservation ? Light.textMuted : appt.color ?? Colors.teal },
+                        ]}
+                      />
+                      <View style={styles.apptInfo}>
+                        <Text style={styles.apptService} numberOfLines={1}>
+                          {isReservation ? appt.label || 'Reserved' : appt.serviceLabel}
+                        </Text>
+                        {!isReservation && (
+                          <Text style={styles.apptClient} numberOfLines={1}>
+                            {appt.clientName}
+                          </Text>
+                        )}
+                      </View>
+                      <Text style={styles.apptTime}>
+                        {appt.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                       </Text>
                     </View>
-                    <Text style={styles.apptTime}>
-                      {appt.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                    </Text>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
             )}
           </View>

@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQueryClient } from '@tanstack/react-query';
+import { signOut, deleteUser } from 'firebase/auth';
+import Constants from 'expo-constants';
+import { auth } from '../../services/firebase';
+import { deleteBusinessAccount } from '../../services/businesses';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -109,7 +114,9 @@ const SETTINGS_ROWS: SettingsRowConfig[] = [
 
 export default function BusinessSettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const handleBack = () => {
     if (navigation.canGoBack()) navigation.goBack();
@@ -122,6 +129,64 @@ export default function BusinessSettingsScreen() {
       navigation.navigate('ServicesSetup');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
+    }
+  };
+
+  const goToAuth = () => {
+    navigation.reset({ index: 0, routes: [{ name: 'RoleSelector' }] });
+  };
+
+  const handleLogOut = () => {
+    Alert.alert('Log Out', 'Are you sure you want to log out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Log Out',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await signOut(auth);
+            queryClient.clear();
+            goToAuth();
+          } catch (err) {
+            console.error('signOut failed:', err);
+            Alert.alert('Error', 'Failed to log out. Please try again.');
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This permanently deletes your business account, including all clients, services, and appointments. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: confirmDeleteAccount },
+      ],
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+    setDeleting(true);
+    try {
+      await deleteBusinessAccount(user.uid);
+      await deleteUser(user);
+      queryClient.clear();
+      goToAuth();
+    } catch (err: any) {
+      setDeleting(false);
+      if (err?.code === 'auth/requires-recent-login') {
+        Alert.alert(
+          'Please log in again',
+          'For your security, log out and log back in before deleting your account.',
+        );
+      } else {
+        console.error('deleteBusinessAccount failed:', err);
+        Alert.alert('Error', 'Failed to delete account. Please try again.');
+      }
     }
   };
 
@@ -173,6 +238,33 @@ export default function BusinessSettingsScreen() {
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
         )}
+        ListFooterComponent={
+          <View style={styles.accountSection}>
+            <TouchableOpacity style={styles.accountRow} activeOpacity={0.7} onPress={handleLogOut}>
+              <View style={styles.rowIconWrap}>
+                <Ionicons name="log-out-outline" size={20} color={Light.textPrimary} />
+              </View>
+              <Text style={styles.accountRowLabel}>Log Out</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.accountRow}
+              activeOpacity={0.7}
+              onPress={handleDeleteAccount}
+              disabled={deleting}
+            >
+              <View style={[styles.rowIconWrap, styles.dangerIconWrap]}>
+                <Ionicons name="trash-outline" size={20} color={Colors.error} />
+              </View>
+              <Text style={[styles.accountRowLabel, styles.dangerLabel]}>Delete Account</Text>
+              {deleting && <ActivityIndicator size="small" color={Colors.error} style={{ marginLeft: 'auto' }} />}
+            </TouchableOpacity>
+
+            <Text style={styles.versionText}>
+              Version {Constants.expoConfig?.version ?? '1.0.0'}
+            </Text>
+          </View>
+        }
       />
 
       <TouchableOpacity style={styles.helpButton} activeOpacity={0.85}>
@@ -273,6 +365,30 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: Radius.full,
     backgroundColor: Colors.error,
+  },
+  accountSection: { marginTop: Spacing.md },
+  accountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Light.border,
+  },
+  accountRowLabel: {
+    flex: 1,
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  dangerIconWrap: { backgroundColor: '#FEF2F2' },
+  dangerLabel: { color: Colors.error },
+  versionText: {
+    textAlign: 'center',
+    marginTop: Spacing.xl,
+    color: Light.textMuted,
+    fontSize: Typography.fontSize.xs,
+    fontFamily: Typography.fontFamily.regular,
   },
   helpButton: {
     position: 'absolute',

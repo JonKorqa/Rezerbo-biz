@@ -19,6 +19,7 @@ export interface NewAppointmentInput {
 export async function createAppointment(input: NewAppointmentInput): Promise<void> {
   await addDoc(collection(db, collectionName), {
     businessId: input.businessId,
+    type: 'booking',
     clientId: input.clientId,
     clientName: input.clientName,
     serviceId: input.serviceId,
@@ -27,6 +28,33 @@ export async function createAppointment(input: NewAppointmentInput): Promise<voi
     start: Timestamp.fromDate(input.start),
     end: Timestamp.fromDate(input.end),
     color: input.color ?? null,
+    status: 'confirmed',
+    createdAt: serverTimestamp(),
+  });
+}
+
+export interface NewReservationInput {
+  businessId: string;
+  label: string;
+  start: Date;
+  end: Date;
+}
+
+// Blocks a calendar slot without a client or service attached — same collection as
+// bookings (so it's covered by the existing `appointments` Firestore rule), distinguished
+// by `type: 'reservation'`. Rendering code must branch on `type` to hide client/service info.
+export async function createReservation(input: NewReservationInput): Promise<void> {
+  await addDoc(collection(db, collectionName), {
+    businessId: input.businessId,
+    type: 'reservation',
+    clientId: null,
+    clientName: '',
+    serviceLabel: '',
+    label: input.label,
+    staffId: input.businessId,
+    start: Timestamp.fromDate(input.start),
+    end: Timestamp.fromDate(input.end),
+    color: null,
     status: 'confirmed',
     createdAt: serverTimestamp(),
   });
@@ -42,9 +70,11 @@ export async function getBusinessAppointments(businessId: string): Promise<Appoi
     return {
       id: doc.id,
       businessId: data.businessId,
+      type: data.type === 'reservation' ? 'reservation' : 'booking',
       clientId: data.clientId ?? null,
       clientName: data.clientName ?? 'Client',
       serviceLabel: data.serviceLabel ?? 'Appointment',
+      label: data.label ?? undefined,
       start: data.start?.toDate ? data.start.toDate() : new Date(data.start),
       end: data.end?.toDate ? data.end.toDate() : new Date(data.end),
       color: data.color,

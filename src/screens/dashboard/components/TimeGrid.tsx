@@ -46,13 +46,15 @@ export function TimeGrid({ appointments }: TimeGridProps) {
           const durationMinutes = Math.max((appt.end.getTime() - appt.start.getTime()) / 60000, 15);
           const height = (durationMinutes / 60) * HOUR_HEIGHT;
           if (top < 0 || top >= gridHeight) return null;
+          const isReservation = appt.type === 'reservation';
 
           return (
             <View
               key={appt.id}
               style={[
                 styles.appointmentBlock,
-                { top, height: Math.max(height, 28), backgroundColor: appt.color ?? Colors.teal },
+                isReservation ? styles.reservationBlock : { backgroundColor: appt.color ?? Colors.teal },
+                { top, height: Math.max(height, 28) },
               ]}
             >
               <Text style={styles.appointmentTime} numberOfLines={1}>
@@ -60,7 +62,7 @@ export function TimeGrid({ appointments }: TimeGridProps) {
                 {appt.end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
               </Text>
               <Text style={styles.appointmentLabel} numberOfLines={1}>
-                {appt.serviceLabel}
+                {isReservation ? appt.label || 'Reserved' : appt.serviceLabel}
               </Text>
             </View>
           );
@@ -94,6 +96,12 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
     justifyContent: 'center',
     gap: 2,
+  },
+  reservationBlock: {
+    backgroundColor: Light.textMuted,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: Light.textPrimary,
   },
   appointmentTime: {
     color: Colors.white,

@@ -10,6 +10,8 @@ import BusinessCategoryScreen from '../screens/onboarding/BusinessCategoryScreen
 import BusinessLocationScreen from '../screens/onboarding/BusinessLocationScreen';
 import DashboardTabs from './DashboardTabs';
 import NewAppointmentScreen from '../screens/dashboard/NewAppointmentScreen';
+import AddReservationScreen from '../screens/dashboard/AddReservationScreen';
+import AddTimeOffScreen from '../screens/dashboard/AddTimeOffScreen';
 import ClientPickerScreen from '../screens/dashboard/ClientPickerScreen';
 import ServicePickerScreen from '../screens/dashboard/ServicePickerScreen';
 import AddClientScreen from '../screens/dashboard/AddClientScreen';
@@ -38,6 +40,8 @@ export default function Navigation() {
         <Stack.Screen name="BusinessLocation" component={BusinessLocationScreen} />
         <Stack.Screen name="Dashboard" component={DashboardTabs} />
         <Stack.Screen name="NewAppointment" component={NewAppointmentScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="AddReservation" component={AddReservationScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="AddTimeOff" component={AddTimeOffScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="ClientPicker" component={ClientPickerScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="ServicePicker" component={ServicePickerScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="AddClient" component={AddClientScreen} options={{ presentation: 'modal' }} />
