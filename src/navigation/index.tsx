@@ -29,6 +29,8 @@ import ServicesSetupScreen from '../screens/dashboard/ServicesSetupScreen';
 import AddEditServiceScreen from '../screens/dashboard/AddEditServiceScreen';
 import StatsAndReportsScreen from '../screens/dashboard/StatsAndReportsScreen';
 import PaymentsAndCheckoutScreen from '../screens/dashboard/PaymentsAndCheckoutScreen';
+import SocialMediaMarketingScreen from '../screens/dashboard/SocialMediaMarketingScreen';
+import TextAndEmailMarketingScreen from '../screens/dashboard/TextAndEmailMarketingScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -69,6 +71,8 @@ export default function Navigation() {
         <Stack.Screen name="AddEditService" component={AddEditServiceScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="StatsAndReports" component={StatsAndReportsScreen} />
         <Stack.Screen name="PaymentsAndCheckout" component={PaymentsAndCheckoutScreen} />
+        <Stack.Screen name="SocialMediaMarketing" component={SocialMediaMarketingScreen} />
+        <Stack.Screen name="TextAndEmailMarketing" component={TextAndEmailMarketingScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

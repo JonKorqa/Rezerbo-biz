@@ -20,10 +20,11 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
   const filteredClients = useMemo(() => filterClients(clients, search), [clients, search]);
 
   const currentService = route.params?.currentService;
+  const returnTo = route.params?.returnTo ?? 'NewAppointment';
 
-  const returnToNewAppointment = (selectedClient: { id: string | null; name: string }) => {
+  const returnToCaller = (selectedClient: { id: string | null; name: string }) => {
     const { routes } = navigation.getState();
-    const parentRoute = [...routes].reverse().find((r) => r.name === 'NewAppointment');
+    const parentRoute = [...routes].reverse().find((r) => r.name === returnTo);
     if (parentRoute) {
       navigation.dispatch({
         ...CommonActions.setParams({ selectedClient, selectedService: currentService }),
@@ -33,9 +34,9 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
     navigation.goBack();
   };
 
-  const selectWalkIn = () => returnToNewAppointment({ id: null, name: 'Walk-in' });
+  const selectWalkIn = () => returnToCaller({ id: null, name: 'Walk-in' });
 
-  const selectClient = (id: string, name: string) => returnToNewAppointment({ id, name });
+  const selectClient = (id: string, name: string) => returnToCaller({ id, name });
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -63,12 +64,16 @@ export default function ClientPickerScreen({ navigation, route }: Props) {
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>
-            <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={selectWalkIn}>
-              <View style={styles.rowIconWrap}>
-                <Ionicons name="walk-outline" size={20} color={Colors.teal} />
-              </View>
-              <Text style={styles.rowLabel}>Continue as walk-in</Text>
-            </TouchableOpacity>
+            {/* A walk-in has no saved contact info, so it only makes sense for the
+                appointment-booking flow — hide it when reused elsewhere (e.g. messaging). */}
+            {returnTo === 'NewAppointment' && (
+              <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={selectWalkIn}>
+                <View style={styles.rowIconWrap}>
+                  <Ionicons name="walk-outline" size={20} color={Colors.teal} />
+                </View>
+                <Text style={styles.rowLabel}>Continue as walk-in</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.row}
               activeOpacity={0.7}

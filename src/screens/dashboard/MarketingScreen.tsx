@@ -3,8 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Stop, Rect } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import type { RootStackParamList } from '../../types/navigation';
 
 interface FeatureCard {
   key: string;
@@ -46,8 +49,20 @@ const FEATURE_CARDS: FeatureCard[] = [
 ];
 
 export default function MarketingScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const handleComingSoon = (title: string) => {
     Alert.alert('Coming soon', `${title} is not built yet.`);
+  };
+
+  const handleCardPress = (card: FeatureCard) => {
+    if (card.key === 'social') {
+      navigation.navigate('SocialMediaMarketing');
+    } else if (card.key === 'textEmail') {
+      navigation.navigate('TextAndEmailMarketing');
+    } else {
+      handleComingSoon(card.title);
+    }
   };
 
   return (
@@ -92,7 +107,7 @@ export default function MarketingScreen() {
               key={card.key}
               style={styles.card}
               activeOpacity={0.7}
-              onPress={() => handleComingSoon(card.title)}
+              onPress={() => handleCardPress(card)}
             >
               <View style={styles.cardBody}>
                 <View style={styles.statusRow}>

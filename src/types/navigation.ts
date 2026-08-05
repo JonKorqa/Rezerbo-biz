@@ -30,7 +30,15 @@ export type RootStackParamList = {
     | undefined;
   AddReservation: undefined;
   AddTimeOff: undefined;
-  ClientPicker: { currentService?: SelectedServiceParam } | undefined;
+  ClientPicker:
+    | {
+        currentService?: SelectedServiceParam;
+        // Which route in the stack to setParams({ selectedClient }) on when a client is
+        // picked. Defaults to 'NewAppointment' — set this when reusing the picker from
+        // another screen (e.g. Text & Email Marketing).
+        returnTo?: keyof RootStackParamList;
+      }
+    | undefined;
   ServicePicker: { currentClient?: SelectedClientParam } | undefined;
   AddClient: { client?: Client } | undefined;
   ClientDetail: { clientId: string };
@@ -47,6 +55,8 @@ export type RootStackParamList = {
   AddEditService: { service?: Service } | undefined;
   StatsAndReports: undefined;
   PaymentsAndCheckout: undefined;
+  SocialMediaMarketing: undefined;
+  TextAndEmailMarketing: { selectedClient?: SelectedClientParam } | undefined;
 };
 
 export type DashboardTabParamList = {
