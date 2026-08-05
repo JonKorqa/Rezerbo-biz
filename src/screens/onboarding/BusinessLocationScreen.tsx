@@ -25,9 +25,11 @@ const DEFAULT_REGION: Region = {
 
 export default function BusinessLocationScreen({ navigation }: Props) {
   const mapRef = useRef<MapView>(null);
+  const userEditedAddress = useRef(false);
   const [coords, setCoords] = useState({ latitude: DEFAULT_REGION.latitude, longitude: DEFAULT_REGION.longitude });
   const [address, setAddress] = useState('');
   const [resolvingAddress, setResolvingAddress] = useState(true);
+  const [geocodeFailed, setGeocodeFailed] = useState(false);
   const [unit, setUnit] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,17 +38,29 @@ export default function BusinessLocationScreen({ navigation }: Props) {
     setResolvingAddress(true);
     try {
       const [result] = await Location.reverseGeocodeAsync({ latitude, longitude });
-      if (result) {
-        const parts = [result.streetNumber, result.street, result.city, result.country].filter(Boolean);
-        setAddress(parts.join(', ') || 'Unknown address');
-      } else {
-        setAddress('Unknown address');
+      setGeocodeFailed(false);
+      if (!userEditedAddress.current) {
+        if (result) {
+          const parts = [result.streetNumber, result.street, result.city, result.country].filter(Boolean);
+          setAddress(parts.join(', ') || 'Unknown address');
+        } else {
+          setAddress('Unknown address');
+        }
       }
-    } catch {
-      setAddress('Could not resolve address');
+    } catch (err) {
+      console.error('reverseGeocodeAsync failed, falling back to manual entry:', err);
+      setGeocodeFailed(true);
+      if (!userEditedAddress.current) {
+        setAddress(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+      }
     } finally {
       setResolvingAddress(false);
     }
+  };
+
+  const handleAddressChange = (text: string) => {
+    userEditedAddress.current = true;
+    setAddress(text);
   };
 
   useEffect(() => {
@@ -105,16 +119,23 @@ export default function BusinessLocationScreen({ navigation }: Props) {
         <Text style={styles.title}>Where's your business located?</Text>
         <Text style={styles.subtitle}>Drag the pin to set your exact location.</Text>
 
-        <View style={styles.addressRow}>
-          <Ionicons name="location" size={18} color={Colors.teal} />
-          {resolvingAddress ? (
-            <ActivityIndicator size="small" color={Colors.teal} />
-          ) : (
-            <Text style={styles.addressText} numberOfLines={2}>
-              {address}
-            </Text>
-          )}
-        </View>
+        <FormInput
+          placeholder="Enter your business address"
+          value={address}
+          onChangeText={handleAddressChange}
+          leftElement={
+            resolvingAddress ? (
+              <ActivityIndicator size="small" color={Colors.teal} />
+            ) : (
+              <Ionicons name="location" size={18} color={Colors.teal} />
+            )
+          }
+        />
+        {geocodeFailed && !resolvingAddress && (
+          <Text style={styles.geocodeFallbackText}>
+            Address lookup unavailable — you can still continue by entering it manually.
+          </Text>
+        )}
 
         <View style={styles.mapWrap}>
           <MapView
@@ -163,23 +184,10 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.regular,
   },
-  addressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    backgroundColor: Light.fieldBg,
-    borderWidth: 1.5,
-    borderColor: Light.border,
-    borderRadius: Radius.lg,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    minHeight: 44,
-  },
-  addressText: {
-    flex: 1,
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.sm,
-    fontFamily: Typography.fontFamily.medium,
+  geocodeFallbackText: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.xs,
+    fontFamily: Typography.fontFamily.regular,
   },
   mapWrap: {
     flex: 1,
