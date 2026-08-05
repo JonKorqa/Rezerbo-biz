@@ -56,7 +56,9 @@ export default function MarketingScreen() {
   };
 
   const handleCardPress = (card: FeatureCard) => {
-    if (card.key === 'social') {
+    if (card.key === 'invite') {
+      navigation.navigate('ImportInviteClients');
+    } else if (card.key === 'social') {
       navigation.navigate('SocialMediaMarketing');
     } else if (card.key === 'textEmail') {
       navigation.navigate('TextAndEmailMarketing');

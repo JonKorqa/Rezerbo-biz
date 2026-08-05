@@ -14,6 +14,7 @@
     "expo": "~57.0.6",
     "expo-clipboard": "~57.0.1",
     "expo-constants": "~57.0.9",
+    "expo-contacts": "~57.0.3",
     "expo-font": "~57.0.1",
     "expo-image-picker": "~57.0.4",
     "expo-location": "~57.0.6",
@@ -30,7 +31,9 @@
   "expo": {
     "autolinking": {
       "android": {
-        "buildFromSource": ["expo-location"]
+        "buildFromSource": [
+          "expo-location"
+        ]
       }
     }
   },

@@ -43,6 +43,12 @@
           "savePhotosPermission": "Allow Rezervo Biz to save your profile QR code to your photos.",
           "isAccessMediaLocationEnabled": false
         }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Rezervo Biz to access your contacts to import clients."
+        }
       ]
     ]
   }
