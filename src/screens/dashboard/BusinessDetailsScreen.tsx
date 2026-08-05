@@ -79,6 +79,10 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
 
+  // Section 4 — Location & Mobile Services
+  const [offersMobileServices, setOffersMobileServices] = useState(false);
+  const [mobileServiceArea, setMobileServiceArea] = useState('');
+
   useEffect(() => {
     if (!business || initialized.current) return;
     initialized.current = true;
@@ -89,6 +93,8 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
     setFacebookUrl(business.facebookUrl ?? '');
     setWebsiteUrl(business.websiteUrl ?? '');
     setOnlineShopUrl(business.onlineShopUrl ?? '');
+    setOffersMobileServices(business.offersMobileServices ?? false);
+    setMobileServiceArea(business.mobileServiceArea ?? '');
   }, [business]);
 
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
@@ -185,6 +191,27 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   };
 
   const portfolioCount = business?.portfolio?.length ?? 0;
+
+  const handleSaveMobileServices = async () => {
+    if (!uid) return;
+    setSavingSection('location');
+    try {
+      await updateBusiness(uid, {
+        offersMobileServices,
+        mobileServiceArea: offersMobileServices ? mobileServiceArea.trim() : '',
+      });
+      invalidateBusiness();
+    } catch (err) {
+      console.error('saveMobileServices failed:', err);
+      Alert.alert('Error', 'Could not save mobile services settings. Please try again.');
+    } finally {
+      setSavingSection(null);
+    }
+  };
+
+  const locationSummary = business?.location?.address
+    ? [business.location.address, business.location.unit].filter(Boolean).join(', ')
+    : 'No location set yet';
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -385,6 +412,67 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </TouchableOpacity>
           </View>
+
+          {/* Section 4 — Location & Mobile Services */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Location & Mobile Services</Text>
+
+            <View style={styles.linkRow}>
+              <View style={styles.linkRowIconWrap}>
+                <Ionicons name="location-outline" size={20} color={Colors.teal} />
+              </View>
+              <View style={styles.linkRowBody}>
+                <Text style={styles.linkRowTitle}>Business Address</Text>
+                <Text style={styles.linkRowDescription} numberOfLines={2}>
+                  {locationSummary}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.editChip}
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('BusinessLocation')}
+              >
+                <Text style={styles.editChipLabel}>Edit</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleRowBody}>
+                <Text style={styles.toggleRowTitle}>I also offer mobile services</Text>
+                <Text style={styles.toggleRowDescription}>
+                  Let clients know you can come to them
+                </Text>
+              </View>
+              <Switch
+                value={offersMobileServices}
+                onValueChange={setOffersMobileServices}
+                trackColor={{ false: Light.track, true: Colors.tealLight }}
+                thumbColor={offersMobileServices ? Colors.teal : Colors.white}
+              />
+            </View>
+
+            {offersMobileServices && (
+              <View>
+                <Text style={styles.label}>Service area</Text>
+                <TextInput
+                  style={styles.textArea}
+                  placeholder="e.g. I travel within 15km of Prishtina"
+                  placeholderTextColor={Light.textMuted}
+                  value={mobileServiceArea}
+                  onChangeText={setMobileServiceArea}
+                  multiline
+                  textAlignVertical="top"
+                />
+              </View>
+            )}
+
+            <Button
+              label="Save"
+              onPress={handleSaveMobileServices}
+              loading={savingSection === 'location'}
+              style={styles.sectionSaveButton}
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -554,6 +642,35 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.bold,
   },
   linkRowDescription: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.regular,
+  },
+  editChip: {
+    borderWidth: 1.5,
+    borderColor: Colors.teal,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+  },
+  editChipLabel: {
+    color: Colors.teal,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  toggleRowBody: { flex: 1, gap: 2 },
+  toggleRowTitle: {
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.bold,
+  },
+  toggleRowDescription: {
     color: Light.textSecondary,
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.regular,

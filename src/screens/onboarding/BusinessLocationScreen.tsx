@@ -109,7 +109,13 @@ export default function BusinessLocationScreen({ navigation }: Props) {
     } finally {
       setLoading(false);
     }
-    navigation.replace('Dashboard');
+    // Onboarding always pushes this screen fresh (nothing to go back to), but when reached
+    // from Business Details' "Edit" link it's on top of the stack and should just pop back.
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.replace('Dashboard');
+    }
   };
 
   return (
