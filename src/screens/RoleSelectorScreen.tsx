@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { RezervoLogo } from '../components/RezervoLogo';
 import { Colors, Radius, Spacing, Typography } from '../theme';
 import { Light } from '../theme/light';
@@ -11,16 +12,17 @@ import type { RootStackParamList } from '../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'RoleSelector'>;
 
 export default function RoleSelectorScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <RezervoLogo variant="light" size={26} />
-        <Text style={styles.badge}>BIZ</Text>
+        <Text style={styles.badge}>{t('roleSelector.badge')}</Text>
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>How would you like to use Rezervo?</Text>
-        <Text style={styles.subtitle}>Choose the option that fits you best.</Text>
+        <Text style={styles.title}>{t('roleSelector.title')}</Text>
+        <Text style={styles.subtitle}>{t('roleSelector.subtitle')}</Text>
 
         <TouchableOpacity
           style={styles.card}
@@ -31,9 +33,9 @@ export default function RoleSelectorScreen({ navigation }: Props) {
             <Ionicons name="briefcase-outline" size={26} color={Colors.teal} />
           </View>
           <View style={styles.cardText}>
-            <Text style={styles.cardTitle}>I'm a service provider</Text>
+            <Text style={styles.cardTitle}>{t('roleSelector.provider.title')}</Text>
             <Text style={styles.cardSubtitle}>
-              Set up your business, manage bookings and grow your client base.
+              {t('roleSelector.provider.subtitle')}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={Light.textMuted} />
@@ -48,9 +50,9 @@ export default function RoleSelectorScreen({ navigation }: Props) {
             <Ionicons name="calendar-outline" size={26} color={Colors.teal} />
           </View>
           <View style={styles.cardText}>
-            <Text style={styles.cardTitle}>I want to book an appointment</Text>
+            <Text style={styles.cardTitle}>{t('roleSelector.consumer.title')}</Text>
             <Text style={styles.cardSubtitle}>
-              Find professionals near you and book in seconds on the Rezervo app.
+              {t('roleSelector.consumer.subtitle')}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={Light.textMuted} />

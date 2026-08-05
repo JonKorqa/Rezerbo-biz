@@ -1,49 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Pressable, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { auth } from '../../services/firebase';
-import { getBusiness, updateBusiness } from '../../services/businesses';
+import { updateBusiness } from '../../services/businesses';
+import { changeAppLanguage, type AppLanguage } from '../../i18n';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
-import type { Business } from '../../types/business';
 import type { RootStackParamList } from '../../types/navigation';
 
-const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
+// Language names are shown in their own language regardless of the active UI
+// language — "Shqip" and "English" aren't translated.
+const LANGUAGE_OPTIONS: { code: AppLanguage; label: string }[] = [
   { code: 'en', label: 'English' },
   { code: 'sq', label: 'Shqip' },
-  { code: 'sr', label: 'Srpski' },
-  { code: 'de', label: 'Deutsch' },
 ];
 
 export default function PersonalSettingsScreen() {
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
 
-  const { data: business } = useQuery({
-    queryKey: ['business', uid],
-    queryFn: () => (uid ? getBusiness(uid) : Promise.resolve(null)),
-    enabled: !!uid,
-  });
-
-  const [language, setLanguage] = useState('en');
   const [languagePickerVisible, setLanguagePickerVisible] = useState(false);
 
-  useEffect(() => {
-    setLanguage(business?.language ?? 'en');
-  }, [business?.language]);
+  const language = i18n.language as AppLanguage;
 
-  const handlePickLanguage = async (code: string) => {
-    setLanguage(code);
+  const handlePickLanguage = async (code: AppLanguage) => {
     setLanguagePickerVisible(false);
+    await changeAppLanguage(code);
     if (!uid) return;
     try {
-      const data: Partial<Business> = { language: code };
-      await updateBusiness(uid, data);
+      await updateBusiness(uid, { language: code });
       queryClient.invalidateQueries({ queryKey: ['business', uid] });
     } catch (err) {
       console.error('saveLanguage failed:', err);
@@ -58,7 +50,7 @@ export default function PersonalSettingsScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Personal Settings</Text>
+        <Text style={styles.headerTitle}>{t('personalSettings.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -73,8 +65,8 @@ export default function PersonalSettingsScreen() {
               <Ionicons name="notifications-outline" size={18} color={Colors.teal} />
             </View>
             <View style={styles.rowBody}>
-              <Text style={styles.rowLabel}>Notification Preferences</Text>
-              <Text style={styles.rowDescription}>Choose which in-app notifications you receive</Text>
+              <Text style={styles.rowLabel}>{t('personalSettings.notificationPreferences.label')}</Text>
+              <Text style={styles.rowDescription}>{t('personalSettings.notificationPreferences.description')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
@@ -87,7 +79,7 @@ export default function PersonalSettingsScreen() {
               <Ionicons name="language-outline" size={18} color={Colors.teal} />
             </View>
             <View style={styles.rowBody}>
-              <Text style={styles.rowLabel}>Language</Text>
+              <Text style={styles.rowLabel}>{t('personalSettings.language.label')}</Text>
               <Text style={styles.rowDescription}>{languageLabel}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
@@ -105,7 +97,7 @@ export default function PersonalSettingsScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setLanguagePickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Language</Text>
+              <Text style={styles.modalTitle}>{t('personalSettings.language.label')}</Text>
               <TouchableOpacity onPress={() => setLanguagePickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>

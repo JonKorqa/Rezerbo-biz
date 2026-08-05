@@ -1,0 +1,132 @@
+{
+  "common": {
+    "continue": "Vazhdo",
+    "back": "Prapa",
+    "close": "Mbyll",
+    "cancel": "Anulo",
+    "save": "Ruaj",
+    "delete": "Fshij",
+    "edit": "Ndrysho",
+    "comingSoon": "Së shpejti",
+    "loading": "Duke u ngarkuar…",
+    "error": "Gabim",
+    "unknownAddress": "Adresë e panjohur"
+  },
+  "auth": {
+    "tagline": "për pronarë biznesesh",
+    "tabs": {
+      "login": "Kyçu",
+      "signup": "Regjistrohu"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "ti@biznesi.com"
+    },
+    "password": {
+      "label": "Fjalëkalimi",
+      "placeholderLogin": "Fjalëkalimi yt",
+      "placeholderSignup": "Minimum 6 karaktere"
+    },
+    "forgotPassword": "E ke harru fjalëkalimin?",
+    "submit": {
+      "login": "Kyçu",
+      "signup": "Vazhdo me email"
+    },
+    "divider": "ose vazhdo me",
+    "social": {
+      "comingSoonMessage": "Kyçja me {{provider}} ende nuk është gati — përdore emailin për tani."
+    },
+    "errors": {
+      "fillBothFields": "Plotëso të dyja fushat.",
+      "emailInUse": "Ekziston tashmë një llogari me këtë email. Provo me u kyçë.",
+      "invalidCredentialSignup": "Mundet me ekzistu tashmë një llogari me këtë email. Provo me u kyçë.",
+      "invalidCredentialLogin": "Email ose fjalëkalim i pasaktë.",
+      "invalidEmail": "Fut një adresë email të vlefshme.",
+      "weakPassword": "Fjalëkalimi duhet me pas së paku 6 karaktere.",
+      "userNotFound": "Nuk u gjet asnjë llogari me këtë email.",
+      "wrongPassword": "Email ose fjalëkalim i pasaktë.",
+      "tooManyRequests": "Shumë tentativa. Provo prap ma vonë.",
+      "generic": "Diçka shkoi keq. Provo prap."
+    },
+    "forgotModal": {
+      "title": "Rivendos fjalëkalimin",
+      "sentMessage": "Nëse ekziston një llogari për {{email}}, linku për rivendosje po vjen.",
+      "body": "Shkruaj emailin tënd dhe të dërgojmë një link për me rivendos fjalëkalimin.",
+      "error": "Nuk u dërgua dot emaili. Kontrollo adresën dhe provo prap.",
+      "sendButton": "Dërgo linkun"
+    }
+  },
+  "roleSelector": {
+    "badge": "BIZ",
+    "title": "Si dëshiron me e përdor Rezervon?",
+    "subtitle": "Zgjedh opsionin që të përshtatet ma shumë.",
+    "provider": {
+      "title": "Jam ofrues shërbimesh",
+      "subtitle": "Krijo biznesin tënd, menaxho rezervimet dhe rrit bazën e klientëve."
+    },
+    "consumer": {
+      "title": "Dua me rezervu një termin",
+      "subtitle": "Gjej profesionistë afër teje dhe rezervo brenda sekondave në aplikacionin Rezervo."
+    }
+  },
+  "consumerRedirect": {
+    "title": "Po të çojmë te Rezervo",
+    "subtitle": "Rezervimi i termineve bahet në aplikacionin kryesor Rezervo. Ky ridrejtim është vetëm përkohshëm — lidhja e plotë po vjen së shpejti."
+  },
+  "onboarding": {
+    "businessInfo": {
+      "title": "Na trego pak për biznesin tënd",
+      "subtitle": "Kjo i ndihmon klientët me të gjetë dhe njohë në Rezervo.",
+      "businessName": {
+        "label": "Emri i biznesit",
+        "placeholder": "p.sh. Glow Studio"
+      },
+      "ownerName": {
+        "label": "Emri yt",
+        "placeholder": "p.sh. Arta Krasniqi"
+      },
+      "phone": {
+        "label": "Numri i telefonit",
+        "placeholder": "44 123 456"
+      },
+      "errors": {
+        "fillAllFields": "Plotëso të gjitha fushat për me vazhdu.",
+        "notSignedIn": "Duhet me qenë i kyçur për me vazhdu."
+      },
+      "countryModal": {
+        "title": "Zgjedh shtetin"
+      }
+    },
+    "businessCategory": {
+      "title": "Cili është specialiteti yt?",
+      "subtitle": "Zgjedh kategorinë që e përshkruan ma së miri biznesin tënd.",
+      "errors": {
+        "pickCategory": "Zgjedh një kategori për me vazhdu.",
+        "notSignedIn": "Duhet me qenë i kyçur për me vazhdu."
+      }
+    },
+    "businessLocation": {
+      "title": "Ku ndodhet biznesi yt?",
+      "subtitle": "Zvarrit shenjën për me caktu lokacionin e saktë.",
+      "addressPlaceholder": "Shkruaj adresën e biznesit tënd",
+      "geocodeFallback": "Kërkimi i adresës nuk është i disponueshëm — mundesh me vazhdu duke e shkru manualisht.",
+      "unit": {
+        "label": "Apartament / njësi (opsionale)",
+        "placeholder": "p.sh. Njësia 2B"
+      },
+      "errors": {
+        "notSignedIn": "Duhet me qenë i kyçur për me vazhdu."
+      }
+    }
+  },
+  "personalSettings": {
+    "title": "Cilësimet Personale",
+    "notificationPreferences": {
+      "label": "Preferencat e Njoftimeve",
+      "description": "Zgjedh cilat njoftime brenda aplikacionit don me i marrë"
+    },
+    "language": {
+      "label": "Gjuha"
+    }
+  }
+}

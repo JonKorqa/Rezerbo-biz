@@ -33,3 +33,7 @@ export const BUSINESS_CATEGORIES: BusinessCategory[] = [
   { key: 'kafsh', label: { sq: 'Veterinar', en: 'Veterinary' }, icon: 'paw-outline' },
   { key: 'shtepi', label: { sq: 'Të tjera', en: 'Other' }, icon: 'ellipsis-horizontal-outline' },
 ];
+
+export function getCategoryLabel(category: BusinessCategory, language: string): string {
+  return language === 'sq' ? category.label.sq : category.label.en;
+}

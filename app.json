@@ -49,7 +49,8 @@
         {
           "contactsPermission": "Allow Rezervo Biz to access your contacts to import clients."
         }
-      ]
+      ],
+      "expo-localization"
     ]
   }
 }

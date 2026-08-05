@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { saveBusinessCategory } from '../../services/businesses';
 import { Button, ProgressBar } from '../../components/ui';
-import { BUSINESS_CATEGORIES, type BusinessCategory } from '../../constants/categories';
+import { BUSINESS_CATEGORIES, getCategoryLabel, type BusinessCategory } from '../../constants/categories';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -22,6 +23,7 @@ function CategoryTile({
   selected: boolean;
   onPress: () => void;
 }) {
+  const { i18n } = useTranslation();
   return (
     <TouchableOpacity
       style={[styles.tile, selected && styles.tileSelected]}
@@ -31,24 +33,27 @@ function CategoryTile({
       <View style={[styles.tileIconWrap, selected && styles.tileIconWrapSelected]}>
         <Ionicons name={category.icon} size={24} color={selected ? Colors.white : Colors.teal} />
       </View>
-      <Text style={[styles.tileLabel, selected && styles.tileLabelSelected]}>{category.label.en}</Text>
+      <Text style={[styles.tileLabel, selected && styles.tileLabelSelected]}>
+        {getCategoryLabel(category, i18n.language)}
+      </Text>
     </TouchableOpacity>
   );
 }
 
 export default function BusinessCategoryScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleContinue = async () => {
     if (!selected) {
-      setError('Pick a category to continue.');
+      setError(t('onboarding.businessCategory.errors.pickCategory'));
       return;
     }
     const uid = auth.currentUser?.uid;
     if (!uid) {
-      setError('You need to be signed in to continue.');
+      setError(t('onboarding.businessCategory.errors.notSignedIn'));
       return;
     }
     setError(null);

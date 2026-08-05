@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -36,37 +37,8 @@ const SOCIAL_PROVIDERS = [
   { key: 'facebook', icon: 'logo-facebook' as const, label: 'Facebook' },
 ];
 
-function stubSocialAuth(provider: string) {
-  Alert.alert('Coming soon', `${provider} sign-in isn't wired up yet — use email for now.`);
-}
-
-function authErrorMessage(err: unknown, tab: Tab): string {
-  const code = typeof err === 'object' && err !== null && 'code' in err ? String((err as { code: unknown }).code) : undefined;
-  switch (code) {
-    case 'auth/email-already-in-use':
-      return 'An account with this email already exists. Try logging in instead.';
-    case 'auth/invalid-credential':
-      return tab === 'signup'
-        ? 'An account with this email may already exist. Try logging in instead.'
-        : 'Incorrect email or password.';
-    case 'auth/invalid-email':
-      return 'Enter a valid email address.';
-    case 'auth/weak-password':
-      return 'Password should be at least 6 characters.';
-    case 'auth/user-not-found':
-      return 'No account found with this email.';
-    case 'auth/wrong-password':
-      return 'Incorrect email or password.';
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Please try again later.';
-    default: {
-      const base = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-      return code ? `${base} (${code})` : base;
-    }
-  }
-}
-
 export default function AuthScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>(route.params?.initialTab ?? 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -77,6 +49,34 @@ export default function AuthScreen({ navigation, route }: Props) {
   const [forgotStatus, setForgotStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   const slide = useRef(new Animated.Value(tab === 'login' ? 0 : 1)).current;
+
+  function stubSocialAuth(providerLabel: string) {
+    Alert.alert(t('common.comingSoon'), t('auth.social.comingSoonMessage', { provider: providerLabel }));
+  }
+
+  function authErrorMessage(err: unknown, activeTab: Tab): string {
+    const code = typeof err === 'object' && err !== null && 'code' in err ? String((err as { code: unknown }).code) : undefined;
+    switch (code) {
+      case 'auth/email-already-in-use':
+        return t('auth.errors.emailInUse');
+      case 'auth/invalid-credential':
+        return activeTab === 'signup' ? t('auth.errors.invalidCredentialSignup') : t('auth.errors.invalidCredentialLogin');
+      case 'auth/invalid-email':
+        return t('auth.errors.invalidEmail');
+      case 'auth/weak-password':
+        return t('auth.errors.weakPassword');
+      case 'auth/user-not-found':
+        return t('auth.errors.userNotFound');
+      case 'auth/wrong-password':
+        return t('auth.errors.wrongPassword');
+      case 'auth/too-many-requests':
+        return t('auth.errors.tooManyRequests');
+      default: {
+        const base = err instanceof Error ? err.message : t('auth.errors.generic');
+        return code ? `${base} (${code})` : base;
+      }
+    }
+  }
 
   useEffect(() => {
     Animated.timing(slide, {
@@ -104,7 +104,7 @@ export default function AuthScreen({ navigation, route }: Props) {
   const handleSubmit = async () => {
     setError(null);
     if (!email.trim() || !password) {
-      setError('Please fill in both fields.');
+      setError(t('auth.errors.fillBothFields'));
       return;
     }
     setLoading(true);
@@ -148,7 +148,7 @@ export default function AuthScreen({ navigation, route }: Props) {
         >
           <View style={styles.logoSection}>
             <RezervoLogo variant="light" size={26} />
-            <Text style={styles.tagline}>for business owners</Text>
+            <Text style={styles.tagline}>{t('auth.tagline')}</Text>
           </View>
 
           <View style={styles.tabBar}>
@@ -156,18 +156,18 @@ export default function AuthScreen({ navigation, route }: Props) {
               style={[styles.tabIndicator, { left: indicatorLeft }]}
             />
             <TouchableOpacity style={styles.tabButton} onPress={() => switchTab('login')} activeOpacity={0.8}>
-              <Text style={[styles.tabLabel, tab === 'login' && styles.tabLabelActive]}>Log in</Text>
+              <Text style={[styles.tabLabel, tab === 'login' && styles.tabLabelActive]}>{t('auth.tabs.login')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.tabButton} onPress={() => switchTab('signup')} activeOpacity={0.8}>
-              <Text style={[styles.tabLabel, tab === 'signup' && styles.tabLabelActive]}>Sign up</Text>
+              <Text style={[styles.tabLabel, tab === 'signup' && styles.tabLabelActive]}>{t('auth.tabs.signup')}</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.form}>
             <FormInput
-              label="Email"
+              label={t('auth.email.label')}
               icon="mail-outline"
-              placeholder="you@business.com"
+              placeholder={t('auth.email.placeholder')}
               autoCapitalize="none"
               keyboardType="email-address"
               value={email}
@@ -175,16 +175,16 @@ export default function AuthScreen({ navigation, route }: Props) {
             />
             <View>
               <FormInput
-                label="Password"
+                label={t('auth.password.label')}
                 icon="lock-closed-outline"
-                placeholder={tab === 'login' ? 'Your password' : 'Minimum 6 characters'}
+                placeholder={tab === 'login' ? t('auth.password.placeholderLogin') : t('auth.password.placeholderSignup')}
                 secureToggle
                 value={password}
                 onChangeText={setPassword}
               />
               {tab === 'login' && (
                 <TouchableOpacity style={styles.forgotLink} onPress={() => setForgotVisible(true)}>
-                  <Text style={styles.forgotLinkText}>Forgot password?</Text>
+                  <Text style={styles.forgotLinkText}>{t('auth.forgotPassword')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -192,7 +192,7 @@ export default function AuthScreen({ navigation, route }: Props) {
             {error && <Text style={styles.errorText}>{error}</Text>}
 
             <Button
-              label={tab === 'login' ? 'Log in' : 'Continue with email'}
+              label={tab === 'login' ? t('auth.submit.login') : t('auth.submit.signup')}
               onPress={handleSubmit}
               loading={loading}
               style={styles.submitButton}
@@ -201,7 +201,7 @@ export default function AuthScreen({ navigation, route }: Props) {
 
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
+            <Text style={styles.dividerText}>{t('auth.divider')}</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -223,28 +223,28 @@ export default function AuthScreen({ navigation, route }: Props) {
       <Modal visible={forgotVisible} transparent animationType="fade" onRequestClose={() => setForgotVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Reset your password</Text>
+            <Text style={styles.modalTitle}>{t('auth.forgotModal.title')}</Text>
             {forgotStatus === 'sent' ? (
               <Text style={styles.modalBody}>
-                If an account exists for {forgotEmail}, a reset link is on its way.
+                {t('auth.forgotModal.sentMessage', { email: forgotEmail })}
               </Text>
             ) : (
               <>
                 <Text style={styles.modalBody}>
-                  Enter your email and we'll send you a link to reset your password.
+                  {t('auth.forgotModal.body')}
                 </Text>
                 <FormInput
-                  placeholder="you@business.com"
+                  placeholder={t('auth.email.placeholder')}
                   autoCapitalize="none"
                   keyboardType="email-address"
                   value={forgotEmail}
                   onChangeText={setForgotEmail}
                 />
                 {forgotStatus === 'error' && (
-                  <Text style={styles.errorText}>Couldn't send the email. Check the address and try again.</Text>
+                  <Text style={styles.errorText}>{t('auth.forgotModal.error')}</Text>
                 )}
                 <Button
-                  label="Send reset link"
+                  label={t('auth.forgotModal.sendButton')}
                   onPress={handleForgotPassword}
                   loading={forgotStatus === 'sending'}
                   style={styles.modalButton}
@@ -259,7 +259,7 @@ export default function AuthScreen({ navigation, route }: Props) {
                 setForgotEmail('');
               }}
             >
-              <Text style={styles.modalCloseText}>Close</Text>
+              <Text style={styles.modalCloseText}>{t('common.close')}</Text>
             </TouchableOpacity>
           </View>
         </View>

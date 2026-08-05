@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import {
   getBusiness,
@@ -27,7 +28,7 @@ import {
 } from '../../services/businesses';
 import { uploadBusinessImage } from '../../services/imageUpload';
 import { Button, FormInput } from '../../components/ui';
-import { BUSINESS_CATEGORIES, type BusinessCategory } from '../../constants/categories';
+import { BUSINESS_CATEGORIES, getCategoryLabel, type BusinessCategory } from '../../constants/categories';
 import { AMENITIES } from '../../constants/amenities';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
@@ -53,6 +54,7 @@ function CategoryTile({
   selected: boolean;
   onPress: () => void;
 }) {
+  const { i18n } = useTranslation();
   return (
     <TouchableOpacity
       style={[styles.categoryTile, selected && styles.categoryTileSelected]}
@@ -63,7 +65,7 @@ function CategoryTile({
         <Ionicons name={category.icon} size={20} color={selected ? Colors.white : Colors.teal} />
       </View>
       <Text style={[styles.categoryTileLabel, selected && styles.categoryTileLabelSelected]}>
-        {category.label.en}
+        {getCategoryLabel(category, i18n.language)}
       </Text>
       {selected && <Ionicons name="checkmark-circle" size={16} color={Colors.teal} style={styles.categoryCheck} />}
     </TouchableOpacity>

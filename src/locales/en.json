@@ -1,0 +1,132 @@
+{
+  "common": {
+    "continue": "Continue",
+    "back": "Back",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "comingSoon": "Coming soon",
+    "loading": "Loading…",
+    "error": "Error",
+    "unknownAddress": "Unknown address"
+  },
+  "auth": {
+    "tagline": "for business owners",
+    "tabs": {
+      "login": "Log in",
+      "signup": "Sign up"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "you@business.com"
+    },
+    "password": {
+      "label": "Password",
+      "placeholderLogin": "Your password",
+      "placeholderSignup": "Minimum 6 characters"
+    },
+    "forgotPassword": "Forgot password?",
+    "submit": {
+      "login": "Log in",
+      "signup": "Continue with email"
+    },
+    "divider": "or continue with",
+    "social": {
+      "comingSoonMessage": "{{provider}} sign-in isn't wired up yet — use email for now."
+    },
+    "errors": {
+      "fillBothFields": "Please fill in both fields.",
+      "emailInUse": "An account with this email already exists. Try logging in instead.",
+      "invalidCredentialSignup": "An account with this email may already exist. Try logging in instead.",
+      "invalidCredentialLogin": "Incorrect email or password.",
+      "invalidEmail": "Enter a valid email address.",
+      "weakPassword": "Password should be at least 6 characters.",
+      "userNotFound": "No account found with this email.",
+      "wrongPassword": "Incorrect email or password.",
+      "tooManyRequests": "Too many attempts. Please try again later.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "forgotModal": {
+      "title": "Reset your password",
+      "sentMessage": "If an account exists for {{email}}, a reset link is on its way.",
+      "body": "Enter your email and we'll send you a link to reset your password.",
+      "error": "Couldn't send the email. Check the address and try again.",
+      "sendButton": "Send reset link"
+    }
+  },
+  "roleSelector": {
+    "badge": "BIZ",
+    "title": "How would you like to use Rezervo?",
+    "subtitle": "Choose the option that fits you best.",
+    "provider": {
+      "title": "I'm a service provider",
+      "subtitle": "Set up your business, manage bookings and grow your client base."
+    },
+    "consumer": {
+      "title": "I want to book an appointment",
+      "subtitle": "Find professionals near you and book in seconds on the Rezervo app."
+    }
+  },
+  "consumerRedirect": {
+    "title": "Taking you to Rezervo",
+    "subtitle": "Booking appointments happens in the main Rezervo app. This redirect is a placeholder for now — full deep-linking is coming soon."
+  },
+  "onboarding": {
+    "businessInfo": {
+      "title": "Tell us about your business",
+      "subtitle": "This helps clients find and recognize you on Rezervo.",
+      "businessName": {
+        "label": "Business name",
+        "placeholder": "e.g. Glow Studio"
+      },
+      "ownerName": {
+        "label": "Your name",
+        "placeholder": "e.g. Arta Krasniqi"
+      },
+      "phone": {
+        "label": "Phone number",
+        "placeholder": "44 123 456"
+      },
+      "errors": {
+        "fillAllFields": "Please fill in all fields to continue.",
+        "notSignedIn": "You need to be signed in to continue."
+      },
+      "countryModal": {
+        "title": "Select country"
+      }
+    },
+    "businessCategory": {
+      "title": "What's your specialty?",
+      "subtitle": "Choose the category that best describes your business.",
+      "errors": {
+        "pickCategory": "Pick a category to continue.",
+        "notSignedIn": "You need to be signed in to continue."
+      }
+    },
+    "businessLocation": {
+      "title": "Where's your business located?",
+      "subtitle": "Drag the pin to set your exact location.",
+      "addressPlaceholder": "Enter your business address",
+      "geocodeFallback": "Address lookup unavailable — you can still continue by entering it manually.",
+      "unit": {
+        "label": "Apt / suite / unit (optional)",
+        "placeholder": "e.g. Suite 2B"
+      },
+      "errors": {
+        "notSignedIn": "You need to be signed in to continue."
+      }
+    }
+  },
+  "personalSettings": {
+    "title": "Personal Settings",
+    "notificationPreferences": {
+      "label": "Notification Preferences",
+      "description": "Choose which in-app notifications you receive"
+    },
+    "language": {
+      "label": "Language"
+    }
+  }
+}

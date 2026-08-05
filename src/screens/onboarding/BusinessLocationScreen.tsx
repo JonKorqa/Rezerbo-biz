@@ -5,6 +5,7 @@ import MapView, { Marker, PROVIDER_GOOGLE, type Region } from 'react-native-maps
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { saveBusinessLocation } from '../../services/businesses';
 import { Button, FormInput, ProgressBar } from '../../components/ui';
@@ -24,6 +25,7 @@ const DEFAULT_REGION: Region = {
 };
 
 export default function BusinessLocationScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const mapRef = useRef<MapView>(null);
   const userEditedAddress = useRef(false);
   const [coords, setCoords] = useState({ latitude: DEFAULT_REGION.latitude, longitude: DEFAULT_REGION.longitude });
@@ -42,9 +44,9 @@ export default function BusinessLocationScreen({ navigation }: Props) {
       if (!userEditedAddress.current) {
         if (result) {
           const parts = [result.streetNumber, result.street, result.city, result.country].filter(Boolean);
-          setAddress(parts.join(', ') || 'Unknown address');
+          setAddress(parts.join(', ') || t('common.unknownAddress'));
         } else {
-          setAddress('Unknown address');
+          setAddress(t('common.unknownAddress'));
         }
       }
     } catch (err) {
@@ -86,7 +88,7 @@ export default function BusinessLocationScreen({ navigation }: Props) {
   const handleContinue = async () => {
     const uid = auth.currentUser?.uid;
     if (!uid) {
-      setError('You need to be signed in to continue.');
+      setError(t('onboarding.businessLocation.errors.notSignedIn'));
       return;
     }
     setError(null);
@@ -122,11 +124,11 @@ export default function BusinessLocationScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <ProgressBar step={4} totalSteps={4} />
       <View style={styles.content}>
-        <Text style={styles.title}>Where's your business located?</Text>
-        <Text style={styles.subtitle}>Drag the pin to set your exact location.</Text>
+        <Text style={styles.title}>{t('onboarding.businessLocation.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding.businessLocation.subtitle')}</Text>
 
         <FormInput
-          placeholder="Enter your business address"
+          placeholder={t('onboarding.businessLocation.addressPlaceholder')}
           value={address}
           onChangeText={handleAddressChange}
           leftElement={
@@ -139,7 +141,7 @@ export default function BusinessLocationScreen({ navigation }: Props) {
         />
         {geocodeFailed && !resolvingAddress && (
           <Text style={styles.geocodeFallbackText}>
-            Address lookup unavailable — you can still continue by entering it manually.
+            {t('onboarding.businessLocation.geocodeFallback')}
           </Text>
         )}
 
@@ -163,15 +165,15 @@ export default function BusinessLocationScreen({ navigation }: Props) {
         </View>
 
         <FormInput
-          label="Apt / suite / unit (optional)"
-          placeholder="e.g. Suite 2B"
+          label={t('onboarding.businessLocation.unit.label')}
+          placeholder={t('onboarding.businessLocation.unit.placeholder')}
           value={unit}
           onChangeText={setUnit}
         />
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <Button label="Continue" onPress={handleContinue} loading={loading} style={styles.continueButton} />
+        <Button label={t('common.continue')} onPress={handleContinue} loading={loading} style={styles.continueButton} />
       </View>
     </SafeAreaView>
   );

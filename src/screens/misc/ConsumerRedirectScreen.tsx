@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui';
 import { Colors, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
@@ -14,18 +15,18 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ConsumerRedirect'>;
 // Follow-up: wire real Linking.openURL()/store redirect once the consumer
 // app's scheme/listing is finalized.
 export default function ConsumerRedirectScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.content}>
         <View style={styles.iconWrap}>
           <Ionicons name="calendar-outline" size={36} color={Colors.teal} />
         </View>
-        <Text style={styles.title}>Taking you to Rezervo</Text>
+        <Text style={styles.title}>{t('consumerRedirect.title')}</Text>
         <Text style={styles.subtitle}>
-          Booking appointments happens in the main Rezervo app. This redirect is a
-          placeholder for now — full deep-linking is coming soon.
+          {t('consumerRedirect.subtitle')}
         </Text>
-        <Button label="Back" variant="secondary" onPress={() => navigation.goBack()} style={styles.button} />
+        <Button label={t('common.back')} variant="secondary" onPress={() => navigation.goBack()} style={styles.button} />
       </View>
     </SafeAreaView>
   );

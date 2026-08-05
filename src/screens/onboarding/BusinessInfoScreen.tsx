@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { saveBusinessInfo } from '../../services/businesses';
 import { Button, FormInput, ProgressBar } from '../../components/ui';
@@ -24,6 +25,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'BusinessInfo'>;
 
 export default function BusinessInfoScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [businessName, setBusinessName] = useState('');
   const [ownerName, setOwnerName] = useState(auth.currentUser?.displayName ?? '');
   const [phone, setPhone] = useState('');
@@ -35,12 +37,12 @@ export default function BusinessInfoScreen({ navigation }: Props) {
   const handleContinue = async () => {
     setError(null);
     if (!businessName.trim() || !ownerName.trim() || !phone.trim()) {
-      setError('Please fill in all fields to continue.');
+      setError(t('onboarding.businessInfo.errors.fillAllFields'));
       return;
     }
     const uid = auth.currentUser?.uid;
     if (!uid) {
-      setError('You need to be signed in to continue.');
+      setError(t('onboarding.businessInfo.errors.notSignedIn'));
       return;
     }
     setLoading(true);
@@ -68,26 +70,26 @@ export default function BusinessInfoScreen({ navigation }: Props) {
       <ProgressBar step={2} totalSteps={4} />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.title}>Tell us about your business</Text>
-          <Text style={styles.subtitle}>This helps clients find and recognize you on Rezervo.</Text>
+          <Text style={styles.title}>{t('onboarding.businessInfo.title')}</Text>
+          <Text style={styles.subtitle}>{t('onboarding.businessInfo.subtitle')}</Text>
 
           <View style={styles.form}>
             <FormInput
-              label="Business name"
+              label={t('onboarding.businessInfo.businessName.label')}
               icon="storefront-outline"
-              placeholder="e.g. Glow Studio"
+              placeholder={t('onboarding.businessInfo.businessName.placeholder')}
               value={businessName}
               onChangeText={setBusinessName}
             />
             <FormInput
-              label="Your name"
+              label={t('onboarding.businessInfo.ownerName.label')}
               icon="person-outline"
-              placeholder="e.g. Arta Krasniqi"
+              placeholder={t('onboarding.businessInfo.ownerName.placeholder')}
               value={ownerName}
               onChangeText={setOwnerName}
             />
             <View>
-              <Text style={styles.label}>Phone number</Text>
+              <Text style={styles.label}>{t('onboarding.businessInfo.phone.label')}</Text>
               <View style={styles.phoneRow}>
                 <TouchableOpacity style={styles.countryButton} onPress={() => setPickerVisible(true)}>
                   <Text style={styles.flag}>{country.flag}</Text>
@@ -96,7 +98,7 @@ export default function BusinessInfoScreen({ navigation }: Props) {
                 </TouchableOpacity>
                 <View style={styles.phoneInputWrap}>
                   <FormInput
-                    placeholder="44 123 456"
+                    placeholder={t('onboarding.businessInfo.phone.placeholder')}
                     keyboardType="phone-pad"
                     value={phone}
                     onChangeText={setPhone}
@@ -107,7 +109,7 @@ export default function BusinessInfoScreen({ navigation }: Props) {
 
             {error && <Text style={styles.errorText}>{error}</Text>}
 
-            <Button label="Continue" onPress={handleContinue} loading={loading} style={styles.continueButton} />
+            <Button label={t('common.continue')} onPress={handleContinue} loading={loading} style={styles.continueButton} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -115,7 +117,7 @@ export default function BusinessInfoScreen({ navigation }: Props) {
       <Modal visible={pickerVisible} animationType="slide" onRequestClose={() => setPickerVisible(false)}>
         <SafeAreaView style={styles.modalSafe}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Select country</Text>
+            <Text style={styles.modalTitle}>{t('onboarding.businessInfo.countryModal.title')}</Text>
             <TouchableOpacity onPress={() => setPickerVisible(false)}>
               <Ionicons name="close" size={24} color={Light.textPrimary} />
             </TouchableOpacity>
