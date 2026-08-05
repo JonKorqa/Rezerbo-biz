@@ -16,8 +16,8 @@ export interface NewAppointmentInput {
   color?: string;
 }
 
-export async function createAppointment(input: NewAppointmentInput): Promise<void> {
-  await addDoc(collection(db, collectionName), {
+export async function createAppointment(input: NewAppointmentInput): Promise<string> {
+  const ref = await addDoc(collection(db, collectionName), {
     businessId: input.businessId,
     type: 'booking',
     clientId: input.clientId,
@@ -31,6 +31,7 @@ export async function createAppointment(input: NewAppointmentInput): Promise<voi
     status: 'confirmed',
     createdAt: serverTimestamp(),
   });
+  return ref.id;
 }
 
 export interface NewReservationInput {

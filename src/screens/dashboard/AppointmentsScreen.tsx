@@ -1,13 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
 import { useAppointments } from '../../hooks/useAppointments';
+import { useNotifications } from '../../hooks/useNotifications';
 import { getBusiness } from '../../services/businesses';
+import { createUpcomingReminders } from '../../services/notifications';
 import { WeekStrip } from './components/WeekStrip';
 import { TimeGrid } from './components/TimeGrid';
 import { AgendaList } from './components/AgendaList';
@@ -33,6 +35,7 @@ function formatHeaderDate(date: Date) {
 
 export default function AppointmentsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [showCalendarSettings, setShowCalendarSettings] = useState(false);
@@ -40,12 +43,25 @@ export default function AppointmentsScreen() {
   const uid = auth.currentUser?.uid;
 
   const { data: appointments = [] } = useAppointments();
+  const { data: notifications = [] } = useNotifications();
+  const unreadCount = useMemo(() => notifications.filter((n) => !n.read).length, [notifications]);
 
   const { data: business } = useQuery({
     queryKey: ['business', uid],
     queryFn: () => (uid ? getBusiness(uid) : Promise.resolve(null)),
     enabled: !!uid,
   });
+
+  // Checks appointments starting within the next hour and writes an "upcoming" reminder
+  // notification for any that don't already have one — runs whenever the appointment
+  // list changes (e.g. on mount, or after a new booking is saved).
+  useEffect(() => {
+    if (!uid || appointments.length === 0) return;
+    createUpcomingReminders(uid, appointments)
+      .then(() => queryClient.invalidateQueries({ queryKey: ['notifications', uid] }))
+      .catch((err) => console.error('createUpcomingReminders failed:', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid, appointments]);
 
   const businessHours = { ...DEFAULT_BUSINESS_HOURS, ...business?.hours };
   const timeOff = business?.timeOff ?? [];
@@ -94,7 +110,14 @@ export default function AppointmentsScreen() {
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity hitSlop={10} onPress={() => navigation.navigate('Notifications')}>
-          <Ionicons name="notifications-outline" size={22} color={Light.textPrimary} />
+          <View>
+            <Ionicons name="notifications-outline" size={22} color={Light.textPrimary} />
+            {unreadCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeLabel}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+              </View>
+            )}
+          </View>
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
@@ -239,6 +262,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -6,
+    minWidth: 16,
+    height: 16,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  badgeLabel: {
+    color: Colors.white,
+    fontSize: 10,
+    fontFamily: Typography.fontFamily.bold,
   },
   headerCenter: { alignItems: 'center', gap: 2 },
   headerDateRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },

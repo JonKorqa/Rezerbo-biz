@@ -103,6 +103,19 @@ service cloud.firestore {
         && resource.data.businessId == businessId;
     }
 
+    // Rezervo Biz: notifications are a SUBCOLLECTION under businesses/{businessId}/notifications
+    // (see src/services/notifications.ts), not a top-level collection — scoped by the
+    // path segment, with the businessId field on the doc cross-checked on writes.
+    // NOT YET DEPLOYED — added alongside the in-app notifications feature, batch with
+    // any other pending rules before running `firebase deploy --only firestore:rules`.
+    match /businesses/{businessId}/notifications/{notificationId} {
+      allow read: if request.auth != null && request.auth.uid == businessId;
+      allow create: if request.auth != null && request.auth.uid == businessId
+        && request.resource.data.businessId == businessId;
+      allow update, delete: if request.auth != null && request.auth.uid == businessId
+        && resource.data.businessId == businessId;
+    }
+
     // Rezervo Biz: no client-side code writes to `reviews` yet (grepped the repo,
     // no matches) — this rule is speculative/future-proofing per request, using the
     // businessId-field pattern. Re-verify field names once review submission is built.

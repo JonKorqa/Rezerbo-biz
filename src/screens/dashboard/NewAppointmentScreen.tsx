@@ -7,6 +7,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { auth } from '../../services/firebase';
 import { getBusiness } from '../../services/businesses';
 import { createAppointment } from '../../services/appointments';
+import { createNotification } from '../../services/notifications';
 import { Button } from '../../components/ui';
 import { DateTimePickerSheet } from '../../components/DateTimePickerSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -111,10 +112,11 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
     // stays testable — once rules are deployed, remove this try/catch and let a failed save
     // block navigation (with retry) like it did before.
     try {
-      await createAppointment({
+      const clientLabel = client?.name ?? 'Walk-in';
+      const appointmentId = await createAppointment({
         businessId: uid,
         clientId: client?.id ?? null,
-        clientName: client?.name ?? 'Walk-in',
+        clientName: clientLabel,
         serviceId: service.id,
         serviceLabel: service.name,
         staffId: uid,
@@ -122,12 +124,20 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         end: endTime,
         color: service.color,
       });
+      const timeLabel = startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      await createNotification(uid, {
+        type: 'new_booking',
+        title: 'New Appointment',
+        message: `${clientLabel} - ${service.name} at ${timeLabel}`,
+        appointmentId,
+      });
     } catch (err) {
       console.error('createAppointment failed, continuing anyway:', err);
     } finally {
       setSaving(false);
     }
     queryClient.invalidateQueries({ queryKey: ['appointments', uid] });
+    queryClient.invalidateQueries({ queryKey: ['notifications', uid] });
     navigation.goBack();
   };
 
