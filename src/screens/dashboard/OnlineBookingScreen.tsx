@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, updateBusiness } from '../../services/businesses';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -12,21 +13,22 @@ import { Light } from '../../theme/light';
 import type { Business } from '../../types/business';
 import type { RootStackParamList } from '../../types/navigation';
 
-const LEAD_TIME_OPTIONS: { minutes: number; label: string }[] = [
-  { minutes: 0, label: 'No minimum' },
-  { minutes: 60, label: '1 hour' },
-  { minutes: 120, label: '2 hours' },
-  { minutes: 1440, label: '1 day' },
+const LEAD_TIME_OPTIONS: { minutes: number; labelKey: string }[] = [
+  { minutes: 0, labelKey: 'onlineBooking.noMinimum' },
+  { minutes: 60, labelKey: 'onlineBooking.oneHour' },
+  { minutes: 120, labelKey: 'onlineBooking.twoHours' },
+  { minutes: 1440, labelKey: 'onlineBooking.oneDay' },
 ];
 
-const WINDOW_OPTIONS: { days: number; label: string }[] = [
-  { days: 7, label: '1 week' },
-  { days: 14, label: '2 weeks' },
-  { days: 30, label: '1 month' },
-  { days: 90, label: '3 months' },
+const WINDOW_OPTIONS: { days: number; labelKey: string }[] = [
+  { days: 7, labelKey: 'onlineBooking.oneWeek' },
+  { days: 14, labelKey: 'onlineBooking.twoWeeks' },
+  { days: 30, labelKey: 'onlineBooking.oneMonth' },
+  { days: 90, labelKey: 'onlineBooking.threeMonths' },
 ];
 
 export default function OnlineBookingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
@@ -88,8 +90,8 @@ export default function OnlineBookingScreen() {
     save({ bookingWindowDays: days });
   };
 
-  const leadTimeLabel = LEAD_TIME_OPTIONS.find((o) => o.minutes === bookingLeadTimeMinutes)?.label ?? 'No minimum';
-  const windowLabel = WINDOW_OPTIONS.find((o) => o.days === bookingWindowDays)?.label ?? '1 month';
+  const leadTimeLabelKey = LEAD_TIME_OPTIONS.find((o) => o.minutes === bookingLeadTimeMinutes)?.labelKey ?? 'onlineBooking.noMinimum';
+  const windowLabelKey = WINDOW_OPTIONS.find((o) => o.days === bookingWindowDays)?.labelKey ?? 'onlineBooking.oneMonth';
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -97,21 +99,21 @@ export default function OnlineBookingScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Online Booking</Text>
+        <Text style={styles.headerTitle}>{t('onlineBooking.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.subtitle}>
-          Controls how clients can book with you through Rezervo's consumer app.
+          {t('onlineBooking.subtitle')}
         </Text>
 
         <View style={styles.card}>
           <View style={styles.toggleRow}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Enable Online Booking</Text>
+              <Text style={styles.rowLabel}>{t('onlineBooking.enableOnlineBooking')}</Text>
               <Text style={styles.rowDescription}>
-                When off, clients can't self-book — you'll only be able to add appointments manually here.
+                {t('onlineBooking.enableOnlineBookingDescription')}
               </Text>
             </View>
             <Switch
@@ -123,9 +125,9 @@ export default function OnlineBookingScreen() {
           </View>
           <View style={[styles.toggleRow, styles.rowLast]}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Require approval for new bookings</Text>
+              <Text style={styles.rowLabel}>{t('onlineBooking.requireApproval')}</Text>
               <Text style={styles.rowDescription}>
-                New client-initiated bookings need your confirmation before they're final.
+                {t('onlineBooking.requireApprovalDescription')}
               </Text>
             </View>
             <Switch
@@ -137,14 +139,14 @@ export default function OnlineBookingScreen() {
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Timing</Text>
+        <Text style={styles.sectionTitle}>{t('onlineBooking.timing')}</Text>
         <View style={styles.card}>
           <TouchableOpacity style={styles.pickerRow} activeOpacity={0.7} onPress={() => setLeadTimePickerVisible(true)}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Booking lead time</Text>
-              <Text style={styles.rowDescription}>How far in advance clients must book</Text>
+              <Text style={styles.rowLabel}>{t('onlineBooking.leadTime')}</Text>
+              <Text style={styles.rowDescription}>{t('onlineBooking.leadTimeDescription')}</Text>
             </View>
-            <Text style={styles.pickerValue}>{leadTimeLabel}</Text>
+            <Text style={styles.pickerValue}>{t(leadTimeLabelKey)}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -153,10 +155,10 @@ export default function OnlineBookingScreen() {
             onPress={() => setWindowPickerVisible(true)}
           >
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Booking window</Text>
-              <Text style={styles.rowDescription}>How far ahead clients can book</Text>
+              <Text style={styles.rowLabel}>{t('onlineBooking.window')}</Text>
+              <Text style={styles.rowDescription}>{t('onlineBooking.windowDescription')}</Text>
             </View>
-            <Text style={styles.pickerValue}>{windowLabel}</Text>
+            <Text style={styles.pickerValue}>{t(windowLabelKey)}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
         </View>
@@ -172,7 +174,7 @@ export default function OnlineBookingScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setLeadTimePickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Booking lead time</Text>
+              <Text style={styles.modalTitle}>{t('onlineBooking.leadTime')}</Text>
               <TouchableOpacity onPress={() => setLeadTimePickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -186,7 +188,7 @@ export default function OnlineBookingScreen() {
                   activeOpacity={0.7}
                   onPress={() => handlePickLeadTime(item.minutes)}
                 >
-                  <Text style={styles.optionLabel}>{item.label}</Text>
+                  <Text style={styles.optionLabel}>{t(item.labelKey)}</Text>
                   {item.minutes === bookingLeadTimeMinutes && (
                     <Ionicons name="checkmark" size={20} color={Colors.teal} />
                   )}
@@ -207,7 +209,7 @@ export default function OnlineBookingScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setWindowPickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Booking window</Text>
+              <Text style={styles.modalTitle}>{t('onlineBooking.window')}</Text>
               <TouchableOpacity onPress={() => setWindowPickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -217,7 +219,7 @@ export default function OnlineBookingScreen() {
               keyExtractor={(item) => String(item.days)}
               renderItem={({ item }) => (
                 <TouchableOpacity style={styles.optionRow} activeOpacity={0.7} onPress={() => handlePickWindow(item.days)}>
-                  <Text style={styles.optionLabel}>{item.label}</Text>
+                  <Text style={styles.optionLabel}>{t(item.labelKey)}</Text>
                   {item.days === bookingWindowDays && <Ionicons name="checkmark" size={20} color={Colors.teal} />}
                 </TouchableOpacity>
               )}

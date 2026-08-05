@@ -548,5 +548,199 @@
         "body": "Hi {clientName}, thank you for visiting {businessName}! If you enjoyed your visit, we would really appreciate a quick review."
       }
     }
+  },
+  "profile": {
+    "uploadCoverError": "Could not upload cover photo. Please try again.",
+    "uploadAvatarError": "Could not upload profile photo. Please try again.",
+    "uploadPortfolioError": "Could not upload photo. Please try again.",
+    "removePhotoTitle": "Remove photo",
+    "removePhotoMessage": "Remove this photo from your portfolio?",
+    "remove": "Remove",
+    "removePhotoError": "Could not remove photo. Please try again.",
+    "saveInstagramError": "Could not save Instagram handle. Please try again.",
+    "addCover": "Add Cover",
+    "publicProfilePreview": "Public Profile Preview",
+    "shareProfile": "Share Profile",
+    "addInstagram": "Add Instagram",
+    "completionChecklist": "Completion Checklist",
+    "novice": "Novice",
+    "completedCount": "{{done}} of {{total}} completed",
+    "statsAndReports": "Stats & Reports",
+    "statsAndReportsDescription": "Important insights about your business and staff members",
+    "createSocialPost": "Create a Social Post",
+    "createSocialPostDescription": "Design and share it to promote your business",
+    "referralHeadline": "Refer a business, earn rewards",
+    "referralSubtext": "Invite other business owners to Rezervo and get rewarded when they join.",
+    "shareYourLink": "Share your link",
+    "shareYourLinkArrow": "Share your link →",
+    "settings": "Settings",
+    "portfolio": "Portfolio",
+    "portfolioEmptyText": "Show off your best work — add photos of your space, your team, or finished results to attract new clients."
+  },
+  "shareProfile": {
+    "bookWithMessage": "Book with {{businessName}} on Rezervo",
+    "permissionNeededTitle": "Permission needed",
+    "permissionNeededMessage": "Allow photo access to save the QR code.",
+    "savedTitle": "Saved",
+    "savedMessage": "QR code saved to your photos.",
+    "saveError": "Could not save the QR code. Please try again.",
+    "linkCopied": "Link copied!",
+    "copyLink": "Copy Link",
+    "shareLink": "Share Link",
+    "scanToBook": "Scan to book",
+    "saveQrCode": "Save QR Code"
+  },
+  "businessSettings": {
+    "title": "Settings",
+    "search": "Search",
+    "newBadge": "New",
+    "logOut": "Log Out",
+    "logOutTitle": "Log Out",
+    "logOutMessage": "Are you sure you want to log out?",
+    "logOutError": "Failed to log out. Please try again.",
+    "deleteAccount": "Delete Account",
+    "deleteAccountTitle": "Delete Account",
+    "deleteAccountMessage": "This permanently deletes your business account, including all clients, services, and appointments. This cannot be undone.",
+    "deleteAccountError": "Failed to delete account. Please try again.",
+    "reloginTitle": "Please log in again",
+    "reloginMessage": "For your security, log out and log back in before deleting your account.",
+    "version": "Version {{version}}",
+    "helpCenter": "Help Center",
+    "rows": {
+      "loyalty": {
+        "title": "Loyalty Cards Program",
+        "description": "Create stamp cards for clients and track their rewards"
+      },
+      "payments": {
+        "title": "Payments & Checkout",
+        "description": "All payment settings in one place"
+      },
+      "services": {
+        "title": "Services Setup",
+        "description": "Add service details, adjust settings, and categorize them for easy discovery"
+      },
+      "schedule": {
+        "title": "Schedule Management",
+        "description": "Edit your opening hours and business hours, manage time-off, and schedule working hours for staff members"
+      },
+      "staff": {
+        "title": "Staff Management",
+        "description": "Add new staff members, edit permissions, and adjust team details."
+      },
+      "giftCards": {
+        "title": "Gift Cards",
+        "description": "Allow your customers to buy gift cards and share your talent with their friends."
+      },
+      "memberships": {
+        "title": "Memberships",
+        "description": "Use memberships to offer unlimited visits for specific services"
+      },
+      "packages": {
+        "title": "Packages",
+        "description": "Encourage repeat visits or combine multiple services into a single experience"
+      },
+      "businessDetails": {
+        "title": "Business Details",
+        "description": "Edit business information, adjust location settings, and add your policies and safety rules"
+      },
+      "onlineBooking": {
+        "title": "Online Booking",
+        "description": "Decide which online booking options you'd like to make available for your clients"
+      },
+      "advanced": {
+        "title": "Advanced Options",
+        "description": "Access your Booking Settings and adjust retail information"
+      },
+      "personal": {
+        "title": "Personal Settings",
+        "description": "Modify your language, set your notification preferences, and switch business profiles (if applicable)"
+      },
+      "subscription": {
+        "title": "Subscription & Billing",
+        "description": "Manage your Rezervo subscription, view statements, and your payment method"
+      },
+      "app": {
+        "title": "App",
+        "description": "Access to Rezervo's Terms & Conditions and Privacy Policy"
+      }
+    }
+  },
+  "businessDetails": {
+    "title": "Business Details",
+    "missingInfoTitle": "Missing info",
+    "missingInfoMessage": "Business name and phone number are required.",
+    "saveInfoError": "Could not save business info. Please try again.",
+    "invalidWebsiteUrl": "Enter a valid website URL.",
+    "saveSocialError": "Could not save social media links. Please try again.",
+    "uploadLogoError": "Could not upload logo. Please try again.",
+    "saveMobileServicesError": "Could not save mobile services settings. Please try again.",
+    "noLocationSet": "No location set yet",
+    "saveAmenitiesError": "Could not save amenities. Please try again.",
+    "pickCategoryTitle": "Pick at least one category",
+    "pickCategoryMessage": "Choose the categories that best describe your business.",
+    "saveCategoriesError": "Could not save categories. Please try again.",
+    "savePoliciesError": "Could not save policies. Please try again.",
+    "businessInfo": "Business Info",
+    "businessName": "Business name",
+    "businessPhone": "Business phone number",
+    "ownerEmail": "Owner email",
+    "publicProfileLink": "Link to your public profile",
+    "copied": "Copied",
+    "copy": "Copy",
+    "shortDescription": "Short description",
+    "shortDescriptionPlaceholder": "Tell clients what makes your business special…",
+    "socialMedia": "Social Media",
+    "instagramHandle": "Instagram handle",
+    "facebookUrl": "Facebook page URL or handle",
+    "websiteUrl": "Website URL",
+    "onlineShopUrl": "Online shop URL",
+    "profileImages": "Profile Images",
+    "logo": "Logo",
+    "coverPhoto": "Cover Photo",
+    "workplacePhotos": "Workplace Photos",
+    "photosInPortfolio_one": "{{count}} photo in your portfolio",
+    "photosInPortfolio_other": "{{count}} photos in your portfolio",
+    "addPhotosPrompt": "Add photos of your space, team, or results",
+    "locationAndMobile": "Location & Mobile Services",
+    "businessAddress": "Business Address",
+    "offersMobileServices": "I also offer mobile services",
+    "offersMobileServicesDescription": "Let clients know you can come to them",
+    "serviceArea": "Service area",
+    "serviceAreaPlaceholder": "e.g. I travel within 15km of Prishtina",
+    "amenities": "Amenities",
+    "amenitiesSubtitle": "Let clients know what to expect at your business.",
+    "businessCategory": "Business Category",
+    "businessCategorySubtitle": "Select all categories that apply to your business.",
+    "policiesAndSafety": "Policies & Safety",
+    "cancellationPolicy": "Cancellation policy",
+    "cancellationPolicyPlaceholder": "e.g. Cancel or reschedule at least 24 hours in advance",
+    "noWaitingArea": "No waiting area",
+    "optionalNotePlaceholder": "Optional note for clients",
+    "noOutsideGuests": "No outside guests",
+    "healthSafetyRules": "Health & safety rules",
+    "healthSafetyRulesPlaceholder": "e.g. Masks optional, please arrive on time",
+    "additionalDetails": "Additional details",
+    "additionalDetailsPlaceholder": "Anything else clients should know before booking"
+  },
+  "onlineBooking": {
+    "title": "Online Booking",
+    "subtitle": "Controls how clients can book with you through Rezervo's consumer app.",
+    "enableOnlineBooking": "Enable Online Booking",
+    "enableOnlineBookingDescription": "When off, clients can't self-book — you'll only be able to add appointments manually here.",
+    "requireApproval": "Require approval for new bookings",
+    "requireApprovalDescription": "New client-initiated bookings need your confirmation before they're final.",
+    "timing": "Timing",
+    "leadTime": "Booking lead time",
+    "leadTimeDescription": "How far in advance clients must book",
+    "window": "Booking window",
+    "windowDescription": "How far ahead clients can book",
+    "noMinimum": "No minimum",
+    "oneHour": "1 hour",
+    "twoHours": "2 hours",
+    "oneDay": "1 day",
+    "oneWeek": "1 week",
+    "twoWeeks": "2 weeks",
+    "oneMonth": "1 month",
+    "threeMonths": "3 months"
   }
 }

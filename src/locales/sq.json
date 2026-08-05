@@ -548,5 +548,199 @@
         "body": "Përshëndetje {clientName}, faleminderit që na vizitove në {businessName}! Nëse e ke pëlqy vizitën, do të na gëzonte shumë një vlerësim i shpejtë."
       }
     }
+  },
+  "profile": {
+    "uploadCoverError": "Nuk u ngarkua dot foto e kopertinës. Provo prap.",
+    "uploadAvatarError": "Nuk u ngarkua dot foto e profilit. Provo prap.",
+    "uploadPortfolioError": "Nuk u ngarkua dot foto. Provo prap.",
+    "removePhotoTitle": "Hjek foton",
+    "removePhotoMessage": "Me e hjek këtë foto nga portofoli yt?",
+    "remove": "Hjek",
+    "removePhotoError": "Nuk u hoq dot foto. Provo prap.",
+    "saveInstagramError": "Nuk u ruajt dot llogaria e Instagramit. Provo prap.",
+    "addCover": "Shto Kopertinë",
+    "publicProfilePreview": "Shiko Profilin Publik",
+    "shareProfile": "Ndaj Profilin",
+    "addInstagram": "Shto Instagram",
+    "completionChecklist": "Lista e Plotësimit",
+    "novice": "Fillestar",
+    "completedCount": "{{done}} nga {{total}} të plotësuara",
+    "statsAndReports": "Statistika & Raporte",
+    "statsAndReportsDescription": "Njohuri të rëndësishme rreth biznesit dhe stafit tënd",
+    "createSocialPost": "Krijo një Postim Social",
+    "createSocialPostDescription": "Dizajno dhe ndaje për me promovu biznesin tënd",
+    "referralHeadline": "Rekomando një biznes, fito shpërblime",
+    "referralSubtext": "Fto pronarë tjerë biznesesh në Rezervo dhe fito shpërblim kur bashkohen.",
+    "shareYourLink": "Ndaj linkun tënd",
+    "shareYourLinkArrow": "Ndaj linkun tënd →",
+    "settings": "Cilësimet",
+    "portfolio": "Portofoli",
+    "portfolioEmptyText": "Trego punën tënde më të mirë — shto foto të hapësirës, ekipit, ose rezultateve përfundimtare për me tërhjek klientë të rinj."
+  },
+  "shareProfile": {
+    "bookWithMessage": "Rezervo me {{businessName}} në Rezervo",
+    "permissionNeededTitle": "Nevojitet leje",
+    "permissionNeededMessage": "Lejo qasjen te fotot për me ruajt kodin QR.",
+    "savedTitle": "U ruajt",
+    "savedMessage": "Kodi QR u ruajt në fotot e tua.",
+    "saveError": "Nuk u ruajt dot kodi QR. Provo prap.",
+    "linkCopied": "Linku u kopjue!",
+    "copyLink": "Kopjo Linkun",
+    "shareLink": "Ndaj Linkun",
+    "scanToBook": "Skano për me rezervu",
+    "saveQrCode": "Ruaj Kodin QR"
+  },
+  "businessSettings": {
+    "title": "Cilësimet",
+    "search": "Kërko",
+    "newBadge": "E re",
+    "logOut": "Dil",
+    "logOutTitle": "Dil",
+    "logOutMessage": "A je i sigurt që don me dalë?",
+    "logOutError": "Dalja dështoi. Provo prap.",
+    "deleteAccount": "Fshij Llogarinë",
+    "deleteAccountTitle": "Fshij Llogarinë",
+    "deleteAccountMessage": "Kjo e fshin përgjithmonë llogarinë e biznesit tënd, përfshi të gjithë klientët, shërbimet dhe terminet. Kjo nuk mund të kthehet mbrapsht.",
+    "deleteAccountError": "Fshirja e llogarisë dështoi. Provo prap.",
+    "reloginTitle": "Kyçu prap",
+    "reloginMessage": "Për sigurinë tënde, dil dhe kyçu prap para se me fshi llogarinë.",
+    "version": "Versioni {{version}}",
+    "helpCenter": "Qendra e Ndihmës",
+    "rows": {
+      "loyalty": {
+        "title": "Programi i Kartave të Besnikërisë",
+        "description": "Krijo karta pullash për klientët dhe ndiq shpërblimet e tyre"
+      },
+      "payments": {
+        "title": "Pagesat & Arkëtimi",
+        "description": "Të gjitha cilësimet e pagesave në një vend"
+      },
+      "services": {
+        "title": "Konfigurimi i Shërbimeve",
+        "description": "Shto detaje shërbimesh, rregullo cilësime, dhe kategorizoi për me u gjetë lehtë"
+      },
+      "schedule": {
+        "title": "Menaxhimi i Orarit",
+        "description": "Ndrysho orarin e hapjes dhe orarin e biznesit, menaxho ditët e pushimit, dhe planifiko orarin e stafit"
+      },
+      "staff": {
+        "title": "Menaxhimi i Stafit",
+        "description": "Shto anëtarë të rinj stafi, ndrysho lejet, dhe rregullo detajet e ekipit."
+      },
+      "giftCards": {
+        "title": "Karta Dhuratë",
+        "description": "Lejo klientët e tu me blenë karta dhuratë dhe me ndajë talentin tënd me miqtë e tyre."
+      },
+      "memberships": {
+        "title": "Anëtarësimet",
+        "description": "Përdor anëtarësime për me ofru vizita të pakufizuara për shërbime specifike"
+      },
+      "packages": {
+        "title": "Paketat",
+        "description": "Nxit vizita të përsëritura ose kombino shumë shërbime në një përvojë të vetme"
+      },
+      "businessDetails": {
+        "title": "Detajet e Biznesit",
+        "description": "Ndrysho të dhënat e biznesit, rregullo cilësimet e lokacionit, dhe shto politikat e sigurinë tënde"
+      },
+      "onlineBooking": {
+        "title": "Rezervimi Online",
+        "description": "Vendos cilat opsione rezervimi online don me i ofru klientëve tu"
+      },
+      "advanced": {
+        "title": "Opsione të Avancuara",
+        "description": "Qasu te Cilësimet e Rezervimit dhe rregullo informacionet e shitjes me pakicë"
+      },
+      "personal": {
+        "title": "Cilësimet Personale",
+        "description": "Ndrysho gjuhën tënde, cakto preferencat e njoftimeve, dhe kalo mes profileve të biznesit (nëse aplikohet)"
+      },
+      "subscription": {
+        "title": "Abonimi & Faturimi",
+        "description": "Menaxho abonimin tënd në Rezervo, shiko deklaratat, dhe mënyrën e pagesës"
+      },
+      "app": {
+        "title": "Aplikacioni",
+        "description": "Qasu te Kushtet & Rregullat dhe Politika e Privatësisë e Rezervos"
+      }
+    }
+  },
+  "businessDetails": {
+    "title": "Detajet e Biznesit",
+    "missingInfoTitle": "Mungojnë të dhëna",
+    "missingInfoMessage": "Emri i biznesit dhe numri i telefonit janë të domosdoshëm.",
+    "saveInfoError": "Nuk u ruajtën dot të dhënat e biznesit. Provo prap.",
+    "invalidWebsiteUrl": "Fut një URL të vlefshme faqeje.",
+    "saveSocialError": "Nuk u ruajtën dot linqet e rrjeteve sociale. Provo prap.",
+    "uploadLogoError": "Nuk u ngarkua dot logoja. Provo prap.",
+    "saveMobileServicesError": "Nuk u ruajtën dot cilësimet e shërbimeve mobile. Provo prap.",
+    "noLocationSet": "Ende nuk ka lokacion të caktuar",
+    "saveAmenitiesError": "Nuk u ruajtën dot komoditetet. Provo prap.",
+    "pickCategoryTitle": "Zgjedh së paku një kategori",
+    "pickCategoryMessage": "Zgjedh kategoritë që e përshkruajnë më së miri biznesin tënd.",
+    "saveCategoriesError": "Nuk u ruajtën dot kategoritë. Provo prap.",
+    "savePoliciesError": "Nuk u ruajtën dot politikat. Provo prap.",
+    "businessInfo": "Të Dhënat e Biznesit",
+    "businessName": "Emri i biznesit",
+    "businessPhone": "Numri i telefonit të biznesit",
+    "ownerEmail": "Emaili i pronarit",
+    "publicProfileLink": "Linku i profilit tënd publik",
+    "copied": "U kopjue",
+    "copy": "Kopjo",
+    "shortDescription": "Përshkrim i shkurtër",
+    "shortDescriptionPlaceholder": "Tregoju klientëve çka e bën biznesin tënd special…",
+    "socialMedia": "Rrjetet Sociale",
+    "instagramHandle": "Llogaria e Instagramit",
+    "facebookUrl": "URL ose llogaria e faqes në Facebook",
+    "websiteUrl": "URL e faqes së internetit",
+    "onlineShopUrl": "URL e dyqanit online",
+    "profileImages": "Fotot e Profilit",
+    "logo": "Logo",
+    "coverPhoto": "Foto Kopertine",
+    "workplacePhotos": "Fotot e Vendit të Punës",
+    "photosInPortfolio_one": "{{count}} foto në portofolin tënd",
+    "photosInPortfolio_other": "{{count}} foto në portofolin tënd",
+    "addPhotosPrompt": "Shto foto të hapësirës, ekipit, ose rezultateve",
+    "locationAndMobile": "Lokacioni & Shërbimet Mobile",
+    "businessAddress": "Adresa e Biznesit",
+    "offersMobileServices": "Ofroj edhe shërbime mobile",
+    "offersMobileServicesDescription": "Njofto klientët se mundesh me shku te ata",
+    "serviceArea": "Zona e shërbimit",
+    "serviceAreaPlaceholder": "p.sh. Udhëtoj brenda 15km nga Prishtina",
+    "amenities": "Komoditetet",
+    "amenitiesSubtitle": "Njofto klientët çka të presin te biznesi yt.",
+    "businessCategory": "Kategoria e Biznesit",
+    "businessCategorySubtitle": "Zgjedh të gjitha kategoritë që i përshtaten biznesit tënd.",
+    "policiesAndSafety": "Politikat & Siguria",
+    "cancellationPolicy": "Politika e anulimit",
+    "cancellationPolicyPlaceholder": "p.sh. Anulo ose ricakto së paku 24 orë përpara",
+    "noWaitingArea": "Nuk ka hapësirë pritjeje",
+    "optionalNotePlaceholder": "Shënim opsional për klientët",
+    "noOutsideGuests": "Nuk lejohen mysafirë të jashtëm",
+    "healthSafetyRules": "Rregullat e shëndetit & sigurisë",
+    "healthSafetyRulesPlaceholder": "p.sh. Maskat opsionale, ju lutem ejani në kohë",
+    "additionalDetails": "Detaje shtesë",
+    "additionalDetailsPlaceholder": "Çdo gjë tjetër që klientët duhet me e ditë para rezervimit"
+  },
+  "onlineBooking": {
+    "title": "Rezervimi Online",
+    "subtitle": "Kontrollon si klientët mund të rezervojnë me ty përmes aplikacionit konsumator të Rezervos.",
+    "enableOnlineBooking": "Aktivizo Rezervimin Online",
+    "enableOnlineBookingDescription": "Kur është çaktivizuar, klientët nuk mund të vetë-rezervojnë — do të mundesh vetëm t'i shtosh terminet manualisht këtu.",
+    "requireApproval": "Kërko miratim për rezervime të reja",
+    "requireApprovalDescription": "Rezervimet e reja të nisura nga klientët kanë nevojë për konfirmimin tënd para se të bahen përfundimtare.",
+    "timing": "Kohët",
+    "leadTime": "Koha minimale e rezervimit",
+    "leadTimeDescription": "Sa kohë përpara duhet klientët me rezervu",
+    "window": "Dritarja e rezervimit",
+    "windowDescription": "Sa larg në të ardhmen mundet klientët me rezervu",
+    "noMinimum": "Pa minimum",
+    "oneHour": "1 orë",
+    "twoHours": "2 orë",
+    "oneDay": "1 ditë",
+    "oneWeek": "1 javë",
+    "twoWeeks": "2 javë",
+    "oneMonth": "1 muaj",
+    "threeMonths": "3 muaj"
   }
 }

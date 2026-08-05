@@ -16,6 +16,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Asset, requestPermissionsAsync } from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
 import QRCode from 'react-native-qrcode-svg';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../theme';
 import { Light } from '../theme/light';
 
@@ -29,6 +30,7 @@ interface ShareProfileSheetProps {
 }
 
 export function ShareProfileSheet({ visible, onClose, businessName, profileUrl }: ShareProfileSheetProps) {
+  const { t } = useTranslation();
   const qrRef = useRef<View>(null);
   const [copyConfirmed, setCopyConfirmed] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -43,8 +45,8 @@ export function ShareProfileSheet({ visible, onClose, businessName, profileUrl }
     try {
       await Share.share(
         Platform.OS === 'ios'
-          ? { message: `Book with ${businessName} on Rezervo`, url: profileUrl }
-          : { message: `Book with ${businessName} on Rezervo: ${profileUrl}` },
+          ? { message: t('shareProfile.bookWithMessage', { businessName }), url: profileUrl }
+          : { message: `${t('shareProfile.bookWithMessage', { businessName })}: ${profileUrl}` },
       );
     } catch {
       // Share sheet dismissed or unavailable — nothing to recover from.
@@ -57,14 +59,14 @@ export function ShareProfileSheet({ visible, onClose, businessName, profileUrl }
     try {
       const permission = await requestPermissionsAsync(true);
       if (!permission.granted) {
-        Alert.alert('Permission needed', 'Allow photo access to save the QR code.');
+        Alert.alert(t('shareProfile.permissionNeededTitle'), t('shareProfile.permissionNeededMessage'));
         return;
       }
       const uri = await captureRef(qrRef, { format: 'png', quality: 1 });
       await Asset.create(uri);
-      Alert.alert('Saved', 'QR code saved to your photos.');
+      Alert.alert(t('shareProfile.savedTitle'), t('shareProfile.savedMessage'));
     } catch {
-      Alert.alert('Error', 'Could not save the QR code. Please try again.');
+      Alert.alert(t('common.error'), t('shareProfile.saveError'));
     } finally {
       setSaving(false);
     }
@@ -76,7 +78,7 @@ export function ShareProfileSheet({ visible, onClose, businessName, profileUrl }
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <Pressable style={styles.sheet} onPress={() => {}}>
           <View style={styles.header}>
-            <Text style={styles.title}>Share Profile</Text>
+            <Text style={styles.title}>{t('profile.shareProfile')}</Text>
             <TouchableOpacity onPress={onClose} hitSlop={12}>
               <Ionicons name="close" size={22} color={Light.textPrimary} />
             </TouchableOpacity>
@@ -92,19 +94,19 @@ export function ShareProfileSheet({ visible, onClose, businessName, profileUrl }
           <View style={styles.actionsRow}>
             <TouchableOpacity style={styles.actionButton} activeOpacity={0.8} onPress={handleCopyLink}>
               <Ionicons name={copyConfirmed ? 'checkmark' : 'copy-outline'} size={18} color={Colors.teal} />
-              <Text style={styles.actionLabel}>{copyConfirmed ? 'Link copied!' : 'Copy Link'}</Text>
+              <Text style={styles.actionLabel}>{copyConfirmed ? t('shareProfile.linkCopied') : t('shareProfile.copyLink')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionButton} activeOpacity={0.8} onPress={handleShareLink}>
               <Ionicons name="share-social-outline" size={18} color={Colors.teal} />
-              <Text style={styles.actionLabel}>Share Link</Text>
+              <Text style={styles.actionLabel}>{t('shareProfile.shareLink')}</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.qrWrap}>
             <View ref={qrRef} collapsable={false} style={styles.qrCard}>
               <QRCode value={profileUrl} size={QR_SIZE} backgroundColor={Colors.white} color={Light.textPrimary} />
-              <Text style={styles.qrCaption}>Scan to book</Text>
+              <Text style={styles.qrCaption}>{t('shareProfile.scanToBook')}</Text>
             </View>
           </View>
 
@@ -119,7 +121,7 @@ export function ShareProfileSheet({ visible, onClose, businessName, profileUrl }
             ) : (
               <>
                 <Ionicons name="download-outline" size={18} color={Colors.white} />
-                <Text style={styles.saveButtonLabel}>Save QR Code</Text>
+                <Text style={styles.saveButtonLabel}>{t('shareProfile.saveQrCode')}</Text>
               </>
             )}
           </TouchableOpacity>

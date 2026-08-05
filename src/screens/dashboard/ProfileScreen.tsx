@@ -22,6 +22,7 @@ import Svg, { Defs, LinearGradient as SvgLinearGradient, Stop, Rect } from 'reac
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import {
   addPortfolioImage,
@@ -44,6 +45,7 @@ const TILE_SIZE =
   (Dimensions.get('window').width - Spacing.xl * 2 - GRID_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
   const uid = auth.currentUser?.uid;
@@ -74,7 +76,7 @@ export default function ProfileScreen() {
       save: saveBusinessCoverPhoto,
       setUploading: setUploadingCover,
       errorLabel: 'uploadCover',
-      errorMessage: 'Could not upload cover photo. Please try again.',
+      errorMessage: t('profile.uploadCoverError'),
       onSuccess: invalidateBusiness,
     });
   };
@@ -88,7 +90,7 @@ export default function ProfileScreen() {
       save: saveBusinessPhoto,
       setUploading: setUploadingAvatar,
       errorLabel: 'uploadAvatar',
-      errorMessage: 'Could not upload profile photo. Please try again.',
+      errorMessage: t('profile.uploadAvatarError'),
       onSuccess: invalidateBusiness,
     });
   };
@@ -102,16 +104,16 @@ export default function ProfileScreen() {
       save: addPortfolioImage,
       setUploading: setUploadingPortfolio,
       errorLabel: 'addPortfolioPhoto',
-      errorMessage: 'Could not upload photo. Please try again.',
+      errorMessage: t('profile.uploadPortfolioError'),
       onSuccess: invalidateBusiness,
     });
   };
 
   const handleRemovePortfolioPhoto = (url: string) => {
-    Alert.alert('Remove photo', 'Remove this photo from your portfolio?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('profile.removePhotoTitle'), t('profile.removePhotoMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Remove',
+        text: t('profile.remove'),
         style: 'destructive',
         onPress: async () => {
           if (!uid) return;
@@ -119,7 +121,7 @@ export default function ProfileScreen() {
             await removePortfolioImage(uid, url);
             invalidateBusiness();
           } catch {
-            Alert.alert('Error', 'Could not remove photo. Please try again.');
+            Alert.alert(t('common.error'), t('profile.removePhotoError'));
           }
         },
       },
@@ -142,7 +144,7 @@ export default function ProfileScreen() {
       invalidateBusiness();
       closeInstagramModal();
     } catch {
-      Alert.alert('Error', 'Could not save Instagram handle. Please try again.');
+      Alert.alert(t('common.error'), t('profile.saveInstagramError'));
     }
   };
 
@@ -153,7 +155,7 @@ export default function ProfileScreen() {
   };
 
   const handleComingSoon = (label: string) => {
-    Alert.alert('Coming soon', `${label} is not built yet.`);
+    Alert.alert(t('common.comingSoon'), t('marketing.notBuiltYet', { title: label }));
   };
 
   const handleStubNav = (title: string, icon: keyof typeof Ionicons.glyphMap) => {
@@ -183,7 +185,7 @@ export default function ProfileScreen() {
             ) : (
               <>
                 <Ionicons name="camera-outline" size={15} color={Colors.white} />
-                <Text style={styles.addCoverLabel}>Add Cover</Text>
+                <Text style={styles.addCoverLabel}>{t('profile.addCover')}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -192,7 +194,7 @@ export default function ProfileScreen() {
             <TouchableOpacity
               style={styles.coverIconButton}
               activeOpacity={0.85}
-              onPress={() => handleStubNav('Public Profile Preview', 'eye-outline')}
+              onPress={() => handleStubNav(t('profile.publicProfilePreview'), 'eye-outline')}
             >
               <Ionicons name="eye-outline" size={18} color={Colors.white} />
             </TouchableOpacity>
@@ -202,7 +204,7 @@ export default function ProfileScreen() {
               onPress={() => setShowShareModal(true)}
             >
               <Ionicons name="qr-code-outline" size={15} color={Colors.white} />
-              <Text style={styles.shareButtonLabel}>Share Profile</Text>
+              <Text style={styles.shareButtonLabel}>{t('profile.shareProfile')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -236,7 +238,7 @@ export default function ProfileScreen() {
           </View>
 
           <Text style={styles.businessName} numberOfLines={1}>
-            {business?.businessName ?? 'Your Business'}
+            {business?.businessName ?? t('importInvite.defaultBusinessName')}
           </Text>
 
           {business?.instagramHandle ? (
@@ -247,19 +249,19 @@ export default function ProfileScreen() {
           ) : (
             <TouchableOpacity style={styles.addInstagramChip} activeOpacity={0.7} onPress={openInstagramModal}>
               <Ionicons name="add" size={16} color={Colors.teal} />
-              <Text style={styles.addInstagramLabel}>Add Instagram</Text>
+              <Text style={styles.addInstagramLabel}>{t('profile.addInstagram')}</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity
             style={styles.progressCard}
             activeOpacity={0.8}
-            onPress={() => handleStubNav('Completion Checklist', 'checkmark-circle-outline')}
+            onPress={() => handleStubNav(t('profile.completionChecklist'), 'checkmark-circle-outline')}
           >
             <View style={styles.progressCardTop}>
               <View>
-                <Text style={styles.progressLevel}>Novice</Text>
-                <Text style={styles.progressLabel}>0 of 5 completed</Text>
+                <Text style={styles.progressLevel}>{t('profile.novice')}</Text>
+                <Text style={styles.progressLabel}>{t('profile.completedCount', { done: 0, total: 5 })}</Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
             </View>
@@ -276,9 +278,9 @@ export default function ProfileScreen() {
             <Ionicons name="bar-chart-outline" size={20} color={Colors.teal} />
           </View>
           <View style={styles.rowCardBody}>
-            <Text style={styles.rowCardTitle}>Stats & Reports</Text>
+            <Text style={styles.rowCardTitle}>{t('profile.statsAndReports')}</Text>
             <Text style={styles.rowCardDescription}>
-              Important insights about your business and staff members
+              {t('profile.statsAndReportsDescription')}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
@@ -287,14 +289,14 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={styles.rowCard}
           activeOpacity={0.7}
-          onPress={() => handleComingSoon('Social Media Marketing')}
+          onPress={() => handleComingSoon(t('marketing.cards.social.title'))}
         >
           <View style={styles.rowCardIconWrap}>
             <Ionicons name="share-social-outline" size={20} color={Colors.teal} />
           </View>
           <View style={styles.rowCardBody}>
-            <Text style={styles.rowCardTitle}>Create a Social Post</Text>
-            <Text style={styles.rowCardDescription}>Design and share it to promote your business</Text>
+            <Text style={styles.rowCardTitle}>{t('profile.createSocialPost')}</Text>
+            <Text style={styles.rowCardDescription}>{t('profile.createSocialPostDescription')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
         </TouchableOpacity>
@@ -312,16 +314,16 @@ export default function ProfileScreen() {
 
           <View style={styles.bannerContent}>
             <View style={styles.bannerText}>
-              <Text style={styles.bannerHeadline}>Refer a business, earn rewards</Text>
+              <Text style={styles.bannerHeadline}>{t('profile.referralHeadline')}</Text>
               <Text style={styles.bannerSubtext}>
-                Invite other business owners to Rezervo and get rewarded when they join.
+                {t('profile.referralSubtext')}
               </Text>
               <TouchableOpacity
                 style={styles.bannerButton}
                 activeOpacity={0.85}
-                onPress={() => handleComingSoon('Share your link')}
+                onPress={() => handleComingSoon(t('profile.shareYourLink'))}
               >
-                <Text style={styles.bannerButtonLabel}>Share your link →</Text>
+                <Text style={styles.bannerButtonLabel}>{t('profile.shareYourLinkArrow')}</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.bannerIconWrap}>
@@ -336,11 +338,11 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate('BusinessSettings')}
         >
           <Ionicons name="settings-outline" size={18} color={Colors.teal} />
-          <Text style={styles.settingsPillLabel}>Settings</Text>
+          <Text style={styles.settingsPillLabel}>{t('profile.settings')}</Text>
         </TouchableOpacity>
 
         <View style={styles.portfolioSection}>
-          <Text style={styles.sectionTitle}>Portfolio</Text>
+          <Text style={styles.sectionTitle}>{t('profile.portfolio')}</Text>
 
           <View style={styles.portfolioGrid}>
             <TouchableOpacity
@@ -372,8 +374,7 @@ export default function ProfileScreen() {
 
           {portfolio.length === 0 && (
             <Text style={styles.portfolioEmptyText}>
-              Show off your best work — add photos of your space, your team, or finished results to
-              attract new clients.
+              {t('profile.portfolioEmptyText')}
             </Text>
           )}
         </View>
@@ -387,7 +388,7 @@ export default function ProfileScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={closeInstagramModal} />
           <Pressable style={styles.modalSheet} onPress={() => {}}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Instagram</Text>
+              <Text style={styles.modalTitle}>{t('profile.addInstagram')}</Text>
               <TouchableOpacity onPress={closeInstagramModal} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -407,7 +408,7 @@ export default function ProfileScreen() {
               />
             </View>
 
-            <Button label="Save" onPress={handleSaveInstagram} style={styles.instagramSaveButton} />
+            <Button label={t('common.save')} onPress={handleSaveInstagram} style={styles.instagramSaveButton} />
           </Pressable>
         </KeyboardAvoidingView>
       </Modal>
@@ -415,7 +416,7 @@ export default function ProfileScreen() {
       <ShareProfileSheet
         visible={showShareModal}
         onClose={() => setShowShareModal(false)}
-        businessName={business?.businessName ?? 'Your Business'}
+        businessName={business?.businessName ?? t('importInvite.defaultBusinessName')}
         profileUrl={profileUrl}
       />
     </SafeAreaView>

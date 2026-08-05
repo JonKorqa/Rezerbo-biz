@@ -29,7 +29,7 @@ import {
 import { uploadBusinessImage } from '../../services/imageUpload';
 import { Button, FormInput } from '../../components/ui';
 import { BUSINESS_CATEGORIES, getCategoryLabel, type BusinessCategory } from '../../constants/categories';
-import { AMENITIES } from '../../constants/amenities';
+import { AMENITIES, getAmenityLabel } from '../../constants/amenities';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -73,6 +73,7 @@ function CategoryTile({
 }
 
 export default function BusinessDetailsScreen({ navigation }: Props) {
+  const { t, i18n } = useTranslation();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
 
@@ -162,7 +163,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const handleSaveInfo = async () => {
     if (!uid) return;
     if (!businessName.trim() || !phone.trim()) {
-      Alert.alert('Missing info', 'Business name and phone number are required.');
+      Alert.alert(t('businessDetails.missingInfoTitle'), t('businessDetails.missingInfoMessage'));
       return;
     }
     setSavingSection('info');
@@ -175,7 +176,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       invalidateBusiness();
     } catch (err) {
       console.error('saveBusinessInfo (BusinessDetails) failed:', err);
-      Alert.alert('Error', 'Could not save business info. Please try again.');
+      Alert.alert(t('common.error'), t('businessDetails.saveInfoError'));
     } finally {
       setSavingSection(null);
     }
@@ -193,7 +194,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
     if (!uid) return;
     const normalizedWebsite = normalizeUrl(websiteUrl);
     if (normalizedWebsite && !isValidUrl(normalizedWebsite)) {
-      setWebsiteError('Enter a valid website URL.');
+      setWebsiteError(t('businessDetails.invalidWebsiteUrl'));
       return;
     }
     setWebsiteError(null);
@@ -209,7 +210,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       invalidateBusiness();
     } catch (err) {
       console.error('saveSocialLinks failed:', err);
-      Alert.alert('Error', 'Could not save social media links. Please try again.');
+      Alert.alert(t('common.error'), t('businessDetails.saveSocialError'));
     } finally {
       setSavingSection(null);
     }
@@ -224,7 +225,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       save: saveBusinessPhoto,
       setUploading: setUploadingAvatar,
       errorLabel: 'uploadAvatar',
-      errorMessage: 'Could not upload logo. Please try again.',
+      errorMessage: t('businessDetails.uploadLogoError'),
       onSuccess: invalidateBusiness,
     });
   };
@@ -238,7 +239,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       save: saveBusinessCoverPhoto,
       setUploading: setUploadingCover,
       errorLabel: 'uploadCover',
-      errorMessage: 'Could not upload cover photo. Please try again.',
+      errorMessage: t('profile.uploadCoverError'),
       onSuccess: invalidateBusiness,
     });
   };
@@ -256,7 +257,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       invalidateBusiness();
     } catch (err) {
       console.error('saveMobileServices failed:', err);
-      Alert.alert('Error', 'Could not save mobile services settings. Please try again.');
+      Alert.alert(t('common.error'), t('businessDetails.saveMobileServicesError'));
     } finally {
       setSavingSection(null);
     }
@@ -264,7 +265,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
   const locationSummary = business?.location?.address
     ? [business.location.address, business.location.unit].filter(Boolean).join(', ')
-    : 'No location set yet';
+    : t('businessDetails.noLocationSet');
 
   const toggleInArray = (list: string[], key: string): string[] =>
     list.includes(key) ? list.filter((item) => item !== key) : [...list, key];
@@ -277,7 +278,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       invalidateBusiness();
     } catch (err) {
       console.error('saveAmenities failed:', err);
-      Alert.alert('Error', 'Could not save amenities. Please try again.');
+      Alert.alert(t('common.error'), t('businessDetails.saveAmenitiesError'));
     } finally {
       setSavingSection(null);
     }
@@ -286,7 +287,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const handleSaveCategories = async () => {
     if (!uid) return;
     if (categories.length === 0) {
-      Alert.alert('Pick at least one category', 'Choose the categories that best describe your business.');
+      Alert.alert(t('businessDetails.pickCategoryTitle'), t('businessDetails.pickCategoryMessage'));
       return;
     }
     setSavingSection('categories');
@@ -295,7 +296,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       invalidateBusiness();
     } catch (err) {
       console.error('saveBusinessCategories failed:', err);
-      Alert.alert('Error', 'Could not save categories. Please try again.');
+      Alert.alert(t('common.error'), t('businessDetails.saveCategoriesError'));
     } finally {
       setSavingSection(null);
     }
@@ -318,7 +319,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
       invalidateBusiness();
     } catch (err) {
       console.error('savePolicies failed:', err);
-      Alert.alert('Error', 'Could not save policies. Please try again.');
+      Alert.alert(t('common.error'), t('businessDetails.savePoliciesError'));
     } finally {
       setSavingSection(null);
     }
@@ -330,7 +331,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={10}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Business Details</Text>
+        <Text style={styles.headerTitle}>{t('businessDetails.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -338,17 +339,17 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           {/* Section 1 — Business Info */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Business Info</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.businessInfo')}</Text>
 
             <FormInput
-              label="Business name"
+              label={t('businessDetails.businessName')}
               icon="storefront-outline"
-              placeholder="e.g. Glow Studio"
+              placeholder={t('onboarding.businessInfo.businessName.placeholder')}
               value={businessName}
               onChangeText={setBusinessName}
             />
             <FormInput
-              label="Business phone number"
+              label={t('businessDetails.businessPhone')}
               icon="call-outline"
               placeholder="e.g. +383 44 123 456"
               keyboardType="phone-pad"
@@ -357,7 +358,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             />
 
             <View>
-              <Text style={styles.label}>Owner email</Text>
+              <Text style={styles.label}>{t('businessDetails.ownerEmail')}</Text>
               <View style={styles.readOnlyField}>
                 <Ionicons name="mail-outline" size={18} color={Light.textMuted} />
                 <Text style={styles.readOnlyText}>{auth.currentUser?.email ?? '—'}</Text>
@@ -365,23 +366,23 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
 
             <View>
-              <Text style={styles.label}>Link to your public profile</Text>
+              <Text style={styles.label}>{t('businessDetails.publicProfileLink')}</Text>
               <View style={styles.shareLinkRow}>
                 <Text style={styles.shareLinkText} numberOfLines={1}>
                   {profileUrl}
                 </Text>
                 <TouchableOpacity style={styles.copyButton} activeOpacity={0.8} onPress={handleCopyLink}>
                   <Ionicons name={copyConfirmed ? 'checkmark' : 'copy-outline'} size={16} color={Colors.teal} />
-                  <Text style={styles.copyButtonLabel}>{copyConfirmed ? 'Copied' : 'Copy'}</Text>
+                  <Text style={styles.copyButtonLabel}>{copyConfirmed ? t('businessDetails.copied') : t('businessDetails.copy')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
             <View>
-              <Text style={styles.label}>Short description</Text>
+              <Text style={styles.label}>{t('businessDetails.shortDescription')}</Text>
               <TextInput
                 style={styles.textArea}
-                placeholder="Tell clients what makes your business special…"
+                placeholder={t('businessDetails.shortDescriptionPlaceholder')}
                 placeholderTextColor={Light.textMuted}
                 value={bio}
                 onChangeText={setBio}
@@ -391,7 +392,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
 
             <Button
-              label="Save"
+              label={t('common.save')}
               onPress={handleSaveInfo}
               loading={savingSection === 'info'}
               style={styles.sectionSaveButton}
@@ -400,10 +401,10 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
           {/* Section 2 — Social Media */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Social Media</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.socialMedia')}</Text>
 
             <FormInput
-              label="Instagram handle"
+              label={t('businessDetails.instagramHandle')}
               icon="logo-instagram"
               placeholder="yourbusiness"
               autoCapitalize="none"
@@ -412,7 +413,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               onChangeText={setInstagramHandle}
             />
             <FormInput
-              label="Facebook page URL or handle"
+              label={t('businessDetails.facebookUrl')}
               icon="logo-facebook"
               placeholder="e.g. facebook.com/yourbusiness"
               autoCapitalize="none"
@@ -421,7 +422,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               onChangeText={setFacebookUrl}
             />
             <FormInput
-              label="Website URL"
+              label={t('businessDetails.websiteUrl')}
               icon="globe-outline"
               placeholder="e.g. www.yourbusiness.com"
               autoCapitalize="none"
@@ -435,7 +436,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               error={websiteError ?? undefined}
             />
             <FormInput
-              label="Online shop URL"
+              label={t('businessDetails.onlineShopUrl')}
               icon="bag-outline"
               placeholder="e.g. shop.yourbusiness.com"
               autoCapitalize="none"
@@ -445,7 +446,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             />
 
             <Button
-              label="Save"
+              label={t('common.save')}
               onPress={handleSaveSocial}
               loading={savingSection === 'social'}
               style={styles.sectionSaveButton}
@@ -454,7 +455,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
           {/* Section 3 — Profile Images */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Profile Images</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.profileImages')}</Text>
 
             <View style={styles.imagesRow}>
               <TouchableOpacity
@@ -477,7 +478,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
                     <Ionicons name="camera" size={12} color={Colors.white} />
                   )}
                 </View>
-                <Text style={styles.imagePickerLabel}>Logo</Text>
+                <Text style={styles.imagePickerLabel}>{t('businessDetails.logo')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -500,7 +501,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
                     <Ionicons name="camera" size={12} color={Colors.white} />
                   )}
                 </View>
-                <Text style={styles.imagePickerLabel}>Cover Photo</Text>
+                <Text style={styles.imagePickerLabel}>{t('businessDetails.coverPhoto')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -513,11 +514,11 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
                 <Ionicons name="images-outline" size={20} color={Colors.teal} />
               </View>
               <View style={styles.linkRowBody}>
-                <Text style={styles.linkRowTitle}>Workplace Photos</Text>
+                <Text style={styles.linkRowTitle}>{t('businessDetails.workplacePhotos')}</Text>
                 <Text style={styles.linkRowDescription}>
                   {portfolioCount > 0
-                    ? `${portfolioCount} photo${portfolioCount === 1 ? '' : 's'} in your portfolio`
-                    : 'Add photos of your space, team, or results'}
+                    ? t('businessDetails.photosInPortfolio', { count: portfolioCount })
+                    : t('businessDetails.addPhotosPrompt')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
@@ -526,14 +527,14 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
           {/* Section 4 — Location & Mobile Services */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Location & Mobile Services</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.locationAndMobile')}</Text>
 
             <View style={styles.linkRow}>
               <View style={styles.linkRowIconWrap}>
                 <Ionicons name="location-outline" size={20} color={Colors.teal} />
               </View>
               <View style={styles.linkRowBody}>
-                <Text style={styles.linkRowTitle}>Business Address</Text>
+                <Text style={styles.linkRowTitle}>{t('businessDetails.businessAddress')}</Text>
                 <Text style={styles.linkRowDescription} numberOfLines={2}>
                   {locationSummary}
                 </Text>
@@ -543,15 +544,15 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
                 activeOpacity={0.8}
                 onPress={() => navigation.navigate('BusinessLocation')}
               >
-                <Text style={styles.editChipLabel}>Edit</Text>
+                <Text style={styles.editChipLabel}>{t('common.edit')}</Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.toggleRow}>
               <View style={styles.toggleRowBody}>
-                <Text style={styles.toggleRowTitle}>I also offer mobile services</Text>
+                <Text style={styles.toggleRowTitle}>{t('businessDetails.offersMobileServices')}</Text>
                 <Text style={styles.toggleRowDescription}>
-                  Let clients know you can come to them
+                  {t('businessDetails.offersMobileServicesDescription')}
                 </Text>
               </View>
               <Switch
@@ -564,10 +565,10 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
             {offersMobileServices && (
               <View>
-                <Text style={styles.label}>Service area</Text>
+                <Text style={styles.label}>{t('businessDetails.serviceArea')}</Text>
                 <TextInput
                   style={styles.textArea}
-                  placeholder="e.g. I travel within 15km of Prishtina"
+                  placeholder={t('businessDetails.serviceAreaPlaceholder')}
                   placeholderTextColor={Light.textMuted}
                   value={mobileServiceArea}
                   onChangeText={setMobileServiceArea}
@@ -578,7 +579,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             )}
 
             <Button
-              label="Save"
+              label={t('common.save')}
               onPress={handleSaveMobileServices}
               loading={savingSection === 'location'}
               style={styles.sectionSaveButton}
@@ -587,8 +588,8 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
           {/* Section 5 — Amenities */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Amenities</Text>
-            <Text style={styles.sectionSubtitle}>Let clients know what to expect at your business.</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.amenities')}</Text>
+            <Text style={styles.sectionSubtitle}>{t('businessDetails.amenitiesSubtitle')}</Text>
 
             {AMENITIES.map((amenity) => {
               const enabled = amenities.includes(amenity.key);
@@ -597,7 +598,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
                   <View style={styles.amenityIconWrap}>
                     <Ionicons name={amenity.icon} size={18} color={Colors.teal} />
                   </View>
-                  <Text style={styles.amenityLabel}>{amenity.label}</Text>
+                  <Text style={styles.amenityLabel}>{getAmenityLabel(amenity, i18n.language)}</Text>
                   <Switch
                     value={enabled}
                     onValueChange={() => setAmenities((prev) => toggleInArray(prev, amenity.key))}
@@ -609,7 +610,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             })}
 
             <Button
-              label="Save"
+              label={t('common.save')}
               onPress={handleSaveAmenities}
               loading={savingSection === 'amenities'}
               style={styles.sectionSaveButton}
@@ -618,8 +619,8 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
           {/* Section 6 — Business Category */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Business Category</Text>
-            <Text style={styles.sectionSubtitle}>Select all categories that apply to your business.</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.businessCategory')}</Text>
+            <Text style={styles.sectionSubtitle}>{t('businessDetails.businessCategorySubtitle')}</Text>
 
             <View style={styles.categoryGrid}>
               {BUSINESS_CATEGORIES.map((category) => (
@@ -633,7 +634,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
 
             <Button
-              label="Save"
+              label={t('common.save')}
               onPress={handleSaveCategories}
               loading={savingSection === 'categories'}
               style={styles.sectionSaveButton}
@@ -642,13 +643,13 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
           {/* Section 7 — Policies & Safety */}
           <View style={[styles.section, styles.lastSection]}>
-            <Text style={styles.sectionTitle}>Policies & Safety</Text>
+            <Text style={styles.sectionTitle}>{t('businessDetails.policiesAndSafety')}</Text>
 
             <View>
-              <Text style={styles.label}>Cancellation policy</Text>
+              <Text style={styles.label}>{t('businessDetails.cancellationPolicy')}</Text>
               <TextInput
                 style={styles.textArea}
-                placeholder="e.g. Cancel or reschedule at least 24 hours in advance"
+                placeholder={t('businessDetails.cancellationPolicyPlaceholder')}
                 placeholderTextColor={Light.textMuted}
                 value={cancellationPolicy}
                 onChangeText={setCancellationPolicy}
@@ -659,7 +660,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
             <View style={styles.toggleRow}>
               <View style={styles.toggleRowBody}>
-                <Text style={styles.toggleRowTitle}>No waiting area</Text>
+                <Text style={styles.toggleRowTitle}>{t('businessDetails.noWaitingArea')}</Text>
               </View>
               <Switch
                 value={noWaitingArea}
@@ -670,7 +671,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
             {noWaitingArea && (
               <FormInput
-                placeholder="Optional note for clients"
+                placeholder={t('businessDetails.optionalNotePlaceholder')}
                 value={noWaitingAreaNote}
                 onChangeText={setNoWaitingAreaNote}
               />
@@ -678,7 +679,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
 
             <View style={styles.toggleRow}>
               <View style={styles.toggleRowBody}>
-                <Text style={styles.toggleRowTitle}>No outside guests</Text>
+                <Text style={styles.toggleRowTitle}>{t('businessDetails.noOutsideGuests')}</Text>
               </View>
               <Switch
                 value={noOutsideGuests}
@@ -689,17 +690,17 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
             {noOutsideGuests && (
               <FormInput
-                placeholder="Optional note for clients"
+                placeholder={t('businessDetails.optionalNotePlaceholder')}
                 value={noOutsideGuestsNote}
                 onChangeText={setNoOutsideGuestsNote}
               />
             )}
 
             <View>
-              <Text style={styles.label}>Health & safety rules</Text>
+              <Text style={styles.label}>{t('businessDetails.healthSafetyRules')}</Text>
               <TextInput
                 style={styles.textArea}
-                placeholder="e.g. Masks optional, please arrive on time"
+                placeholder={t('businessDetails.healthSafetyRulesPlaceholder')}
                 placeholderTextColor={Light.textMuted}
                 value={healthSafetyRules}
                 onChangeText={setHealthSafetyRules}
@@ -709,10 +710,10 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
 
             <View>
-              <Text style={styles.label}>Additional details</Text>
+              <Text style={styles.label}>{t('businessDetails.additionalDetails')}</Text>
               <TextInput
                 style={styles.textArea}
-                placeholder="Anything else clients should know before booking"
+                placeholder={t('businessDetails.additionalDetailsPlaceholder')}
                 placeholderTextColor={Light.textMuted}
                 value={additionalDetails}
                 onChangeText={setAdditionalDetails}
@@ -722,7 +723,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
             </View>
 
             <Button
-              label="Save"
+              label={t('common.save')}
               onPress={handleSavePolicies}
               loading={savingSection === 'policies'}
               style={styles.sectionSaveButton}

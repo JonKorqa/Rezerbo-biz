@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { signOut, deleteUser } from 'firebase/auth';
 import Constants from 'expo-constants';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { deleteBusinessAccount } from '../../services/businesses';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -16,8 +17,8 @@ import type { RootStackParamList } from '../../types/navigation';
 interface SettingsRowConfig {
   key: string;
   icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   badge?: 'new' | 'dot';
 }
 
@@ -25,94 +26,93 @@ const SETTINGS_ROWS: SettingsRowConfig[] = [
   {
     key: 'loyalty',
     icon: 'gift-outline',
-    title: 'Loyalty Cards Program',
-    description: 'Create stamp cards for clients and track their rewards',
+    titleKey: 'businessSettings.rows.loyalty.title',
+    descriptionKey: 'businessSettings.rows.loyalty.description',
     badge: 'new',
   },
   {
     key: 'payments',
     icon: 'card-outline',
-    title: 'Payments & Checkout',
-    description: 'All payment settings in one place',
+    titleKey: 'businessSettings.rows.payments.title',
+    descriptionKey: 'businessSettings.rows.payments.description',
   },
   {
     key: 'services',
     icon: 'cut-outline',
-    title: 'Services Setup',
-    description: 'Add service details, adjust settings, and categorize them for easy discovery',
+    titleKey: 'businessSettings.rows.services.title',
+    descriptionKey: 'businessSettings.rows.services.description',
   },
   {
     key: 'schedule',
     icon: 'time-outline',
-    title: 'Schedule Management',
-    description:
-      'Edit your opening hours and business hours, manage time-off, and schedule working hours for staff members',
+    titleKey: 'businessSettings.rows.schedule.title',
+    descriptionKey: 'businessSettings.rows.schedule.description',
   },
   {
     key: 'staff',
     icon: 'people-outline',
-    title: 'Staff Management',
-    description: 'Add new staff members, edit permissions, and adjust team details.',
+    titleKey: 'businessSettings.rows.staff.title',
+    descriptionKey: 'businessSettings.rows.staff.description',
   },
   {
     key: 'gift-cards',
     icon: 'pricetags-outline',
-    title: 'Gift Cards',
-    description: 'Allow your customers to buy gift cards and share your talent with their friends.',
+    titleKey: 'businessSettings.rows.giftCards.title',
+    descriptionKey: 'businessSettings.rows.giftCards.description',
   },
   {
     key: 'memberships',
     icon: 'ribbon-outline',
-    title: 'Memberships',
-    description: 'Use memberships to offer unlimited visits for specific services',
+    titleKey: 'businessSettings.rows.memberships.title',
+    descriptionKey: 'businessSettings.rows.memberships.description',
   },
   {
     key: 'packages',
     icon: 'cube-outline',
-    title: 'Packages',
-    description: 'Encourage repeat visits or combine multiple services into a single experience',
+    titleKey: 'businessSettings.rows.packages.title',
+    descriptionKey: 'businessSettings.rows.packages.description',
   },
   {
     key: 'business-details',
     icon: 'storefront-outline',
-    title: 'Business Details',
-    description: 'Edit business information, adjust location settings, and add your policies and safety rules',
+    titleKey: 'businessSettings.rows.businessDetails.title',
+    descriptionKey: 'businessSettings.rows.businessDetails.description',
   },
   {
     key: 'online-booking',
     icon: 'globe-outline',
-    title: 'Online Booking',
-    description: "Decide which online booking options you'd like to make available for your clients",
+    titleKey: 'businessSettings.rows.onlineBooking.title',
+    descriptionKey: 'businessSettings.rows.onlineBooking.description',
   },
   {
     key: 'advanced',
     icon: 'options-outline',
-    title: 'Advanced Options',
-    description: 'Access your Booking Settings and adjust retail information',
+    titleKey: 'businessSettings.rows.advanced.title',
+    descriptionKey: 'businessSettings.rows.advanced.description',
   },
   {
     key: 'personal',
     icon: 'person-circle-outline',
-    title: 'Personal Settings',
-    description:
-      'Modify your language, set your notification preferences, and switch business profiles (if applicable)',
+    titleKey: 'businessSettings.rows.personal.title',
+    descriptionKey: 'businessSettings.rows.personal.description',
   },
   {
     key: 'subscription',
     icon: 'wallet-outline',
-    title: 'Subscription & Billing',
-    description: 'Manage your Rezervo subscription, view statements, and your payment method',
+    titleKey: 'businessSettings.rows.subscription.title',
+    descriptionKey: 'businessSettings.rows.subscription.description',
   },
   {
     key: 'app',
     icon: 'apps-outline',
-    title: 'App',
-    description: "Access to Rezervo's Terms & Conditions and Privacy Policy",
+    titleKey: 'businessSettings.rows.app.title',
+    descriptionKey: 'businessSettings.rows.app.description',
     badge: 'dot',
   },
 ];
 
 export default function BusinessSettingsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
@@ -146,7 +146,7 @@ export default function BusinessSettingsScreen() {
     } else if (row.key === 'app') {
       navigation.navigate('AppInfo');
     } else {
-      navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
+      navigation.navigate('SettingsPlaceholder', { title: t(row.titleKey), icon: row.icon });
     }
   };
 
@@ -155,10 +155,10 @@ export default function BusinessSettingsScreen() {
   };
 
   const handleLogOut = () => {
-    Alert.alert('Log Out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('businessSettings.logOutTitle'), t('businessSettings.logOutMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Log Out',
+        text: t('businessSettings.logOut'),
         style: 'destructive',
         onPress: async () => {
           try {
@@ -167,7 +167,7 @@ export default function BusinessSettingsScreen() {
             goToAuth();
           } catch (err) {
             console.error('signOut failed:', err);
-            Alert.alert('Error', 'Failed to log out. Please try again.');
+            Alert.alert(t('common.error'), t('businessSettings.logOutError'));
           }
         },
       },
@@ -176,11 +176,11 @@ export default function BusinessSettingsScreen() {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Delete Account',
-      'This permanently deletes your business account, including all clients, services, and appointments. This cannot be undone.',
+      t('businessSettings.deleteAccountTitle'),
+      t('businessSettings.deleteAccountMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: confirmDeleteAccount },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.delete'), style: 'destructive', onPress: confirmDeleteAccount },
       ],
     );
   };
@@ -198,12 +198,12 @@ export default function BusinessSettingsScreen() {
       setDeleting(false);
       if (err?.code === 'auth/requires-recent-login') {
         Alert.alert(
-          'Please log in again',
-          'For your security, log out and log back in before deleting your account.',
+          t('businessSettings.reloginTitle'),
+          t('businessSettings.reloginMessage'),
         );
       } else {
         console.error('deleteBusinessAccount failed:', err);
-        Alert.alert('Error', 'Failed to delete account. Please try again.');
+        Alert.alert(t('common.error'), t('businessSettings.deleteAccountError'));
       }
     }
   };
@@ -214,7 +214,7 @@ export default function BusinessSettingsScreen() {
         <TouchableOpacity onPress={handleBack} hitSlop={10}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>{t('businessSettings.title')}</Text>
         <TouchableOpacity style={styles.countrySelector} activeOpacity={0.7}>
           <Text style={styles.countryFlag}>🇽🇰</Text>
           <Ionicons name="chevron-down" size={16} color={Light.textSecondary} />
@@ -225,7 +225,7 @@ export default function BusinessSettingsScreen() {
         <Ionicons name="search-outline" size={18} color={Light.textMuted} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search"
+          placeholder={t('businessSettings.search')}
           placeholderTextColor={Light.textMuted}
           value={search}
           onChangeText={setSearch}
@@ -243,15 +243,15 @@ export default function BusinessSettingsScreen() {
             </View>
             <View style={styles.rowBody}>
               <View style={styles.rowTitleLine}>
-                <Text style={styles.rowTitle}>{item.title}</Text>
+                <Text style={styles.rowTitle}>{t(item.titleKey)}</Text>
                 {item.badge === 'new' && (
                   <View style={styles.newBadge}>
-                    <Text style={styles.newBadgeLabel}>New</Text>
+                    <Text style={styles.newBadgeLabel}>{t('businessSettings.newBadge')}</Text>
                   </View>
                 )}
                 {item.badge === 'dot' && <View style={styles.dotBadge} />}
               </View>
-              <Text style={styles.rowDescription}>{item.description}</Text>
+              <Text style={styles.rowDescription}>{t(item.descriptionKey)}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
@@ -262,7 +262,7 @@ export default function BusinessSettingsScreen() {
               <View style={styles.rowIconWrap}>
                 <Ionicons name="log-out-outline" size={20} color={Light.textPrimary} />
               </View>
-              <Text style={styles.accountRowLabel}>Log Out</Text>
+              <Text style={styles.accountRowLabel}>{t('businessSettings.logOut')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -274,12 +274,12 @@ export default function BusinessSettingsScreen() {
               <View style={[styles.rowIconWrap, styles.dangerIconWrap]}>
                 <Ionicons name="trash-outline" size={20} color={Colors.error} />
               </View>
-              <Text style={[styles.accountRowLabel, styles.dangerLabel]}>Delete Account</Text>
+              <Text style={[styles.accountRowLabel, styles.dangerLabel]}>{t('businessSettings.deleteAccount')}</Text>
               {deleting && <ActivityIndicator size="small" color={Colors.error} style={{ marginLeft: 'auto' }} />}
             </TouchableOpacity>
 
             <Text style={styles.versionText}>
-              Version {Constants.expoConfig?.version ?? '1.0.0'}
+              {t('businessSettings.version', { version: Constants.expoConfig?.version ?? '1.0.0' })}
             </Text>
           </View>
         }
@@ -291,7 +291,7 @@ export default function BusinessSettingsScreen() {
         onPress={() => navigation.navigate('HelpCenter')}
       >
         <Ionicons name="help-circle-outline" size={18} color={Colors.white} />
-        <Text style={styles.helpButtonLabel}>Help Center</Text>
+        <Text style={styles.helpButtonLabel}>{t('businessSettings.helpCenter')}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
