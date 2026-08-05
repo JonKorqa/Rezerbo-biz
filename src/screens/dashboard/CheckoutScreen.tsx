@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { createTransaction } from '../../services/transactions';
 import { useClients } from '../../hooks/useClients';
@@ -42,6 +43,7 @@ function sanitizeAmountInput(text: string): string {
 }
 
 export default function CheckoutScreen() {
+  const { t } = useTranslation();
   const uid = auth.currentUser?.uid;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -76,9 +78,9 @@ export default function CheckoutScreen() {
   const handleClose = () => {
     const hasData = !!client || items.length > 0 || amount > 0;
     if (!hasData) return;
-    Alert.alert('Clear checkout?', 'This will clear the client, items, and amount.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Clear', style: 'destructive', onPress: resetForm },
+    Alert.alert(t('checkout.clearConfirmTitle'), t('checkout.clearConfirmMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('checkout.clear'), style: 'destructive', onPress: resetForm },
     ]);
   };
 
@@ -125,7 +127,7 @@ export default function CheckoutScreen() {
         <TouchableOpacity onPress={handleClose} hitSlop={12}>
           <Ionicons name="close" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Checkout</Text>
+        <Text style={styles.headerTitle}>{t('checkout.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -133,13 +135,13 @@ export default function CheckoutScreen() {
         <TouchableOpacity style={styles.clientRow} activeOpacity={0.7} onPress={() => setShowClientSheet(true)}>
           <Ionicons name="person-outline" size={18} color={Light.textSecondary} />
           <Text style={styles.clientRowLabel} numberOfLines={1}>
-            {client ? client.name : 'Select a client or leave empty for walk-in'}
+            {client ? client.name : t('newAppointment.selectClientPlaceholder')}
           </Text>
           <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
         </TouchableOpacity>
 
         <View style={styles.amountBlock}>
-          <Text style={styles.amountLabel}>AMOUNT DUE</Text>
+          <Text style={styles.amountLabel}>{t('checkout.amountDue')}</Text>
           <View style={styles.amountRow}>
             <Text style={styles.amountSign}>$</Text>
             <TextInput
@@ -156,7 +158,7 @@ export default function CheckoutScreen() {
 
         <TouchableOpacity style={styles.addItemRow} activeOpacity={0.7} onPress={() => setShowItemSheet(true)}>
           <Ionicons name="add-circle-outline" size={18} color={Colors.teal} />
-          <Text style={styles.addItemLabel}>Add Item</Text>
+          <Text style={styles.addItemLabel}>{t('checkout.addItem')}</Text>
         </TouchableOpacity>
 
         {items.length > 0 && (
@@ -178,7 +180,7 @@ export default function CheckoutScreen() {
 
       <View style={styles.bottomBar}>
         <Button
-          label={`$${amount.toFixed(2)} • CHARGE`}
+          label={`$${amount.toFixed(2)} • ${t('checkout.charge')}`}
           onPress={handleCharge}
           disabled={!canCharge}
           loading={charging}
@@ -194,7 +196,7 @@ export default function CheckoutScreen() {
         <Pressable style={styles.sheetBackdrop} onPress={() => setShowClientSheet(false)}>
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Select client</Text>
+              <Text style={styles.sheetTitle}>{t('clientPicker.title')}</Text>
               <TouchableOpacity onPress={() => setShowClientSheet(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -204,7 +206,7 @@ export default function CheckoutScreen() {
               <Ionicons name="search-outline" size={18} color={Light.textMuted} />
               <TextInput
                 style={styles.searchInput}
-                placeholder="Search by name or phone"
+                placeholder={t('clients.searchPlaceholder')}
                 placeholderTextColor={Light.textMuted}
                 value={clientSearch}
                 onChangeText={setClientSearch}
@@ -219,12 +221,12 @@ export default function CheckoutScreen() {
                 <TouchableOpacity
                   style={styles.walkInRow}
                   activeOpacity={0.7}
-                  onPress={() => selectClient({ id: null, name: 'Walk-in' })}
+                  onPress={() => selectClient({ id: null, name: t('newAppointment.walkIn') })}
                 >
                   <View style={styles.walkInIconWrap}>
                     <Ionicons name="walk-outline" size={20} color={Colors.teal} />
                   </View>
-                  <Text style={styles.walkInLabel}>Continue as walk-in</Text>
+                  <Text style={styles.walkInLabel}>{t('clientPicker.continueAsWalkIn')}</Text>
                 </TouchableOpacity>
               }
               renderItem={({ item }) => (
@@ -232,7 +234,7 @@ export default function CheckoutScreen() {
               )}
               ListEmptyComponent={
                 <View style={styles.sheetEmpty}>
-                  <Text style={styles.sheetEmptyText}>No saved clients yet.</Text>
+                  <Text style={styles.sheetEmptyText}>{t('clientPicker.noSavedClients')}</Text>
                 </View>
               }
             />
@@ -249,7 +251,7 @@ export default function CheckoutScreen() {
         <Pressable style={styles.sheetBackdrop} onPress={() => setShowItemSheet(false)}>
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Add item</Text>
+              <Text style={styles.sheetTitle}>{t('checkout.addItemSheetTitle')}</Text>
               <TouchableOpacity onPress={() => setShowItemSheet(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -281,7 +283,7 @@ export default function CheckoutScreen() {
                 ListEmptyComponent={
                   <View style={styles.sheetEmpty}>
                     <Text style={styles.sheetEmptyText}>
-                      No services set up yet. Add one from Settings → Services Setup.
+                      {t('checkout.noServices')}
                     </Text>
                   </View>
                 }

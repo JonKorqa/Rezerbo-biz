@@ -295,5 +295,50 @@
     "defaultBusinessName": "Your Business",
     "defaultRecipientName": "there",
     "emptyText": "No clients yet — import from contacts or add one manually."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "clearConfirmTitle": "Clear checkout?",
+    "clearConfirmMessage": "This will clear the client, items, and amount.",
+    "clear": "Clear",
+    "amountDue": "AMOUNT DUE",
+    "addItem": "Add Item",
+    "charge": "CHARGE",
+    "addItemSheetTitle": "Add item",
+    "noServices": "No services set up yet. Add one from Settings → Services Setup."
+  },
+  "checkoutComplete": {
+    "title": "Checkout Complete",
+    "sendReceipt": "SEND RECEIPT",
+    "receiptSentTitle": "Receipt sent",
+    "receiptSentMessage": "A receipt for ${{amount}} would be sent.",
+    "receiptSentMessageWithClient": "A receipt for ${{amount}} would be sent to {{clientName}}."
+  },
+  "paymentsAndCheckout": {
+    "title": "Payments & Checkout",
+    "acceptedMethods": "Accepted Payment Methods",
+    "cash": "Cash",
+    "card": "Card",
+    "paypal": "PayPal",
+    "active": "Active",
+    "receiptSettings": "Receipt Settings",
+    "alwaysAskReceipt": "Always ask to send receipt",
+    "alwaysAskReceiptDescription": "Prompt after every checkout, instead of only showing the option",
+    "history": "History",
+    "transactionHistory": "Transaction History",
+    "transactionHistoryDescription": "View past checkouts and revenue"
+  },
+  "servicePicker": {
+    "title": "Choose a service"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "yesterday": "Yesterday",
+    "checkoutsCount_one": "{{count}} checkout",
+    "checkoutsCount_other": "{{count}} checkouts",
+    "emptyMessage": "No transactions yet. Checkouts you complete will show up here.",
+    "noItemizedDetails": "No itemized details for this charge."
   }
 }

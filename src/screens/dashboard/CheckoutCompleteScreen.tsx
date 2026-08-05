@@ -3,17 +3,22 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import type { RootStackParamList } from '../../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CheckoutComplete'>;
 
 export default function CheckoutCompleteScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { amount, clientName } = route.params;
 
   const handleSendReceipt = () => {
     // TODO: wire up real receipt delivery (email/SMS) once available.
-    Alert.alert('Receipt sent', `A receipt for $${amount.toFixed(2)} would be sent${clientName ? ` to ${clientName}` : ''}.`);
+    const message = clientName
+      ? t('checkoutComplete.receiptSentMessageWithClient', { amount: amount.toFixed(2), clientName })
+      : t('checkoutComplete.receiptSentMessage', { amount: amount.toFixed(2) });
+    Alert.alert(t('checkoutComplete.receiptSentTitle'), message);
   };
 
   const handleBack = () => {
@@ -26,16 +31,16 @@ export default function CheckoutCompleteScreen({ navigation, route }: Props) {
         <View style={styles.checkCircle}>
           <Ionicons name="checkmark" size={64} color={Colors.success} />
         </View>
-        <Text style={styles.title}>Checkout Complete</Text>
+        <Text style={styles.title}>{t('checkoutComplete.title')}</Text>
       </View>
 
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.receiptButton} activeOpacity={0.85} onPress={handleSendReceipt}>
           <Ionicons name="mail-outline" size={18} color={Colors.white} />
-          <Text style={styles.receiptButtonLabel}>SEND RECEIPT</Text>
+          <Text style={styles.receiptButtonLabel}>{t('checkoutComplete.sendReceipt')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.backButton} activeOpacity={0.7} onPress={handleBack}>
-          <Text style={styles.backButtonLabel}>BACK</Text>
+          <Text style={styles.backButtonLabel}>{t('common.back').toUpperCase()}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

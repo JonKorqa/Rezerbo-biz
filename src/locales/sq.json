@@ -295,5 +295,50 @@
     "defaultBusinessName": "Biznesi Yt",
     "defaultRecipientName": "aty",
     "emptyText": "Ende nuk ka klientë — importo nga kontaktet ose shto njërin manualisht."
+  },
+  "checkout": {
+    "title": "Arkëtimi",
+    "clearConfirmTitle": "Me e pastru arkëtimin?",
+    "clearConfirmMessage": "Kjo do t'i pastrojë klientin, artikujt dhe shumën.",
+    "clear": "Pastro",
+    "amountDue": "SHUMA PËR PAGESË",
+    "addItem": "Shto Artikull",
+    "charge": "ARKËTO",
+    "addItemSheetTitle": "Shto artikull",
+    "noServices": "Ende nuk ka shërbime të krijuara. Shto njërin nga Cilësimet → Konfigurimi i Shërbimeve."
+  },
+  "checkoutComplete": {
+    "title": "Arkëtimi u Kry",
+    "sendReceipt": "DËRGO FATURËN",
+    "receiptSentTitle": "Fatura u dërgue",
+    "receiptSentMessage": "Një faturë prej ${{amount}} do të dërgohej.",
+    "receiptSentMessageWithClient": "Një faturë prej ${{amount}} do t'i dërgohej {{clientName}}."
+  },
+  "paymentsAndCheckout": {
+    "title": "Pagesat & Arkëtimi",
+    "acceptedMethods": "Mënyrat e Pranuara të Pagesës",
+    "cash": "Cash",
+    "card": "Kartelë",
+    "paypal": "PayPal",
+    "active": "Aktiv",
+    "receiptSettings": "Cilësimet e Faturës",
+    "alwaysAskReceipt": "Pyet gjithmonë për dërgim fature",
+    "alwaysAskReceiptDescription": "Pyet pas çdo arkëtimi, në vend se ta shfaqësh vetëm si opsion",
+    "history": "Historiku",
+    "transactionHistory": "Historiku i Transaksioneve",
+    "transactionHistoryDescription": "Shiko arkëtimet dhe të ardhurat e kaluara"
+  },
+  "servicePicker": {
+    "title": "Zgjedh një shërbim"
+  },
+  "transactions": {
+    "title": "Transaksionet",
+    "thisWeek": "Këtë Javë",
+    "thisMonth": "Këtë Muaj",
+    "yesterday": "Dje",
+    "checkoutsCount_one": "{{count}} arkëtim",
+    "checkoutsCount_other": "{{count}} arkëtime",
+    "emptyMessage": "Ende nuk ka transaksione. Arkëtimet që kryen do të shfaqen këtu.",
+    "noItemizedDetails": "Nuk ka detaje artikujsh për këtë pagesë."
   }
 }

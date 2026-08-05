@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useClients } from '../../hooks/useClients';
 import { getClientDisplayName } from '../../types/client';
@@ -11,25 +12,19 @@ import { EmptyState } from '../../components/EmptyState';
 import { computeRevenueSummary, startOfDay } from '../../utils/stats';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 import type { Transaction } from '../../types/transaction';
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-function formatTime(date: Date) {
-  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+function formatTime(date: Date, locale: string) {
+  return date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
 }
 
-function formatGroupLabel(date: Date, now: Date) {
+function formatGroupLabel(date: Date, now: Date, locale: string, todayLabel: string, yesterdayLabel: string) {
   const diffDays = Math.round((startOfDay(now).getTime() - startOfDay(date).getTime()) / 86400000);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  return `${WEEKDAYS[date.getDay()]}, ${date.getDate()} ${MONTHS[date.getMonth()]}`;
-}
-
-function formatMethod(method: string) {
-  return method.charAt(0).toUpperCase() + method.slice(1);
+  if (diffDays === 0) return todayLabel;
+  if (diffDays === 1) return yesterdayLabel;
+  return date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
 function TransactionRow({
@@ -43,13 +38,16 @@ function TransactionRow({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
+  const methodLabel = t('paymentsAndCheckout.cash');
   return (
     <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={onToggle}>
       <View style={styles.rowMain}>
         <View style={styles.rowLeft}>
           <Text style={styles.rowClient}>{clientName}</Text>
           <Text style={styles.rowMeta}>
-            {formatMethod(transaction.method)} · {formatTime(transaction.createdAt)}
+            {methodLabel} · {formatTime(transaction.createdAt, locale)}
           </Text>
         </View>
         <Text style={styles.rowAmount}>${transaction.amount.toFixed(2)}</Text>
@@ -57,7 +55,7 @@ function TransactionRow({
       {expanded && (
         <View style={styles.itemsBlock}>
           {transaction.items.length === 0 ? (
-            <Text style={styles.itemMeta}>No itemized details for this charge.</Text>
+            <Text style={styles.itemMeta}>{t('transactions.noItemizedDetails')}</Text>
           ) : (
             transaction.items.map((item, index) => (
               <View key={`${item.name}-${index}`} style={styles.itemRow}>
@@ -73,6 +71,8 @@ function TransactionRow({
 }
 
 export default function TransactionsScreen() {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: transactions = [], isLoading } = useTransactions();
   const { data: clients = [] } = useClients();
@@ -81,27 +81,31 @@ export default function TransactionsScreen() {
   const clientNameById = useMemo(() => {
     const map = new Map<string, string>();
     for (const client of clients) {
-      map.set(client.id, getClientDisplayName(client) || 'Client');
+      map.set(client.id, getClientDisplayName(client) || t('clients.defaultName'));
     }
     return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clients]);
 
   const summary = useMemo(() => computeRevenueSummary(transactions), [transactions]);
 
   const sections = useMemo(() => {
     const now = new Date();
+    const todayLabel = t('common.today');
+    const yesterdayLabel = t('transactions.yesterday');
     const groups = new Map<number, { label: string; data: Transaction[] }>();
-    for (const t of transactions) {
-      const key = startOfDay(t.createdAt).getTime();
+    for (const tx of transactions) {
+      const key = startOfDay(tx.createdAt).getTime();
       if (!groups.has(key)) {
-        groups.set(key, { label: formatGroupLabel(t.createdAt, now), data: [] });
+        groups.set(key, { label: formatGroupLabel(tx.createdAt, now, locale, todayLabel, yesterdayLabel), data: [] });
       }
-      groups.get(key)!.data.push(t);
+      groups.get(key)!.data.push(tx);
     }
     return Array.from(groups.entries())
       .sort((a, b) => b[0] - a[0])
       .map(([key, value]) => ({ title: value.label, data: value.data, key: String(key) }));
-  }, [transactions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, locale]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -109,32 +113,32 @@ export default function TransactionsScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Transactions</Text>
+        <Text style={styles.headerTitle}>{t('transactions.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <View style={styles.summaryCard}>
         <View style={styles.summaryColumn}>
-          <Text style={styles.summaryLabel}>Today</Text>
+          <Text style={styles.summaryLabel}>{t('common.today')}</Text>
           <Text style={styles.summaryAmount}>${summary.today.total.toFixed(2)}</Text>
-          <Text style={styles.summaryCount}>{summary.today.count} checkouts</Text>
+          <Text style={styles.summaryCount}>{t('transactions.checkoutsCount', { count: summary.today.count })}</Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryColumn}>
-          <Text style={styles.summaryLabel}>This Week</Text>
+          <Text style={styles.summaryLabel}>{t('transactions.thisWeek')}</Text>
           <Text style={styles.summaryAmount}>${summary.week.total.toFixed(2)}</Text>
-          <Text style={styles.summaryCount}>{summary.week.count} checkouts</Text>
+          <Text style={styles.summaryCount}>{t('transactions.checkoutsCount', { count: summary.week.count })}</Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryColumn}>
-          <Text style={styles.summaryLabel}>This Month</Text>
+          <Text style={styles.summaryLabel}>{t('transactions.thisMonth')}</Text>
           <Text style={styles.summaryAmount}>${summary.month.total.toFixed(2)}</Text>
-          <Text style={styles.summaryCount}>{summary.month.count} checkouts</Text>
+          <Text style={styles.summaryCount}>{t('transactions.checkoutsCount', { count: summary.month.count })}</Text>
         </View>
       </View>
 
       {!isLoading && sections.length === 0 ? (
-        <EmptyState variant="cards" icon="receipt-outline" message="No transactions yet. Checkouts you complete will show up here." />
+        <EmptyState variant="cards" icon="receipt-outline" message={t('transactions.emptyMessage')} />
       ) : (
         <SectionList
           sections={sections}
@@ -145,7 +149,7 @@ export default function TransactionsScreen() {
           renderItem={({ item }) => (
             <TransactionRow
               transaction={item}
-              clientName={item.clientId ? clientNameById.get(item.clientId) ?? 'Client' : 'Walk-in'}
+              clientName={item.clientId ? clientNameById.get(item.clientId) ?? t('clients.defaultName') : t('newAppointment.walkIn')}
               expanded={expandedId === item.id}
               onToggle={() => setExpandedId((current) => (current === item.id ? null : item.id))}
             />

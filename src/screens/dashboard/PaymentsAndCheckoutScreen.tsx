@@ -5,19 +5,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, updateBusiness } from '../../services/businesses';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
 
-const PAYMENT_METHODS: { key: string; label: string; icon: keyof typeof Ionicons.glyphMap; enabled: boolean }[] = [
-  { key: 'cash', label: 'Cash', icon: 'cash-outline', enabled: true },
-  { key: 'card', label: 'Card', icon: 'card-outline', enabled: false },
-  { key: 'paypal', label: 'PayPal', icon: 'logo-paypal', enabled: false },
+const PAYMENT_METHODS: { key: string; labelKey: string; icon: keyof typeof Ionicons.glyphMap; enabled: boolean }[] = [
+  { key: 'cash', labelKey: 'paymentsAndCheckout.cash', icon: 'cash-outline', enabled: true },
+  { key: 'card', labelKey: 'paymentsAndCheckout.card', icon: 'card-outline', enabled: false },
+  { key: 'paypal', labelKey: 'paymentsAndCheckout.paypal', icon: 'logo-paypal', enabled: false },
 ];
 
 export default function PaymentsAndCheckoutScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
@@ -56,12 +58,12 @@ export default function PaymentsAndCheckoutScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Payments & Checkout</Text>
+        <Text style={styles.headerTitle}>{t('paymentsAndCheckout.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Accepted Payment Methods</Text>
+        <Text style={styles.sectionTitle}>{t('paymentsAndCheckout.acceptedMethods')}</Text>
         <View style={styles.card}>
           {PAYMENT_METHODS.map((method, index) => (
             <View
@@ -71,27 +73,27 @@ export default function PaymentsAndCheckoutScreen() {
               <View style={styles.rowIconWrap}>
                 <Ionicons name={method.icon} size={18} color={method.enabled ? Colors.teal : Light.textMuted} />
               </View>
-              <Text style={styles.methodLabel}>{method.label}</Text>
+              <Text style={styles.methodLabel}>{t(method.labelKey)}</Text>
               {method.enabled ? (
                 <View style={styles.activeBadge}>
-                  <Text style={styles.activeBadgeLabel}>Active</Text>
+                  <Text style={styles.activeBadgeLabel}>{t('paymentsAndCheckout.active')}</Text>
                 </View>
               ) : (
                 <View style={styles.soonBadge}>
-                  <Text style={styles.soonBadgeLabel}>Coming soon</Text>
+                  <Text style={styles.soonBadgeLabel}>{t('common.comingSoon')}</Text>
                 </View>
               )}
             </View>
           ))}
         </View>
 
-        <Text style={styles.sectionTitle}>Receipt Settings</Text>
+        <Text style={styles.sectionTitle}>{t('paymentsAndCheckout.receiptSettings')}</Text>
         <View style={styles.card}>
           <View style={[styles.toggleRow, styles.rowLast]}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.methodLabel}>Always ask to send receipt</Text>
+              <Text style={styles.methodLabel}>{t('paymentsAndCheckout.alwaysAskReceipt')}</Text>
               <Text style={styles.toggleRowDescription}>
-                Prompt after every checkout, instead of only showing the option
+                {t('paymentsAndCheckout.alwaysAskReceiptDescription')}
               </Text>
             </View>
             <Switch
@@ -104,7 +106,7 @@ export default function PaymentsAndCheckoutScreen() {
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>History</Text>
+        <Text style={styles.sectionTitle}>{t('paymentsAndCheckout.history')}</Text>
         <TouchableOpacity
           style={styles.card}
           activeOpacity={0.7}
@@ -115,8 +117,8 @@ export default function PaymentsAndCheckoutScreen() {
               <Ionicons name="receipt-outline" size={18} color={Colors.teal} />
             </View>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.methodLabel}>Transaction History</Text>
-              <Text style={styles.toggleRowDescription}>View past checkouts and revenue</Text>
+              <Text style={styles.methodLabel}>{t('paymentsAndCheckout.transactionHistory')}</Text>
+              <Text style={styles.toggleRowDescription}>{t('paymentsAndCheckout.transactionHistoryDescription')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </View>

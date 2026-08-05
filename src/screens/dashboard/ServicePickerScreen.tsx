@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CommonActions } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useServices } from '../../hooks/useServices';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
@@ -13,6 +14,7 @@ import type { Service } from '../../types/service';
 type Props = NativeStackScreenProps<RootStackParamList, 'ServicePicker'>;
 
 export default function ServicePickerScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { data: services = [], isLoading } = useServices();
 
   const currentClient = route.params?.currentClient;
@@ -44,7 +46,7 @@ export default function ServicePickerScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Choose a service</Text>
+        <Text style={styles.headerTitle}>{t('servicePicker.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -73,7 +75,7 @@ export default function ServicePickerScreen({ navigation, route }: Props) {
           ListEmptyComponent={
             <View style={styles.empty}>
               <Text style={styles.emptyText}>
-                No services set up yet. Add one from Settings → Services Setup.
+                {t('checkout.noServices')}
               </Text>
             </View>
           }
