@@ -4,12 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { useNotifications } from '../../hooks/useNotifications';
 import { markNotificationRead } from '../../services/notifications';
 import { EmptyState } from '../../components/EmptyState';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
+import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 import type { AppNotification, NotificationType } from '../../types/notification';
 
@@ -20,20 +22,26 @@ const ICONS_BY_TYPE: Record<NotificationType, keyof typeof Ionicons.glyphMap> = 
   upcoming_reminder: 'alarm-outline',
 };
 
-function formatRelativeTime(date: Date): string {
+function formatRelativeTime(
+  date: Date,
+  locale: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string {
   const diffMs = Date.now() - date.getTime();
   const diffSec = Math.round(diffMs / 1000);
-  if (diffSec < 60) return 'Just now';
+  if (diffSec < 60) return t('notifications.justNow');
   const diffMin = Math.round(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffMin < 60) return t('notifications.minutesAgo', { count: diffMin });
   const diffHour = Math.round(diffMin / 60);
-  if (diffHour < 24) return `${diffHour}h ago`;
+  if (diffHour < 24) return t('notifications.hoursAgo', { count: diffHour });
   const diffDay = Math.round(diffHour / 24);
-  if (diffDay < 7) return `${diffDay}d ago`;
-  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  if (diffDay < 7) return t('notifications.daysAgo', { count: diffDay });
+  return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
 }
 
 export default function NotificationsScreen({ navigation }: Props) {
+  const { t, i18n } = useTranslation();
+  const locale = localeTag(i18n.language);
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
   const { data: notifications = [] } = useNotifications();
@@ -66,7 +74,7 @@ export default function NotificationsScreen({ navigation }: Props) {
           <Text style={[styles.rowTitle, !item.read && styles.rowTitleUnread]} numberOfLines={1}>
             {item.title}
           </Text>
-          <Text style={styles.rowTime}>{formatRelativeTime(item.createdAt)}</Text>
+          <Text style={styles.rowTime}>{formatRelativeTime(item.createdAt, locale, t)}</Text>
         </View>
         <Text style={styles.rowMessage} numberOfLines={2}>
           {item.message}
@@ -82,7 +90,7 @@ export default function NotificationsScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={10}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notifications</Text>
+        <Text style={styles.headerTitle}>{t('notifications.title')}</Text>
         <TouchableOpacity hitSlop={10}>
           <Ionicons name="filter-outline" size={20} color={Light.textPrimary} />
         </TouchableOpacity>
@@ -90,7 +98,7 @@ export default function NotificationsScreen({ navigation }: Props) {
 
       {notifications.length === 0 ? (
         <View style={styles.content}>
-          <EmptyState variant="cards" icon="notifications-outline" message="No notifications yet..." />
+          <EmptyState variant="cards" icon="notifications-outline" message={t('notifications.emptyMessage')} />
         </View>
       ) : (
         <FlatList

@@ -5,11 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
 
 export default function AppInfoScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
@@ -18,7 +20,7 @@ export default function AppInfoScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>App</Text>
+        <Text style={styles.headerTitle}>{t('businessSettings.rows.app.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -32,7 +34,7 @@ export default function AppInfoScreen() {
             <View style={styles.rowIconWrap}>
               <Ionicons name="document-text-outline" size={18} color={Colors.teal} />
             </View>
-            <Text style={styles.rowLabel}>Terms & Conditions</Text>
+            <Text style={styles.rowLabel}>{t('appInfo.termsAndConditions')}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -43,12 +45,12 @@ export default function AppInfoScreen() {
             <View style={styles.rowIconWrap}>
               <Ionicons name="shield-checkmark-outline" size={18} color={Colors.teal} />
             </View>
-            <Text style={styles.rowLabel}>Privacy Policy</Text>
+            <Text style={styles.rowLabel}>{t('appInfo.privacyPolicy')}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.versionText}>Version {Constants.expoConfig?.version ?? '1.0.0'}</Text>
+        <Text style={styles.versionText}>{t('businessSettings.version', { version: Constants.expoConfig?.version ?? '1.0.0' })}</Text>
       </ScrollView>
     </SafeAreaView>
   );

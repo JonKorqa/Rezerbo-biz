@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, updateBusiness } from '../../services/businesses';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -13,6 +14,7 @@ import type { Business } from '../../types/business';
 import type { RootStackParamList } from '../../types/navigation';
 
 export default function NotificationPreferencesScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
@@ -57,17 +59,17 @@ export default function NotificationPreferencesScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notification Preferences</Text>
+        <Text style={styles.headerTitle}>{t('personalSettings.notificationPreferences.label')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.subtitle}>Choose which in-app notifications you'd like to receive.</Text>
+        <Text style={styles.subtitle}>{t('notificationPreferences.subtitle')}</Text>
         <View style={styles.card}>
           <View style={styles.toggleRow}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>New Booking</Text>
-              <Text style={styles.rowDescription}>Get notified when a client books an appointment</Text>
+              <Text style={styles.rowLabel}>{t('notificationPreferences.newBooking')}</Text>
+              <Text style={styles.rowDescription}>{t('notificationPreferences.newBookingDescription')}</Text>
             </View>
             <Switch
               value={notifyNewBooking}
@@ -78,8 +80,8 @@ export default function NotificationPreferencesScreen() {
           </View>
           <View style={[styles.toggleRow, styles.rowLast]}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Upcoming Reminders</Text>
-              <Text style={styles.rowDescription}>Get reminded before an appointment starts</Text>
+              <Text style={styles.rowLabel}>{t('notificationPreferences.upcomingReminders')}</Text>
+              <Text style={styles.rowDescription}>{t('notificationPreferences.upcomingRemindersDescription')}</Text>
             </View>
             <Switch
               value={notifyUpcomingReminder}

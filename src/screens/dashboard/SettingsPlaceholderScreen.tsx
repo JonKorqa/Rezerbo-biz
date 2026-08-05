@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { Colors, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -10,6 +11,7 @@ import type { RootStackParamList } from '../../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'SettingsPlaceholder'>;
 
 export default function SettingsPlaceholderScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { title, icon } = route.params;
 
   return (
@@ -29,7 +31,7 @@ export default function SettingsPlaceholderScreen({ navigation, route }: Props) 
           <Ionicons name={icon} size={32} color={Colors.teal} />
         </View>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>Coming soon</Text>
+        <Text style={styles.subtitle}>{t('common.comingSoon')}</Text>
       </View>
     </SafeAreaView>
   );

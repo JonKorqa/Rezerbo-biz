@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { Colors, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -11,6 +12,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'LegalDocument'>;
 
 // Draft placeholder copy only — NOT reviewed by a lawyer. Must be replaced with real
 // Terms & Conditions / Privacy Policy text before this app is used in production.
+// Intentionally left untranslated: this is throwaway placeholder legal text that will be
+// discarded once real, jurisdiction-reviewed copy (in both languages) replaces it — translating
+// draft text a lawyer hasn't approved isn't useful work.
 const TERMS_BODY = `DRAFT — PLACEHOLDER TEXT. This has not been reviewed by a lawyer and must not be relied on for a real launch.
 
 1. Acceptance of Terms
@@ -56,6 +60,7 @@ We use reasonable technical measures to protect your data, but no method of stor
 This is placeholder text only and must be replaced with reviewed, jurisdiction-appropriate legal language before launch.`;
 
 export default function LegalDocumentScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const isTerms = route.params.type === 'terms';
 
   return (
@@ -64,7 +69,7 @@ export default function LegalDocumentScreen({ navigation, route }: Props) {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isTerms ? 'Terms & Conditions' : 'Privacy Policy'}</Text>
+        <Text style={styles.headerTitle}>{isTerms ? t('appInfo.termsAndConditions') : t('appInfo.privacyPolicy')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
@@ -72,7 +77,7 @@ export default function LegalDocumentScreen({ navigation, route }: Props) {
         <View style={styles.draftBanner}>
           <Ionicons name="warning-outline" size={16} color={Colors.error} />
           <Text style={styles.draftBannerText}>
-            Draft placeholder — not reviewed by a lawyer. Replace before launch.
+            {t('appInfo.draftBanner')}
           </Text>
         </View>
         <Text style={styles.body}>{isTerms ? TERMS_BODY : PRIVACY_BODY}</Text>

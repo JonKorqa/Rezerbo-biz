@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, updateBusiness } from '../../services/businesses';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
@@ -12,25 +13,26 @@ import { Light } from '../../theme/light';
 import type { Business } from '../../types/business';
 import type { RootStackParamList } from '../../types/navigation';
 
-const BUFFER_OPTIONS: { minutes: number; label: string }[] = [
-  { minutes: 0, label: 'No buffer' },
-  { minutes: 5, label: '5 minutes' },
-  { minutes: 10, label: '10 minutes' },
-  { minutes: 15, label: '15 minutes' },
-  { minutes: 20, label: '20 minutes' },
-  { minutes: 30, label: '30 minutes' },
+const BUFFER_OPTIONS: { minutes: number; labelKey: string }[] = [
+  { minutes: 0, labelKey: 'advancedOptions.noBuffer' },
+  { minutes: 5, labelKey: 'advancedOptions.minutes5' },
+  { minutes: 10, labelKey: 'advancedOptions.minutes10' },
+  { minutes: 15, labelKey: 'advancedOptions.minutes15' },
+  { minutes: 20, labelKey: 'advancedOptions.minutes20' },
+  { minutes: 30, labelKey: 'advancedOptions.minutes30' },
 ];
 
-const DURATION_OPTIONS: { minutes: number; label: string }[] = [
-  { minutes: 15, label: '15 minutes' },
-  { minutes: 30, label: '30 minutes' },
-  { minutes: 45, label: '45 minutes' },
-  { minutes: 60, label: '1 hour' },
-  { minutes: 90, label: '1 hour 30 minutes' },
-  { minutes: 120, label: '2 hours' },
+const DURATION_OPTIONS: { minutes: number; labelKey: string }[] = [
+  { minutes: 15, labelKey: 'advancedOptions.minutes15' },
+  { minutes: 30, labelKey: 'advancedOptions.minutes30' },
+  { minutes: 45, labelKey: 'advancedOptions.minutes45' },
+  { minutes: 60, labelKey: 'onlineBooking.oneHour' },
+  { minutes: 90, labelKey: 'advancedOptions.oneHourThirty' },
+  { minutes: 120, labelKey: 'onlineBooking.twoHours' },
 ];
 
 export default function AdvancedOptionsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
@@ -80,9 +82,9 @@ export default function AdvancedOptionsScreen() {
     save({ defaultServiceDurationMinutes: minutes });
   };
 
-  const bufferLabel = BUFFER_OPTIONS.find((o) => o.minutes === bufferTimeMinutes)?.label ?? 'No buffer';
-  const durationLabel =
-    DURATION_OPTIONS.find((o) => o.minutes === defaultServiceDurationMinutes)?.label ?? '30 minutes';
+  const bufferLabelKey = BUFFER_OPTIONS.find((o) => o.minutes === bufferTimeMinutes)?.labelKey ?? 'advancedOptions.noBuffer';
+  const durationLabelKey =
+    DURATION_OPTIONS.find((o) => o.minutes === defaultServiceDurationMinutes)?.labelKey ?? 'advancedOptions.minutes30';
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -90,19 +92,19 @@ export default function AdvancedOptionsScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Advanced Options</Text>
+        <Text style={styles.headerTitle}>{t('advancedOptions.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Booking Settings</Text>
+        <Text style={styles.sectionTitle}>{t('advancedOptions.bookingSettings')}</Text>
         <View style={styles.card}>
           <TouchableOpacity style={styles.pickerRow} activeOpacity={0.7} onPress={() => setBufferPickerVisible(true)}>
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Booking Buffer Time</Text>
-              <Text style={styles.rowDescription}>Gap left between back-to-back appointments</Text>
+              <Text style={styles.rowLabel}>{t('advancedOptions.bufferTime')}</Text>
+              <Text style={styles.rowDescription}>{t('advancedOptions.bufferTimeDescription')}</Text>
             </View>
-            <Text style={styles.pickerValue}>{bufferLabel}</Text>
+            <Text style={styles.pickerValue}>{t(bufferLabelKey)}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -111,19 +113,19 @@ export default function AdvancedOptionsScreen() {
             onPress={() => setDurationPickerVisible(true)}
           >
             <View style={styles.toggleRowBody}>
-              <Text style={styles.rowLabel}>Default Appointment Duration</Text>
-              <Text style={styles.rowDescription}>Used when a service isn't selected on a booking</Text>
+              <Text style={styles.rowLabel}>{t('advancedOptions.defaultDuration')}</Text>
+              <Text style={styles.rowDescription}>{t('advancedOptions.defaultDurationDescription')}</Text>
             </View>
-            <Text style={styles.pickerValue}>{durationLabel}</Text>
+            <Text style={styles.pickerValue}>{t(durationLabelKey)}</Text>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>Retail/Product Information</Text>
+        <Text style={styles.sectionTitle}>{t('advancedOptions.retailInfo')}</Text>
         <View style={styles.card}>
           <TextInput
             style={styles.retailInput}
-            placeholder="Describe any products you sell in-store (e.g. shampoo, styling tools)"
+            placeholder={t('advancedOptions.retailInfoPlaceholder')}
             placeholderTextColor={Light.textMuted}
             value={retailInfo}
             onChangeText={setRetailInfo}
@@ -144,7 +146,7 @@ export default function AdvancedOptionsScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setBufferPickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Booking Buffer Time</Text>
+              <Text style={styles.modalTitle}>{t('advancedOptions.bufferTime')}</Text>
               <TouchableOpacity onPress={() => setBufferPickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -158,7 +160,7 @@ export default function AdvancedOptionsScreen() {
                   activeOpacity={0.7}
                   onPress={() => handlePickBuffer(item.minutes)}
                 >
-                  <Text style={styles.optionLabel}>{item.label}</Text>
+                  <Text style={styles.optionLabel}>{t(item.labelKey)}</Text>
                   {item.minutes === bufferTimeMinutes && <Ionicons name="checkmark" size={20} color={Colors.teal} />}
                 </TouchableOpacity>
               )}
@@ -177,7 +179,7 @@ export default function AdvancedOptionsScreen() {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setDurationPickerVisible(false)} />
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Default Appointment Duration</Text>
+              <Text style={styles.modalTitle}>{t('advancedOptions.defaultDuration')}</Text>
               <TouchableOpacity onPress={() => setDurationPickerVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={Light.textPrimary} />
               </TouchableOpacity>
@@ -191,7 +193,7 @@ export default function AdvancedOptionsScreen() {
                   activeOpacity={0.7}
                   onPress={() => handlePickDuration(item.minutes)}
                 >
-                  <Text style={styles.optionLabel}>{item.label}</Text>
+                  <Text style={styles.optionLabel}>{t(item.labelKey)}</Text>
                   {item.minutes === defaultServiceDurationMinutes && (
                     <Ionicons name="checkmark" size={20} color={Colors.teal} />
                   )}

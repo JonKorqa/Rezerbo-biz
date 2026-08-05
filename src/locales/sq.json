@@ -742,5 +742,79 @@
     "twoWeeks": "2 javë",
     "oneMonth": "1 muaj",
     "threeMonths": "3 muaj"
+  },
+  "advancedOptions": {
+    "title": "Opsione të Avancuara",
+    "bookingSettings": "Cilësimet e Rezervimit",
+    "bufferTime": "Koha e Hapësirës Mes Termineve",
+    "bufferTimeDescription": "Hapësira e lënë mes termineve njëri pas tjetrit",
+    "defaultDuration": "Kohëzgjatja e Parazgjedhur e Terminit",
+    "defaultDurationDescription": "Përdoret kur nuk është zgjedhur shërbim gjatë rezervimit",
+    "retailInfo": "Informacione për Produktet",
+    "retailInfoPlaceholder": "Përshkruaj produktet që i shet në dyqan (p.sh. shampo, mjete stilizimi)",
+    "noBuffer": "Pa hapësirë",
+    "minutes5": "5 minuta",
+    "minutes10": "10 minuta",
+    "minutes15": "15 minuta",
+    "minutes20": "20 minuta",
+    "minutes30": "30 minuta",
+    "minutes45": "45 minuta",
+    "oneHourThirty": "1 orë e 30 minuta"
+  },
+  "notificationPreferences": {
+    "subtitle": "Zgjedh cilat njoftime brenda aplikacionit don me i marrë.",
+    "newBooking": "Termin i Ri",
+    "newBookingDescription": "Merr njoftim kur një klient rezervon një termin",
+    "upcomingReminders": "Kujtesa për Terminet e Ardhshme",
+    "upcomingRemindersDescription": "Merr kujtesë para se me fillu termini"
+  },
+  "notifications": {
+    "title": "Njoftimet",
+    "emptyMessage": "Ende nuk ka njoftime...",
+    "justNow": "Tani",
+    "minutesAgo_one": "{{count}}min më parë",
+    "minutesAgo_other": "{{count}}min më parë",
+    "hoursAgo_one": "{{count}}orë më parë",
+    "hoursAgo_other": "{{count}}orë më parë",
+    "daysAgo_one": "{{count}} ditë më parë",
+    "daysAgo_other": "{{count}} ditë më parë"
+  },
+  "appInfo": {
+    "termsAndConditions": "Kushtet & Rregullat",
+    "privacyPolicy": "Politika e Privatësisë",
+    "draftBanner": "Draft — nuk është shqyrtue nga jurist. Zëvendëso para nisjes."
+  },
+  "helpCenter": {
+    "title": "Qendra e Ndihmës",
+    "faqTitle": "Pyetjet e Shpeshta",
+    "stillNeedHelp": "Ende ke nevojë për ndihmë?",
+    "contactSupport": "Kontakto Mbështetjen",
+    "supportEmailSubject": "Kërkesë mbështetjeje nga aplikacioni Rezervo Biz",
+    "faqs": {
+      "addService": {
+        "question": "Si mund të shtoj një shërbim?",
+        "answer": "Shko te Cilësimet → Konfigurimi i Shërbimeve, pastaj prek butonin shto për me krijue një shërbim të ri me emër, çmim, dhe kohëzgjatje."
+      },
+      "changeHours": {
+        "question": "Si mund ta ndryshoj orarin e biznesit tim?",
+        "answer": "Shko te Cilësimet → Menaxhimi i Orarit për me ndryshu orarin e hapjes, me shtu ditë pushimi, dhe me menaxhu orarin e stafit."
+      },
+      "getPaid": {
+        "question": "Si i marr pagesat?",
+        "answer": "Mënyrat e pagesës dhe cilësimet e arkëtimit gjenden te Cilësimet → Pagesat & Arkëtimi. Cash është i disponueshëm tani, ndërsa kartela dhe PayPal po vijnë së shpejti."
+      },
+      "addStaff": {
+        "question": "Si mund të shtoj një anëtar stafi?",
+        "answer": "Shko te Cilësimet → Menaxhimi i Stafit dhe prek butonin shto për me ftu një anëtar të ri ekipi dhe me caktu lejet e tij."
+      },
+      "onlineBooking": {
+        "question": "Si e aktivizoj rezervimin online për klientët?",
+        "answer": "Shko te Cilësimet → Rezervimi Online dhe aktivizo \"Aktivizo Rezervimin Online\". Mundesh gjithashtu me kërku miratim para se rezervimet e reja të konfirmohen."
+      },
+      "cancelReschedule": {
+        "question": "Si mund të anuloj ose ricaktoj një termin?",
+        "answer": "Hap terminin nga kalendari yt ose nga profili i klientit — aty do t'i gjesh opsionet për me e ricaktu ose anulu."
+      }
+    }
   }
 }

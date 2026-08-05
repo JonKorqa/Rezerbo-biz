@@ -742,5 +742,79 @@
     "twoWeeks": "2 weeks",
     "oneMonth": "1 month",
     "threeMonths": "3 months"
+  },
+  "advancedOptions": {
+    "title": "Advanced Options",
+    "bookingSettings": "Booking Settings",
+    "bufferTime": "Booking Buffer Time",
+    "bufferTimeDescription": "Gap left between back-to-back appointments",
+    "defaultDuration": "Default Appointment Duration",
+    "defaultDurationDescription": "Used when a service isn't selected on a booking",
+    "retailInfo": "Retail/Product Information",
+    "retailInfoPlaceholder": "Describe any products you sell in-store (e.g. shampoo, styling tools)",
+    "noBuffer": "No buffer",
+    "minutes5": "5 minutes",
+    "minutes10": "10 minutes",
+    "minutes15": "15 minutes",
+    "minutes20": "20 minutes",
+    "minutes30": "30 minutes",
+    "minutes45": "45 minutes",
+    "oneHourThirty": "1 hour 30 minutes"
+  },
+  "notificationPreferences": {
+    "subtitle": "Choose which in-app notifications you'd like to receive.",
+    "newBooking": "New Booking",
+    "newBookingDescription": "Get notified when a client books an appointment",
+    "upcomingReminders": "Upcoming Reminders",
+    "upcomingRemindersDescription": "Get reminded before an appointment starts"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "emptyMessage": "No notifications yet...",
+    "justNow": "Just now",
+    "minutesAgo_one": "{{count}}m ago",
+    "minutesAgo_other": "{{count}}m ago",
+    "hoursAgo_one": "{{count}}h ago",
+    "hoursAgo_other": "{{count}}h ago",
+    "daysAgo_one": "{{count}}d ago",
+    "daysAgo_other": "{{count}}d ago"
+  },
+  "appInfo": {
+    "termsAndConditions": "Terms & Conditions",
+    "privacyPolicy": "Privacy Policy",
+    "draftBanner": "Draft placeholder — not reviewed by a lawyer. Replace before launch."
+  },
+  "helpCenter": {
+    "title": "Help Center",
+    "faqTitle": "Frequently Asked Questions",
+    "stillNeedHelp": "Still need help?",
+    "contactSupport": "Contact Support",
+    "supportEmailSubject": "Support request from Rezervo Biz app",
+    "faqs": {
+      "addService": {
+        "question": "How do I add a service?",
+        "answer": "Go to Settings → Services Setup, then tap the add button to create a new service with a name, price, and duration."
+      },
+      "changeHours": {
+        "question": "How do I change my business hours?",
+        "answer": "Go to Settings → Schedule Management to edit your opening hours, add time off, and manage staff working hours."
+      },
+      "getPaid": {
+        "question": "How do I get paid?",
+        "answer": "Payment methods and checkout settings live under Settings → Payments & Checkout. Cash is available today, with card and PayPal coming soon."
+      },
+      "addStaff": {
+        "question": "How do I add a staff member?",
+        "answer": "Go to Settings → Staff Management and tap the add button to invite a new team member and set their permissions."
+      },
+      "onlineBooking": {
+        "question": "How do I turn on online booking for clients?",
+        "answer": "Go to Settings → Online Booking and enable \"Enable Online Booking\". You can also require approval before new bookings are confirmed."
+      },
+      "cancelReschedule": {
+        "question": "How do I cancel or reschedule an appointment?",
+        "answer": "Open the appointment from your calendar or the client's profile — you'll find options to reschedule or cancel from there."
+      }
+    }
   }
 }

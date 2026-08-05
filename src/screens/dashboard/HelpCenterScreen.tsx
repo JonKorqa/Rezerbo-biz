@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -11,34 +12,10 @@ import type { RootStackParamList } from '../../types/navigation';
 // Placeholder support contact — replace with the real support inbox before launch.
 const SUPPORT_EMAIL = 'support@rezervo.app';
 
-const FAQS: { question: string; answer: string }[] = [
-  {
-    question: 'How do I add a service?',
-    answer: 'Go to Settings → Services Setup, then tap the add button to create a new service with a name, price, and duration.',
-  },
-  {
-    question: 'How do I change my business hours?',
-    answer: 'Go to Settings → Schedule Management to edit your opening hours, add time off, and manage staff working hours.',
-  },
-  {
-    question: 'How do I get paid?',
-    answer: 'Payment methods and checkout settings live under Settings → Payments & Checkout. Cash is available today, with card and PayPal coming soon.',
-  },
-  {
-    question: 'How do I add a staff member?',
-    answer: 'Go to Settings → Staff Management and tap the add button to invite a new team member and set their permissions.',
-  },
-  {
-    question: 'How do I turn on online booking for clients?',
-    answer: "Go to Settings → Online Booking and enable \"Enable Online Booking\". You can also require approval before new bookings are confirmed.",
-  },
-  {
-    question: 'How do I cancel or reschedule an appointment?',
-    answer: 'Open the appointment from your calendar or the client\'s profile — you\'ll find options to reschedule or cancel from there.',
-  },
-];
+const FAQ_KEYS = ['addService', 'changeHours', 'getPaid', 'addStaff', 'onlineBooking', 'cancelReschedule'];
 
 export default function HelpCenterScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -47,12 +24,12 @@ export default function HelpCenterScreen() {
   };
 
   const handleContactSupport = async () => {
-    const subject = 'Support request from Rezervo Biz app';
+    const subject = t('helpCenter.supportEmailSubject');
     const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}`;
     try {
       await Linking.openURL(url);
     } catch {
-      Alert.alert('Could not open Mail', 'No email app is available to handle this on your device.');
+      Alert.alert(t('textAndEmailMarketing.couldNotOpenMailTitle'), t('textAndEmailMarketing.couldNotOpenMailMessage'));
     }
   };
 
@@ -62,35 +39,35 @@ export default function HelpCenterScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
           <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Help Center</Text>
+        <Text style={styles.headerTitle}>{t('helpCenter.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+        <Text style={styles.sectionTitle}>{t('helpCenter.faqTitle')}</Text>
         <View style={styles.card}>
-          {FAQS.map((faq, index) => {
+          {FAQ_KEYS.map((key, index) => {
             const expanded = expandedIndex === index;
             return (
-              <View key={faq.question} style={[styles.faqRow, index === FAQS.length - 1 && styles.rowLast]}>
+              <View key={key} style={[styles.faqRow, index === FAQ_KEYS.length - 1 && styles.rowLast]}>
                 <TouchableOpacity style={styles.faqQuestionRow} activeOpacity={0.7} onPress={() => toggleFaq(index)}>
-                  <Text style={styles.faqQuestion}>{faq.question}</Text>
+                  <Text style={styles.faqQuestion}>{t(`helpCenter.faqs.${key}.question`)}</Text>
                   <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={Light.textMuted} />
                 </TouchableOpacity>
-                {expanded && <Text style={styles.faqAnswer}>{faq.answer}</Text>}
+                {expanded && <Text style={styles.faqAnswer}>{t(`helpCenter.faqs.${key}.answer`)}</Text>}
               </View>
             );
           })}
         </View>
 
-        <Text style={styles.sectionTitle}>Still need help?</Text>
+        <Text style={styles.sectionTitle}>{t('helpCenter.stillNeedHelp')}</Text>
         <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={handleContactSupport}>
           <View style={[styles.faqQuestionRow, styles.rowLast]}>
             <View style={styles.rowIconWrap}>
               <Ionicons name="mail-outline" size={18} color={Colors.teal} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.faqQuestion}>Contact Support</Text>
+              <Text style={styles.faqQuestion}>{t('helpCenter.contactSupport')}</Text>
               <Text style={styles.contactSubtext}>{SUPPORT_EMAIL}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
