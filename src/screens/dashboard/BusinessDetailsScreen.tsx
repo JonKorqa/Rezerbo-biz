@@ -44,6 +44,32 @@ type SectionKey =
   | 'categories'
   | 'policies';
 
+function CategoryTile({
+  category,
+  selected,
+  onPress,
+}: {
+  category: BusinessCategory;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      style={[styles.categoryTile, selected && styles.categoryTileSelected]}
+      activeOpacity={0.85}
+      onPress={onPress}
+    >
+      <View style={[styles.categoryTileIconWrap, selected && styles.categoryTileIconWrapSelected]}>
+        <Ionicons name={category.icon} size={20} color={selected ? Colors.white : Colors.teal} />
+      </View>
+      <Text style={[styles.categoryTileLabel, selected && styles.categoryTileLabelSelected]}>
+        {category.label}
+      </Text>
+      {selected && <Ionicons name="checkmark-circle" size={16} color={Colors.teal} style={styles.categoryCheck} />}
+    </TouchableOpacity>
+  );
+}
+
 export default function BusinessDetailsScreen({ navigation }: Props) {
   const uid = auth.currentUser?.uid;
   const queryClient = useQueryClient();
@@ -83,6 +109,13 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const [offersMobileServices, setOffersMobileServices] = useState(false);
   const [mobileServiceArea, setMobileServiceArea] = useState('');
 
+  // Section 5 — Amenities
+  const [amenities, setAmenities] = useState<string[]>([]);
+
+  // Section 6 — Business Category
+  const [categories, setCategories] = useState<string[]>([]);
+  const [showOtherCategories, setShowOtherCategories] = useState(false);
+
   useEffect(() => {
     if (!business || initialized.current) return;
     initialized.current = true;
@@ -95,6 +128,8 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
     setOnlineShopUrl(business.onlineShopUrl ?? '');
     setOffersMobileServices(business.offersMobileServices ?? false);
     setMobileServiceArea(business.mobileServiceArea ?? '');
+    setAmenities(business.amenities ?? []);
+    setCategories(business.categories ?? (business.category ? [business.category] : []));
   }, [business]);
 
   const profileUrl = uid ? `rezervo://salon/${uid}` : '';
@@ -212,6 +247,41 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
   const locationSummary = business?.location?.address
     ? [business.location.address, business.location.unit].filter(Boolean).join(', ')
     : 'No location set yet';
+
+  const toggleInArray = (list: string[], key: string): string[] =>
+    list.includes(key) ? list.filter((item) => item !== key) : [...list, key];
+
+  const handleSaveAmenities = async () => {
+    if (!uid) return;
+    setSavingSection('amenities');
+    try {
+      await updateBusiness(uid, { amenities });
+      invalidateBusiness();
+    } catch (err) {
+      console.error('saveAmenities failed:', err);
+      Alert.alert('Error', 'Could not save amenities. Please try again.');
+    } finally {
+      setSavingSection(null);
+    }
+  };
+
+  const handleSaveCategories = async () => {
+    if (!uid) return;
+    if (categories.length === 0) {
+      Alert.alert('Pick at least one category', 'Choose the categories that best describe your business.');
+      return;
+    }
+    setSavingSection('categories');
+    try {
+      await updateBusiness(uid, { categories });
+      invalidateBusiness();
+    } catch (err) {
+      console.error('saveBusinessCategories failed:', err);
+      Alert.alert('Error', 'Could not save categories. Please try again.');
+    } finally {
+      setSavingSection(null);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -473,6 +543,83 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               style={styles.sectionSaveButton}
             />
           </View>
+
+          {/* Section 5 — Amenities */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Amenities</Text>
+            <Text style={styles.sectionSubtitle}>Let clients know what to expect at your business.</Text>
+
+            {AMENITIES.map((amenity) => {
+              const enabled = amenities.includes(amenity.key);
+              return (
+                <View key={amenity.key} style={styles.amenityRow}>
+                  <View style={styles.amenityIconWrap}>
+                    <Ionicons name={amenity.icon} size={18} color={Colors.teal} />
+                  </View>
+                  <Text style={styles.amenityLabel}>{amenity.label}</Text>
+                  <Switch
+                    value={enabled}
+                    onValueChange={() => setAmenities((prev) => toggleInArray(prev, amenity.key))}
+                    trackColor={{ false: Light.track, true: Colors.tealLight }}
+                    thumbColor={enabled ? Colors.teal : Colors.white}
+                  />
+                </View>
+              );
+            })}
+
+            <Button
+              label="Save"
+              onPress={handleSaveAmenities}
+              loading={savingSection === 'amenities'}
+              style={styles.sectionSaveButton}
+            />
+          </View>
+
+          {/* Section 6 — Business Category */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Business Category</Text>
+            <Text style={styles.sectionSubtitle}>Select all categories that apply to your business.</Text>
+
+            <View style={styles.categoryGrid}>
+              {PRIMARY_CATEGORIES.map((category) => (
+                <CategoryTile
+                  key={category.key}
+                  category={category}
+                  selected={categories.includes(category.key)}
+                  onPress={() => setCategories((prev) => toggleInArray(prev, category.key))}
+                />
+              ))}
+            </View>
+
+            <TouchableOpacity style={styles.otherToggle} onPress={() => setShowOtherCategories((v) => !v)}>
+              <Text style={styles.otherToggleText}>Other categories</Text>
+              <Ionicons
+                name={showOtherCategories ? 'chevron-up' : 'chevron-down'}
+                size={18}
+                color={Light.textSecondary}
+              />
+            </TouchableOpacity>
+
+            {showOtherCategories && (
+              <View style={styles.categoryGrid}>
+                {OTHER_CATEGORIES.map((category) => (
+                  <CategoryTile
+                    key={category.key}
+                    category={category}
+                    selected={categories.includes(category.key)}
+                    onPress={() => setCategories((prev) => toggleInArray(prev, category.key))}
+                  />
+                ))}
+              </View>
+            )}
+
+            <Button
+              label="Save"
+              onPress={handleSaveCategories}
+              loading={savingSection === 'categories'}
+              style={styles.sectionSaveButton}
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -674,5 +821,80 @@ const styles = StyleSheet.create({
     color: Light.textSecondary,
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.regular,
+  },
+  sectionSubtitle: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.regular,
+    marginTop: -Spacing.sm,
+  },
+  amenityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingVertical: Spacing.xs,
+  },
+  amenityIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: Radius.md,
+    backgroundColor: Light.fieldBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  amenityLabel: {
+    flex: 1,
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.base,
+    fontFamily: Typography.fontFamily.medium,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  categoryTile: {
+    width: '47%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    backgroundColor: Light.fieldBg,
+    borderWidth: 1.5,
+    borderColor: Light.border,
+    borderRadius: Radius.lg,
+    padding: Spacing.sm,
+  },
+  categoryTileSelected: {
+    borderColor: Colors.teal,
+    backgroundColor: Light.fieldBgFocused,
+  },
+  categoryTileIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoryTileIconWrapSelected: { backgroundColor: Colors.teal },
+  categoryTileLabel: {
+    flex: 1,
+    color: Light.textPrimary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.medium,
+  },
+  categoryTileLabelSelected: { fontFamily: Typography.fontFamily.bold },
+  categoryCheck: { marginLeft: -Spacing.xs },
+  otherToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: Spacing.xs,
+  },
+  otherToggleText: {
+    color: Light.textSecondary,
+    fontSize: Typography.fontSize.sm,
+    fontFamily: Typography.fontFamily.medium,
   },
 });
