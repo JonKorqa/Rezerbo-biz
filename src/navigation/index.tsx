@@ -41,6 +41,8 @@ import ImportInviteClientsScreen from '../screens/dashboard/ImportInviteClientsS
 import ImportContactsScreen from '../screens/dashboard/ImportContactsScreen';
 import OnlineBookingScreen from '../screens/dashboard/OnlineBookingScreen';
 import AdvancedOptionsScreen from '../screens/dashboard/AdvancedOptionsScreen';
+import PersonalSettingsScreen from '../screens/dashboard/PersonalSettingsScreen';
+import NotificationPreferencesScreen from '../screens/dashboard/NotificationPreferencesScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -93,6 +95,8 @@ export default function Navigation() {
         <Stack.Screen name="ImportContacts" component={ImportContactsScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="OnlineBooking" component={OnlineBookingScreen} />
         <Stack.Screen name="AdvancedOptions" component={AdvancedOptionsScreen} />
+        <Stack.Screen name="PersonalSettings" component={PersonalSettingsScreen} />
+        <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

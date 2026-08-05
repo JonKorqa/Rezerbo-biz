@@ -141,6 +141,8 @@ export default function BusinessSettingsScreen() {
       navigation.navigate('OnlineBooking');
     } else if (row.key === 'advanced') {
       navigation.navigate('AdvancedOptions');
+    } else if (row.key === 'personal') {
+      navigation.navigate('PersonalSettings');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
     }
