@@ -8,6 +8,7 @@ import { useTransactions } from '../../hooks/useTransactions';
 import { useClients } from '../../hooks/useClients';
 import { getClientDisplayName } from '../../types/client';
 import { EmptyState } from '../../components/EmptyState';
+import { computeRevenueSummary, startOfDay } from '../../utils/stats';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import type { RootStackParamList } from '../../types/navigation';
@@ -15,26 +16,6 @@ import type { Transaction } from '../../types/transaction';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-function startOfDay(date: Date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function startOfWeek(date: Date) {
-  const d = startOfDay(date);
-  const day = d.getDay();
-  const diffFromMonday = day === 0 ? 6 : day - 1;
-  d.setDate(d.getDate() - diffFromMonday);
-  return d;
-}
-
-function startOfMonth(date: Date) {
-  const d = startOfDay(date);
-  d.setDate(1);
-  return d;
-}
 
 function formatTime(date: Date) {
   return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -49,11 +30,6 @@ function formatGroupLabel(date: Date, now: Date) {
 
 function formatMethod(method: string) {
   return method.charAt(0).toUpperCase() + method.slice(1);
-}
-
-interface PeriodStat {
-  total: number;
-  count: number;
 }
 
 function TransactionRow({
@@ -110,30 +86,7 @@ export default function TransactionsScreen() {
     return map;
   }, [clients]);
 
-  const summary = useMemo(() => {
-    const now = new Date();
-    const todayStart = startOfDay(now);
-    const weekStart = startOfWeek(now);
-    const monthStart = startOfMonth(now);
-    const today: PeriodStat = { total: 0, count: 0 };
-    const week: PeriodStat = { total: 0, count: 0 };
-    const month: PeriodStat = { total: 0, count: 0 };
-    for (const t of transactions) {
-      if (t.createdAt >= monthStart) {
-        month.total += t.amount;
-        month.count += 1;
-      }
-      if (t.createdAt >= weekStart) {
-        week.total += t.amount;
-        week.count += 1;
-      }
-      if (t.createdAt >= todayStart) {
-        today.total += t.amount;
-        today.count += 1;
-      }
-    }
-    return { today, week, month };
-  }, [transactions]);
+  const summary = useMemo(() => computeRevenueSummary(transactions), [transactions]);
 
   const sections = useMemo(() => {
     const now = new Date();

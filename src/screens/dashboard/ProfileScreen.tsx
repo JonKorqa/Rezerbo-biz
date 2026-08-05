@@ -270,7 +270,7 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={styles.rowCard}
           activeOpacity={0.7}
-          onPress={() => handleStubNav('Stats & Reports', 'bar-chart-outline')}
+          onPress={() => navigation.navigate('StatsAndReports')}
         >
           <View style={styles.rowCardIconWrap}>
             <Ionicons name="bar-chart-outline" size={20} color={Colors.teal} />

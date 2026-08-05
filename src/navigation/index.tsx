@@ -27,6 +27,8 @@ import BusinessDetailsScreen from '../screens/dashboard/BusinessDetailsScreen';
 import TransactionsScreen from '../screens/dashboard/TransactionsScreen';
 import ServicesSetupScreen from '../screens/dashboard/ServicesSetupScreen';
 import AddEditServiceScreen from '../screens/dashboard/AddEditServiceScreen';
+import StatsAndReportsScreen from '../screens/dashboard/StatsAndReportsScreen';
+import PaymentsAndCheckoutScreen from '../screens/dashboard/PaymentsAndCheckoutScreen';
 import type { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -65,6 +67,8 @@ export default function Navigation() {
         <Stack.Screen name="Transactions" component={TransactionsScreen} />
         <Stack.Screen name="ServicesSetup" component={ServicesSetupScreen} />
         <Stack.Screen name="AddEditService" component={AddEditServiceScreen} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="StatsAndReports" component={StatsAndReportsScreen} />
+        <Stack.Screen name="PaymentsAndCheckout" component={PaymentsAndCheckoutScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

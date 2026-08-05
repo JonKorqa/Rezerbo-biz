@@ -3,6 +3,7 @@ export interface Client {
   firstName: string;
   lastName: string;
   phone: string;
+  createdAt?: Date;
 }
 
 export function getClientDisplayName(client: Pick<Client, 'firstName' | 'lastName'>): string {

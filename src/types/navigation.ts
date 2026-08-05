@@ -45,6 +45,8 @@ export type RootStackParamList = {
   Transactions: undefined;
   ServicesSetup: undefined;
   AddEditService: { service?: Service } | undefined;
+  StatsAndReports: undefined;
+  PaymentsAndCheckout: undefined;
 };
 
 export type DashboardTabParamList = {

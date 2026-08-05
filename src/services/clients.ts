@@ -11,6 +11,7 @@ export async function getBusinessClients(businessId: string): Promise<Client[]> 
       firstName: data.firstName ?? '',
       lastName: data.lastName ?? '',
       phone: data.phone ?? '',
+      createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : undefined,
     } satisfies Client;
   });
 }
