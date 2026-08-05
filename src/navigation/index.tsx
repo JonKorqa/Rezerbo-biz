@@ -23,6 +23,7 @@ import CalendarColorScreen from '../screens/dashboard/CalendarColorScreen';
 import CalendarImportScreen from '../screens/dashboard/CalendarImportScreen';
 import SettingsPlaceholderScreen from '../screens/dashboard/SettingsPlaceholderScreen';
 import BusinessSettingsScreen from '../screens/dashboard/BusinessSettingsScreen';
+import TransactionsScreen from '../screens/dashboard/TransactionsScreen';
 import ServicesSetupScreen from '../screens/dashboard/ServicesSetupScreen';
 import AddEditServiceScreen from '../screens/dashboard/AddEditServiceScreen';
 import type { RootStackParamList } from '../types/navigation';
@@ -59,6 +60,7 @@ export default function Navigation() {
         <Stack.Screen name="CalendarImport" component={CalendarImportScreen} />
         <Stack.Screen name="SettingsPlaceholder" component={SettingsPlaceholderScreen} />
         <Stack.Screen name="BusinessSettings" component={BusinessSettingsScreen} />
+        <Stack.Screen name="Transactions" component={TransactionsScreen} />
         <Stack.Screen name="ServicesSetup" component={ServicesSetupScreen} />
         <Stack.Screen name="AddEditService" component={AddEditServiceScreen} options={{ presentation: 'modal' }} />
       </Stack.Navigator>

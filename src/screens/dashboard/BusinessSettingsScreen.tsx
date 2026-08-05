@@ -127,6 +127,8 @@ export default function BusinessSettingsScreen() {
       navigation.navigate('ScheduleManagement');
     } else if (row.key === 'services') {
       navigation.navigate('ServicesSetup');
+    } else if (row.key === 'payments') {
+      navigation.navigate('Transactions');
     } else {
       navigation.navigate('SettingsPlaceholder', { title: row.title, icon: row.icon });
     }

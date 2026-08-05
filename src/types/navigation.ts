@@ -40,6 +40,7 @@ export type RootStackParamList = {
   CalendarImport: undefined;
   SettingsPlaceholder: { title: string; icon: keyof typeof Ionicons.glyphMap };
   BusinessSettings: undefined;
+  Transactions: undefined;
   ServicesSetup: undefined;
   AddEditService: { service?: Service } | undefined;
 };
