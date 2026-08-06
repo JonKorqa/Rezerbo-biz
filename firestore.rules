@@ -65,6 +65,15 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
+    // Public-safe subset synced by Rezervo Biz alongside every businesses/{uid} save
+    // that touches a public field. The parent businesses/{uid} document is owner-only;
+    // this document contains ONLY explicitly whitelisted public fields.
+    // Open read (unauthenticated clients may read); only the owning business may write.
+    match /businessProfiles/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
     // Rezervo Biz: top-level, scoped by businessId field set on the document.
     match /appointments/{appointmentId} {
       allow read, update, delete: if request.auth != null
