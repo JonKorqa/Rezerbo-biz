@@ -93,8 +93,8 @@ export interface ServiceCount {
 export function computeTopServices(appointments: Appointment[], limit = 5): ServiceCount[] {
   const counts = new Map<string, number>();
   for (const a of appointments) {
-    if (a.type !== 'booking' || !a.serviceLabel) continue;
-    counts.set(a.serviceLabel, (counts.get(a.serviceLabel) ?? 0) + 1);
+    if (a.type !== 'booking' || !a.serviceName) continue;
+    counts.set(a.serviceName, (counts.get(a.serviceName) ?? 0) + 1);
   }
   return Array.from(counts.entries())
     .map(([label, count]) => ({ label, count }))
@@ -125,8 +125,8 @@ export interface AppointmentStats {
 export function computeAppointmentStats(appointments: Appointment[], now: Date = new Date()): AppointmentStats {
   const monthStart = startOfMonth(now);
   const bookings = appointments.filter((a) => a.type === 'booking');
-  const thisMonth = bookings.filter((a) => a.start >= monthStart);
-  const completed = thisMonth.filter((a) => a.end <= now).length;
+  const thisMonth = bookings.filter((a) => a.startTime >= monthStart);
+  const completed = thisMonth.filter((a) => a.endTime <= now).length;
   const upcoming = thisMonth.length - completed;
   return { totalThisMonth: thisMonth.length, completed, upcoming };
 }

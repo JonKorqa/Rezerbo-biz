@@ -133,10 +133,10 @@ export default function NewAppointmentScreen({ navigation, route }: Props) {
         clientId: client?.id ?? null,
         clientName: clientLabel,
         serviceId: service.id,
-        serviceLabel: service.name,
+        serviceName: service.name,
         staffId: selectedStaff && !selectedStaff.isOwner ? selectedStaff.id : uid,
-        start: startTime,
-        end: endTime,
+        startTime: startTime,
+        endTime: endTime,
         color: service.color,
       });
       const timeLabel = startTime.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });

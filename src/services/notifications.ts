@@ -59,8 +59,8 @@ async function hasReminderForAppointment(businessId: string, appointmentId: stri
 
 function formatReminderMessage(appointment: Appointment): string {
   const clientLabel = appointment.type === 'reservation' ? appointment.label || 'Reservation' : appointment.clientName || 'Walk-in';
-  const timeLabel = appointment.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  return `${clientLabel} - ${appointment.serviceLabel} at ${timeLabel}`;
+  const timeLabel = appointment.startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return `${clientLabel} - ${appointment.serviceName} at ${timeLabel}`;
 }
 
 // Creates an "upcoming" reminder for any appointment starting within the next hour that
@@ -69,7 +69,7 @@ function formatReminderMessage(appointment: Appointment): string {
 export async function createUpcomingReminders(businessId: string, appointments: Appointment[]): Promise<void> {
   const now = Date.now();
   const upcoming = appointments.filter((appt) => {
-    const diff = appt.start.getTime() - now;
+    const diff = appt.startTime.getTime() - now;
     return diff > 0 && diff <= REMINDER_WINDOW_MS;
   });
 

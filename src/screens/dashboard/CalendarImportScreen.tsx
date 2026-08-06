@@ -23,13 +23,13 @@ function buildScheduleText(
   locale: string,
   t: (key: string, options?: Record<string, unknown>) => string,
 ): string {
-  const sorted = appointments.slice().sort((a, b) => a.start.getTime() - b.start.getTime());
+  const sorted = appointments.slice().sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
   if (sorted.length === 0) return t('calendarImport.noAppointments', { range: rangeLabel });
 
   const lines = sorted.map((appt) => {
-    const time = appt.start.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
+    const time = appt.startTime.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
     const who = appt.type === 'reservation' ? appt.label || t('calendarImport.reservation') : appt.clientName || t('newAppointment.walkIn');
-    return `${time} - ${who} - ${appt.serviceLabel}`;
+    return `${time} - ${who} - ${appt.serviceName}`;
   });
 
   return t('calendarImport.scheduleFor', { range: rangeLabel }) + `\n\n${lines.join('\n')}`;
@@ -49,9 +49,9 @@ export default function CalendarImportScreen({ navigation }: Props) {
 
       const filtered =
         range === 'today'
-          ? appointments.filter((appt) => isSameDay(appt.start, today))
+          ? appointments.filter((appt) => isSameDay(appt.startTime, today))
           : appointments.filter((appt) => {
-              const daysAhead = Math.floor((appt.start.getTime() - today.getTime()) / 86400000);
+              const daysAhead = Math.floor((appt.startTime.getTime() - today.getTime()) / 86400000);
               return daysAhead >= 0 && daysAhead < 7;
             });
 

@@ -38,9 +38,9 @@ function AppointmentRow({ appointment, upcoming }: { appointment: Appointment; u
   return (
     <View style={[styles.apptRow, { borderLeftColor: appointment.color ?? Colors.teal }]}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.apptService}>{appointment.serviceLabel}</Text>
+        <Text style={styles.apptService}>{appointment.serviceName}</Text>
         <Text style={styles.apptMeta}>
-          {formatDate(appointment.start, locale)} · {formatTime(appointment.start, locale)}
+          {formatDate(appointment.startTime, locale)} · {formatTime(appointment.startTime, locale)}
         </Text>
       </View>
       <View style={[styles.statusBadge, upcoming ? styles.statusBadgeUpcoming : styles.statusBadgePast]}>
@@ -64,11 +64,11 @@ export default function ClientDetailScreen({ navigation, route }: Props) {
     const now = new Date();
     const clientAppointments = appointments.filter((a) => a.clientId === clientId);
     const upcomingList = clientAppointments
-      .filter((a) => a.start >= now)
-      .sort((a, b) => a.start.getTime() - b.start.getTime());
+      .filter((a) => a.startTime >= now)
+      .sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
     const pastList = clientAppointments
-      .filter((a) => a.start < now)
-      .sort((a, b) => b.start.getTime() - a.start.getTime());
+      .filter((a) => a.startTime < now)
+      .sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
     return { upcoming: upcomingList, past: pastList };
   }, [appointments, clientId]);
 

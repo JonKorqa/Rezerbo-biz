@@ -6,9 +6,9 @@ export interface Appointment {
   type: AppointmentType;
   clientId: string | null;
   clientName: string;
-  serviceLabel: string;
+  serviceName: string;
   label?: string;
-  start: Date;
-  end: Date;
+  startTime: Date;
+  endTime: Date;
   color?: string;
 }

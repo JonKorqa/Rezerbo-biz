@@ -59,8 +59,8 @@ export function AgendaList({
         const dayTimeOff = findTimeOffForDate(date, timeOff);
         const isClosed = dayHours.closed || !!dayTimeOff;
         const dayAppointments = appointments
-          .filter((appt) => isSameDay(appt.start, date))
-          .sort((a, b) => a.start.getTime() - b.start.getTime());
+          .filter((appt) => isSameDay(appt.startTime, date))
+          .sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
         return (
           <View key={date.toISOString()} style={styles.section}>
@@ -96,7 +96,7 @@ export function AgendaList({
                       />
                       <View style={styles.apptInfo}>
                         <Text style={styles.apptService} numberOfLines={1}>
-                          {isReservation ? appt.label || t('appointments.reserved') : appt.serviceLabel}
+                          {isReservation ? appt.label || t('appointments.reserved') : appt.serviceName}
                         </Text>
                         {!isReservation && (
                           <Text style={styles.apptClient} numberOfLines={1}>
@@ -105,7 +105,7 @@ export function AgendaList({
                         )}
                       </View>
                       <Text style={styles.apptTime}>
-                        {appt.start.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
+                        {appt.startTime.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
                       </Text>
                     </View>
                   );

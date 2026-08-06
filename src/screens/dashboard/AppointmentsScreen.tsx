@@ -70,7 +70,7 @@ export default function AppointmentsScreen() {
   const timeOff = business?.timeOff ?? [];
 
   const dayAppointments = useMemo(
-    () => appointments.filter((appt) => isSameDay(appt.start, selectedDate)),
+    () => appointments.filter((appt) => isSameDay(appt.startTime, selectedDate)),
     [appointments, selectedDate],
   );
 

@@ -47,8 +47,8 @@ export function TimeGrid({ appointments, defaultColor = Colors.teal }: TimeGridP
         ))}
 
         {appointments.map((appt) => {
-          const top = (minutesFromGridStart(appt.start) / 60) * HOUR_HEIGHT;
-          const durationMinutes = Math.max((appt.end.getTime() - appt.start.getTime()) / 60000, 15);
+          const top = (minutesFromGridStart(appt.startTime) / 60) * HOUR_HEIGHT;
+          const durationMinutes = Math.max((appt.endTime.getTime() - appt.startTime.getTime()) / 60000, 15);
           const height = (durationMinutes / 60) * HOUR_HEIGHT;
           if (top < 0 || top >= gridHeight) return null;
           const isReservation = appt.type === 'reservation';
@@ -63,11 +63,11 @@ export function TimeGrid({ appointments, defaultColor = Colors.teal }: TimeGridP
               ]}
             >
               <Text style={styles.appointmentTime} numberOfLines={1}>
-                {appt.start.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })} –{' '}
-                {appt.end.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
+                {appt.startTime.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })} –{' '}
+                {appt.endTime.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}
               </Text>
               <Text style={styles.appointmentLabel} numberOfLines={1}>
-                {isReservation ? appt.label || t('appointments.reserved') : appt.serviceLabel}
+                {isReservation ? appt.label || t('appointments.reserved') : appt.serviceName}
               </Text>
             </View>
           );

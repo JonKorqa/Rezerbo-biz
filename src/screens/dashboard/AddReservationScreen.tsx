@@ -61,7 +61,7 @@ export default function AddReservationScreen({ navigation }: Props) {
     if (!uid || !canSave) return;
     setSaving(true);
     try {
-      await createReservation({ businessId: uid, label: label.trim(), start: startTime, end: endTime });
+      await createReservation({ businessId: uid, label: label.trim(), startTime, endTime });
       queryClient.invalidateQueries({ queryKey: ['appointments', uid] });
       navigation.goBack();
     } catch (err) {

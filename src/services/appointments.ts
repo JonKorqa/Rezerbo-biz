@@ -9,10 +9,10 @@ export interface NewAppointmentInput {
   clientId: string | null;
   clientName: string;
   serviceId: string;
-  serviceLabel: string;
+  serviceName: string;
   staffId: string;
-  start: Date;
-  end: Date;
+  startTime: Date;
+  endTime: Date;
   color?: string;
 }
 
@@ -23,10 +23,10 @@ export async function createAppointment(input: NewAppointmentInput): Promise<str
     clientId: input.clientId,
     clientName: input.clientName,
     serviceId: input.serviceId,
-    serviceLabel: input.serviceLabel,
+    serviceName: input.serviceName,
     staffId: input.staffId,
-    start: Timestamp.fromDate(input.start),
-    end: Timestamp.fromDate(input.end),
+    startTime: Timestamp.fromDate(input.startTime),
+    endTime: Timestamp.fromDate(input.endTime),
     color: input.color ?? null,
     status: 'confirmed',
     createdAt: serverTimestamp(),
@@ -37,8 +37,8 @@ export async function createAppointment(input: NewAppointmentInput): Promise<str
 export interface NewReservationInput {
   businessId: string;
   label: string;
-  start: Date;
-  end: Date;
+  startTime: Date;
+  endTime: Date;
 }
 
 // Blocks a calendar slot without a client or service attached — same collection as
@@ -50,11 +50,11 @@ export async function createReservation(input: NewReservationInput): Promise<voi
     type: 'reservation',
     clientId: null,
     clientName: '',
-    serviceLabel: '',
+    serviceName: '',
     label: input.label,
     staffId: input.businessId,
-    start: Timestamp.fromDate(input.start),
-    end: Timestamp.fromDate(input.end),
+    startTime: Timestamp.fromDate(input.startTime),
+    endTime: Timestamp.fromDate(input.endTime),
     color: null,
     status: 'confirmed',
     createdAt: serverTimestamp(),
@@ -74,10 +74,10 @@ export async function getBusinessAppointments(businessId: string): Promise<Appoi
       type: data.type === 'reservation' ? 'reservation' : 'booking',
       clientId: data.clientId ?? null,
       clientName: data.clientName ?? 'Client',
-      serviceLabel: data.serviceLabel ?? 'Appointment',
+      serviceName: data.serviceName ?? 'Appointment',
       label: data.label ?? undefined,
-      start: data.start?.toDate ? data.start.toDate() : new Date(data.start),
-      end: data.end?.toDate ? data.end.toDate() : new Date(data.end),
+      startTime: data.startTime?.toDate ? data.startTime.toDate() : new Date(data.startTime),
+      endTime: data.endTime?.toDate ? data.endTime.toDate() : new Date(data.endTime),
       color: data.color,
     } satisfies Appointment;
   });
