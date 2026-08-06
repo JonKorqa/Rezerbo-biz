@@ -1,3 +1,10 @@
+// ⚠️ SHARED FILE — this Firestore project is used by both the
+// Rezervo consumer app and Rezervo Biz. This file must be kept
+// IDENTICAL in both repos at all times. Before deploying from
+// EITHER repo, diff this file against the other repo's copy and
+// sync any differences first. Deploying an out-of-sync copy will
+// silently overwrite rules the other app depends on.
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -41,45 +48,80 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
-    match /bookings/{bookingId} {
-      allow read: if request.auth != null
-        && resource.data.customerId == request.auth.uid;
-      allow create: if request.auth != null
-        && request.resource.data.customerId == request.auth.uid
-        && request.resource.data.status == 'pending'
-        && request.resource.data.paymentMethod in ['cash', 'card']
-        && request.resource.data.salonId is string
-        && request.resource.data.serviceId is string
-        && request.resource.data.staffId is string
-        && request.resource.data.datetime is timestamp
-        && request.resource.data.notes is string;
-      allow update: if request.auth != null
-        && resource.data.customerId == request.auth.uid
-        && request.resource.data.status == 'cancelled'
-        && request.resource.data.paymentMethod in ['cash', 'card'];
-      allow delete: if false;
-    }
-
     // Rezervo Biz: one document per business, keyed by the owning user's uid.
     match /businesses/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Public-safe subset synced by Rezervo Biz alongside every businesses/{uid} save
-    // that touches a public field. The parent businesses/{uid} document is owner-only;
-    // this document contains ONLY explicitly whitelisted public fields.
-    // Open read (unauthenticated clients may read); only the owning business may write.
+    // Public-safe subset of business data. Written by Rezervo Biz alongside every
+    // businesses/{uid} save that touches a public field. The parent businesses/{uid}
+    // document is NOT open-read — it contains private owner data. This document
+    // contains ONLY the explicitly whitelisted public fields (see FSBusinessPublicProfile).
+    // Open read (unauthenticated allowed); only the owning business may write.
+    // Read by: consumer app (salon browsing/booking) and Rezervo Biz (own profile).
+    // Written by: Rezervo Biz only.
     match /businessProfiles/{uid} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Rezervo Biz: top-level, scoped by businessId field set on the document.
+    // Shared collection — written by BOTH apps, with two distinct creation patterns.
+    // Both apps agree on core field names (startTime, endTime, serviceName, businessId,
+    // clientId) as of the 2026-08-07 field-name sync — see appointments.ts (Rezervo Biz)
+    // and bookings.ts (consumer app) for the exact shape each writes.
+    //   - Consumer app (bookings.ts): clientId, salonId, startTime, endTime, notes,
+    //     serviceName. Client creates for themselves (clientId == auth.uid).
+    //   - Rezervo Biz (appointments.ts): businessId, startTime, endTime, serviceName, no
+    //     salonId/notes. Business owner creates directly (businessId == auth.uid),
+    //     clientId may be null (walk-ins) or a client uid not equal to auth.uid.
     match /appointments/{appointmentId} {
-      allow read, update, delete: if request.auth != null
-        && resource.data.businessId == request.auth.uid;
-      allow create: if request.auth != null
-        && request.resource.data.businessId == request.auth.uid;
+      // Consumer reads their own; business owner reads their business's appointments.
+      allow read: if request.auth != null
+        && (resource.data.clientId == request.auth.uid
+            || resource.data.businessId == request.auth.uid);
+
+      allow create: if request.auth != null && (
+        // Consumer creates a booking (main app).
+        // businessId is validated against businessProfiles (open-read), so the client
+        // cannot inject an arbitrary businessId — it must map to a real business profile.
+        // salonId must equal businessId (both are the owner uid) to prevent split injection.
+        (request.resource.data.clientId == request.auth.uid
+          && request.resource.data.type == 'booking'
+          && request.resource.data.status == 'confirmed'
+          && request.resource.data.businessId is string
+          && request.resource.data.salonId == request.resource.data.businessId
+          && exists(/databases/$(database)/documents/businessProfiles/$(request.resource.data.businessId))
+          && request.resource.data.startTime is timestamp
+          && request.resource.data.endTime is timestamp
+          && request.resource.data.serviceId is string
+          && request.resource.data.clientName is string
+          && request.resource.data.notes is string)
+        ||
+        // Business owner creates directly (Rezervo Biz) — manual bookings, walk-in
+        // reservations (clientId may be null), calendar blocks.
+        (request.resource.data.businessId == request.auth.uid)
+      );
+
+      // Consumer cancels their own appointment (status → 'cancelled' only).
+      // clientId and businessId are immutable to prevent ownership reassignment.
+      allow update: if request.auth != null
+        && (
+          (resource.data.clientId == request.auth.uid
+            && request.resource.data.status == 'cancelled'
+            && request.resource.data.clientId == resource.data.clientId
+            && request.resource.data.businessId == resource.data.businessId)
+          ||
+          // Business owner updates status/details (confirm / complete / reschedule /
+          // cancel) via Rezervo Biz.
+          (resource.data.businessId == request.auth.uid
+            && request.resource.data.businessId == resource.data.businessId
+            && request.resource.data.clientId == resource.data.clientId)
+        );
+
+      // Business owner may delete their own business's appointments (Rezervo Biz
+      // account-deletion cascade, see businesses.ts). Consumers can only cancel
+      // via update, never delete.
+      allow delete: if request.auth != null && resource.data.businessId == request.auth.uid;
     }
 
     // Rezervo Biz: top-level, scoped by businessId field set on the document.
@@ -115,8 +157,6 @@ service cloud.firestore {
     // Rezervo Biz: notifications are a SUBCOLLECTION under businesses/{businessId}/notifications
     // (see src/services/notifications.ts), not a top-level collection — scoped by the
     // path segment, with the businessId field on the doc cross-checked on writes.
-    // NOT YET DEPLOYED — added alongside the in-app notifications feature, batch with
-    // any other pending rules before running `firebase deploy --only firestore:rules`.
     match /businesses/{businessId}/notifications/{notificationId} {
       allow read: if request.auth != null && request.auth.uid == businessId;
       allow create: if request.auth != null && request.auth.uid == businessId
@@ -125,13 +165,13 @@ service cloud.firestore {
         && resource.data.businessId == businessId;
     }
 
-    // Rezervo Biz: staff are a SUBCOLLECTION under businesses/{businessId}/staff
-    // (see src/services/staff.ts), not a top-level collection — scoped by the
-    // path segment, with the businessId field on the doc cross-checked on writes.
-    // NOT YET DEPLOYED — added alongside Staff Management, batch with any other
-    // pending rules before running `firebase deploy --only firestore:rules`.
+    // Staff — written only by Rezervo Biz (src/services/staff.ts), but READ by the
+    // consumer app too: salons.ts fetchBusinessStaff() reads this for any
+    // authenticated user browsing a salon (needed to pick a staff member when
+    // booking). Read is intentionally broader than owner-only; write stays
+    // owner-scoped with the businessId field cross-check Rezervo Biz relies on.
     match /businesses/{businessId}/staff/{staffId} {
-      allow read: if request.auth != null && request.auth.uid == businessId;
+      allow read: if request.auth != null;
       allow create: if request.auth != null && request.auth.uid == businessId
         && request.resource.data.businessId == businessId;
       allow update, delete: if request.auth != null && request.auth.uid == businessId
@@ -141,8 +181,6 @@ service cloud.firestore {
     // Rezervo Biz: memberships are a SUBCOLLECTION under businesses/{businessId}/memberships
     // (see src/services/memberships.ts), not a top-level collection — scoped by the
     // path segment, with the businessId field on the doc cross-checked on writes.
-    // NOT YET DEPLOYED — added alongside the Memberships feature, batch with any other
-    // pending rules before running `firebase deploy --only firestore:rules`.
     match /businesses/{businessId}/memberships/{membershipId} {
       allow read: if request.auth != null && request.auth.uid == businessId;
       allow create: if request.auth != null && request.auth.uid == businessId
@@ -154,8 +192,6 @@ service cloud.firestore {
     // Rezervo Biz: packages are a SUBCOLLECTION under businesses/{businessId}/packages
     // (see src/services/packages.ts), not a top-level collection — scoped by the
     // path segment, with the businessId field on the doc cross-checked on writes.
-    // NOT YET DEPLOYED — added alongside the Packages feature, batch with any other
-    // pending rules before running `firebase deploy --only firestore:rules`.
     match /businesses/{businessId}/packages/{packageId} {
       allow read: if request.auth != null && request.auth.uid == businessId;
       allow create: if request.auth != null && request.auth.uid == businessId
@@ -171,6 +207,26 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null &&
         (resource == null ? request.resource.data.businessId : resource.data.businessId) == request.auth.uid;
+    }
+
+    // Legacy collection — kept while old data exists. No new writes target this collection.
+    match /bookings/{bookingId} {
+      allow read: if request.auth != null
+        && resource.data.customerId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.paymentMethod in ['cash', 'card']
+        && request.resource.data.salonId is string
+        && request.resource.data.serviceId is string
+        && request.resource.data.staffId is string
+        && request.resource.data.datetime is timestamp
+        && request.resource.data.notes is string;
+      allow update: if request.auth != null
+        && resource.data.customerId == request.auth.uid
+        && request.resource.data.status == 'cancelled'
+        && request.resource.data.paymentMethod in ['cash', 'card'];
+      allow delete: if false;
     }
   }
 }
