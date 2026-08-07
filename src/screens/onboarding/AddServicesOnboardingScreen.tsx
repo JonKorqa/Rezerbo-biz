@@ -27,14 +27,13 @@ export default function AddServicesOnboardingScreen({ navigation }: Props) {
     [services],
   );
 
-  // Last step of onboarding — replaces the stack with Dashboard the same way
-  // BusinessLocationScreen does for its non-fromEdit case. Adding a service isn't
-  // required, so both buttons lead here with no validation gate.
-  const handleContinue = () => navigation.replace('Dashboard');
+  // Adding a service isn't required, so both buttons lead here with no validation
+  // gate. Business Hours is the next (and last) onboarding step.
+  const handleContinue = () => navigation.navigate('BusinessHours', { onboarding: true });
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <ProgressBar step={5} totalSteps={5} />
+      <ProgressBar step={5} totalSteps={6} />
       <View style={styles.header}>
         <Text style={styles.title}>{t('onboarding.addServices.title')}</Text>
         <Text style={styles.subtitle}>{t('onboarding.addServices.subtitle')}</Text>

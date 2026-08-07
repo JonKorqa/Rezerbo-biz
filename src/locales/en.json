@@ -210,6 +210,7 @@
     "closed": "Closed",
     "opens": "OPENS",
     "closes": "CLOSES",
+    "saveFailed": "Couldn't save your hours. Check your connection and try again.",
     "businessHoursTitle": "Business Hours",
     "businessHoursDescription": "Set your standard business hours here. If you need to make exceptions for specific dates, use Opening Calendar.",
     "openingCalendarTitle": "Opening Calendar",

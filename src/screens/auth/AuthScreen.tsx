@@ -139,7 +139,7 @@ export default function AuthScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <ProgressBar step={1} totalSteps={5} />
+      <ProgressBar step={1} totalSteps={6} />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           contentContainerStyle={styles.content}

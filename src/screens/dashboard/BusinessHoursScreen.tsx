@@ -7,7 +7,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { auth } from '../../services/firebase';
 import { getBusiness, saveBusinessHours } from '../../services/businesses';
-import { Button } from '../../components/ui';
+import { Button, ProgressBar } from '../../components/ui';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import { localeTag } from '../../utils/locale';
@@ -48,7 +48,8 @@ function formatDayHours(day: DayHours, locale: string, closedLabel: string): str
   return day.closed ? closedLabel : `${formatTime(day.start, locale)} - ${formatTime(day.end, locale)}`;
 }
 
-export default function BusinessHoursScreen({ navigation }: Props) {
+export default function BusinessHoursScreen({ navigation, route }: Props) {
+  const isOnboarding = route.params?.onboarding === true;
   const { t, i18n } = useTranslation();
   const locale = localeTag(i18n.language);
   const dayLabels: Record<DayOfWeek, string> = {
@@ -74,6 +75,7 @@ export default function BusinessHoursScreen({ navigation }: Props) {
   const [draft, setDraft] = useState<DayHours | null>(null);
   const [activeTimeField, setActiveTimeField] = useState<'start' | 'end' | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (business?.hours && !hydrated) {
@@ -110,22 +112,34 @@ export default function BusinessHoursScreen({ navigation }: Props) {
   const handleContinue = async () => {
     if (!uid) return;
     setSaving(true);
+    setError(null);
     try {
       await saveBusinessHours(uid, hours);
     } catch (err) {
       console.error('saveBusinessHours failed:', err);
-    } finally {
       setSaving(false);
+      setError(t('scheduleManagement.saveFailed'));
+      return;
     }
-    navigation.goBack();
+    setSaving(false);
+    if (isOnboarding) {
+      navigation.replace('Dashboard');
+    } else {
+      navigation.goBack();
+    }
   };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      {isOnboarding && <ProgressBar step={6} totalSteps={6} />}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={10}>
-          <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
-        </TouchableOpacity>
+        {isOnboarding ? (
+          <View style={{ width: 22 }} />
+        ) : (
+          <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={10}>
+            <Ionicons name="arrow-back" size={22} color={Light.textPrimary} />
+          </TouchableOpacity>
+        )}
         <Text style={styles.headerTitle}>{t('scheduleManagement.title')}</Text>
         <View style={{ width: 22 }} />
       </View>
@@ -146,6 +160,7 @@ export default function BusinessHoursScreen({ navigation }: Props) {
       </ScrollView>
 
       <View style={styles.bottomBar}>
+        {error && <Text style={styles.errorText}>{error}</Text>}
         <Button label={t('common.continue')} onPress={handleContinue} loading={saving} />
       </View>
 
@@ -271,6 +286,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.lg,
+    gap: Spacing.xs,
+  },
+  errorText: {
+    color: Colors.error,
+    fontSize: Typography.fontSize.xs,
+    fontFamily: Typography.fontFamily.regular,
   },
   backdrop: { flex: 1, backgroundColor: Colors.overlay, justifyContent: 'flex-end' },
   sheet: {

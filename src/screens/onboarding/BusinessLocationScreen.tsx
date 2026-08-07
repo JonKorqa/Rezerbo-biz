@@ -125,7 +125,7 @@ export default function BusinessLocationScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <ProgressBar step={4} totalSteps={5} />
+      <ProgressBar step={4} totalSteps={6} />
       <View style={styles.content}>
         <Text style={styles.title}>{t('onboarding.businessLocation.title')}</Text>
         <Text style={styles.subtitle}>{t('onboarding.businessLocation.subtitle')}</Text>
