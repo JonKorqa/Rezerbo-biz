@@ -18,7 +18,7 @@ import { Button } from '../../components/ui';
 import { EmptyState } from '../../components/EmptyState';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
-import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor, findTimeOffForDate } from '../../constants/businessHours';
+import { DEFAULT_BUSINESS_HOURS, effectiveDayHours, findTimeOffForDate } from '../../constants/businessHours';
 import { localeTag } from '../../utils/locale';
 import type { RootStackParamList } from '../../types/navigation';
 
@@ -67,6 +67,7 @@ export default function AppointmentsScreen() {
   }, [uid, appointments]);
 
   const businessHours = { ...DEFAULT_BUSINESS_HOURS, ...business?.hours };
+  const hoursOverrides = business?.hoursOverrides ?? {};
   const timeOff = business?.timeOff ?? [];
 
   const dayAppointments = useMemo(
@@ -75,7 +76,7 @@ export default function AppointmentsScreen() {
   );
 
   const timeOffEntry = findTimeOffForDate(selectedDate, timeOff);
-  const isDayOff = businessHours[dayOfWeekFor(selectedDate)].closed || !!timeOffEntry;
+  const isDayOff = effectiveDayHours(selectedDate, businessHours, hoursOverrides).closed || !!timeOffEntry;
 
   const openAddSheet = () => setShowAddSheet(true);
   const closeAddSheet = () => setShowAddSheet(false);
@@ -158,6 +159,7 @@ export default function AppointmentsScreen() {
         <AgendaList
           appointments={appointments}
           hours={businessHours}
+          hoursOverrides={hoursOverrides}
           timeOff={timeOff}
           defaultColor={business?.calendarColor}
           onEditHours={goToScheduleManagement}

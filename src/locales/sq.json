@@ -203,11 +203,26 @@
     "endDate": "DATA E MBARIMIT"
   },
   "scheduleManagement": {
+    "hubTitle": "Menaxhimi i Orarit",
     "title": "Orari i Biznesit Tënd",
     "subtitle": "Kur mundet klientët me rezervu te ti?",
     "closed": "Mbyllur",
     "opens": "HAPET",
-    "closes": "MBYLLET"
+    "closes": "MBYLLET",
+    "businessHoursTitle": "Orari i Biznesit",
+    "businessHoursDescription": "Cakto këtu orarin standard të biznesit tënd. Nëse do bësh përjashtime për data specifike, përdor Kalendarin e Hapjes.",
+    "openingCalendarTitle": "Kalendari i Hapjes",
+    "openingCalendarDescription": "Rregullo orarin e biznesit ose shto pushim për data specifike."
+  },
+  "openingCalendar": {
+    "subtitle": "Zgjedh një ose ma shumë data, pastaj cakto orar të veçantë ose shënoji si ditë pushimi.",
+    "datesSelected_one": "{{count}} datë e zgjedhur",
+    "datesSelected_other": "{{count}} data të zgjedhura",
+    "clear": "Pastro",
+    "setCustomHours": "Cakto Orar të Veçantë",
+    "markDayOff": "Shëno si Ditë Pushimi",
+    "upcomingExceptions": "Përjashtimet e Ardhshme",
+    "noExceptions": "Nuk ka përjashtime të ardhshme — orari yt i zakonshëm vlen si gjithmonë."
   },
   "calendarColor": {
     "title": "Ngjyrat e Kalendarit",

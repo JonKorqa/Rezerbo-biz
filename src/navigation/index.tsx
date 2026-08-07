@@ -19,6 +19,8 @@ import AddClientScreen from '../screens/dashboard/AddClientScreen';
 import ClientDetailScreen from '../screens/dashboard/ClientDetailScreen';
 import CheckoutCompleteScreen from '../screens/dashboard/CheckoutCompleteScreen';
 import ScheduleManagementScreen from '../screens/dashboard/ScheduleManagementScreen';
+import BusinessHoursScreen from '../screens/dashboard/BusinessHoursScreen';
+import OpeningCalendarScreen from '../screens/dashboard/OpeningCalendarScreen';
 import NotificationsScreen from '../screens/dashboard/NotificationsScreen';
 import CalendarColorScreen from '../screens/dashboard/CalendarColorScreen';
 import CalendarImportScreen from '../screens/dashboard/CalendarImportScreen';
@@ -77,6 +79,8 @@ export default function Navigation() {
           options={{ presentation: 'fullScreenModal', gestureEnabled: false }}
         />
         <Stack.Screen name="ScheduleManagement" component={ScheduleManagementScreen} />
+        <Stack.Screen name="BusinessHours" component={BusinessHoursScreen} />
+        <Stack.Screen name="OpeningCalendar" component={OpeningCalendarScreen} />
         <Stack.Screen name="Notifications" component={NotificationsScreen} />
         <Stack.Screen name="CalendarColorSettings" component={CalendarColorScreen} />
         <Stack.Screen name="CalendarImport" component={CalendarImportScreen} />

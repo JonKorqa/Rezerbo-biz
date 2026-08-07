@@ -48,6 +48,8 @@ export type RootStackParamList = {
   ClientDetail: { clientId: string };
   CheckoutComplete: { amount: number; clientName?: string };
   ScheduleManagement: undefined;
+  BusinessHours: undefined;
+  OpeningCalendar: undefined;
   Notifications: undefined;
   CalendarColorSettings: undefined;
   CalendarImport: undefined;

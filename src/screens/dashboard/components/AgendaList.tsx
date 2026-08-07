@@ -4,10 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radius, Spacing, Typography } from '../../../theme';
 import { Light } from '../../../theme/light';
-import { DEFAULT_BUSINESS_HOURS, dayOfWeekFor, findTimeOffForDate } from '../../../constants/businessHours';
+import { DEFAULT_BUSINESS_HOURS, effectiveDayHours, findTimeOffForDate } from '../../../constants/businessHours';
 import { localeTag } from '../../../utils/locale';
 import type { Appointment } from '../../../types/appointment';
-import type { BusinessHours, TimeOffEntry } from '../../../types/business';
+import type { BusinessHours, DateHoursOverrides, TimeOffEntry } from '../../../types/business';
 import { EmptyState } from '../../../components/EmptyState';
 
 const DAYS_AHEAD = 14;
@@ -26,6 +26,7 @@ function formatDateLabel(date: Date, today: Date, locale: string, todayLabel: st
 interface AgendaListProps {
   appointments: Appointment[];
   hours?: BusinessHours;
+  hoursOverrides?: DateHoursOverrides;
   timeOff?: TimeOffEntry[];
   defaultColor?: string;
   onEditHours: () => void;
@@ -34,6 +35,7 @@ interface AgendaListProps {
 export function AgendaList({
   appointments,
   hours = DEFAULT_BUSINESS_HOURS,
+  hoursOverrides = {},
   timeOff = [],
   defaultColor = Colors.teal,
   onEditHours,
@@ -55,7 +57,7 @@ export function AgendaList({
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {days.map((date) => {
-        const dayHours = hours[dayOfWeekFor(date)];
+        const dayHours = effectiveDayHours(date, hours, hoursOverrides);
         const dayTimeOff = findTimeOffForDate(date, timeOff);
         const isClosed = dayHours.closed || !!dayTimeOff;
         const dayAppointments = appointments

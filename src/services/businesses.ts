@@ -3,6 +3,7 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -12,7 +13,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Business, BusinessHours, BusinessLocationData, TimeOffEntry } from '../types/business';
+import type { Business, BusinessHours, BusinessLocationData, DayHours, TimeOffEntry } from '../types/business';
 
 const collectionName = 'businesses';
 
@@ -67,6 +68,25 @@ export async function saveBusinessHours(uid: string, hours: BusinessHours) {
   await setDoc(
     doc(db, collectionName, uid),
     { hours, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
+// Sets (or replaces) a single date's custom hours, set via Schedule Management's
+// Opening Calendar. merge:true deep-merges into the hoursOverrides map, so other
+// dates' overrides are left untouched.
+export async function saveHoursOverride(uid: string, dateKey: string, hours: DayHours) {
+  await setDoc(
+    doc(db, collectionName, uid),
+    { hoursOverrides: { [dateKey]: hours }, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
+export async function removeHoursOverride(uid: string, dateKey: string) {
+  await setDoc(
+    doc(db, collectionName, uid),
+    { hoursOverrides: { [dateKey]: deleteField() }, updatedAt: serverTimestamp() },
     { merge: true },
   );
 }

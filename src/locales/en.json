@@ -203,11 +203,26 @@
     "endDate": "END DATE"
   },
   "scheduleManagement": {
+    "hubTitle": "Schedule Management",
     "title": "Your Business Hours",
     "subtitle": "When can clients book with you?",
     "closed": "Closed",
     "opens": "OPENS",
-    "closes": "CLOSES"
+    "closes": "CLOSES",
+    "businessHoursTitle": "Business Hours",
+    "businessHoursDescription": "Set your standard business hours here. If you need to make exceptions for specific dates, use Opening Calendar.",
+    "openingCalendarTitle": "Opening Calendar",
+    "openingCalendarDescription": "Adjust business hours or add time off for specific dates."
+  },
+  "openingCalendar": {
+    "subtitle": "Select one or more dates, then set custom hours or mark them as a day off.",
+    "datesSelected_one": "{{count}} date selected",
+    "datesSelected_other": "{{count}} dates selected",
+    "clear": "Clear",
+    "setCustomHours": "Set Custom Hours",
+    "markDayOff": "Mark as Day Off",
+    "upcomingExceptions": "Upcoming Exceptions",
+    "noExceptions": "No upcoming exceptions — your business hours apply as usual."
   },
   "calendarColor": {
     "title": "Calendar Color Scheme",

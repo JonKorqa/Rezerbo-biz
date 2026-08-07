@@ -15,6 +15,11 @@ export interface DayHours {
 
 export type BusinessHours = Record<DayOfWeek, DayHours>;
 
+// Per-date exceptions to the weekly BusinessHours (e.g. open later on a holiday),
+// keyed by local YYYY-MM-DD date. Distinct from TimeOffEntry, which marks a date
+// (or range) fully closed rather than giving it custom hours.
+export type DateHoursOverrides = Record<string, DayHours>;
+
 export interface TimeOffEntry {
   id: string;
   // Local YYYY-MM-DD dates, inclusive on both ends. A single day off has startDate === endDate.
@@ -47,6 +52,7 @@ export interface Business {
   location?: BusinessLocationData;
   hours?: BusinessHours;
   timeOff?: TimeOffEntry[];
+  hoursOverrides?: DateHoursOverrides;
   coverPhotoUrl?: string;
   photoUrl?: string;
   portfolio?: string[];

@@ -1,4 +1,4 @@
-import type { BusinessHours, DayHours, DayOfWeek, TimeOffEntry } from '../types/business';
+import type { BusinessHours, DateHoursOverrides, DayHours, DayOfWeek, TimeOffEntry } from '../types/business';
 import { toDateKey } from '../utils/scheduling';
 
 export const DAY_ORDER: DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -21,4 +21,13 @@ export function dayOfWeekFor(date: Date): DayOfWeek {
 export function findTimeOffForDate(date: Date, timeOff: TimeOffEntry[] = []): TimeOffEntry | undefined {
   const key = toDateKey(date);
   return timeOff.find((entry) => key >= entry.startDate && key <= entry.endDate);
+}
+
+// A per-date override (set via Opening Calendar) takes precedence over the weekly default.
+export function effectiveDayHours(
+  date: Date,
+  hours: BusinessHours,
+  overrides: DateHoursOverrides = {},
+): DayHours {
+  return overrides[toDateKey(date)] ?? hours[dayOfWeekFor(date)];
 }
