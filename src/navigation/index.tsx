@@ -8,6 +8,7 @@ import ConsumerRedirectScreen from '../screens/misc/ConsumerRedirectScreen';
 import BusinessInfoScreen from '../screens/onboarding/BusinessInfoScreen';
 import BusinessCategoryScreen from '../screens/onboarding/BusinessCategoryScreen';
 import BusinessLocationScreen from '../screens/onboarding/BusinessLocationScreen';
+import AddServicesOnboardingScreen from '../screens/onboarding/AddServicesOnboardingScreen';
 import DashboardTabs from './DashboardTabs';
 import NewAppointmentScreen from '../screens/dashboard/NewAppointmentScreen';
 import AddReservationScreen from '../screens/dashboard/AddReservationScreen';
@@ -61,6 +62,7 @@ export default function Navigation() {
         <Stack.Screen name="BusinessInfo" component={BusinessInfoScreen} />
         <Stack.Screen name="BusinessCategory" component={BusinessCategoryScreen} />
         <Stack.Screen name="BusinessLocation" component={BusinessLocationScreen} />
+        <Stack.Screen name="AddServicesOnboarding" component={AddServicesOnboardingScreen} />
         <Stack.Screen name="Dashboard" component={DashboardTabs} />
         <Stack.Screen name="NewAppointment" component={NewAppointmentScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="AddReservation" component={AddReservationScreen} options={{ presentation: 'modal' }} />

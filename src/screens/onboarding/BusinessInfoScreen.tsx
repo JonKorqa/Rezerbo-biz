@@ -67,7 +67,7 @@ export default function BusinessInfoScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <ProgressBar step={2} totalSteps={4} />
+      <ProgressBar step={2} totalSteps={5} />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <Text style={styles.title}>{t('onboarding.businessInfo.title')}</Text>

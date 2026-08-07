@@ -24,6 +24,7 @@ export type RootStackParamList = {
   BusinessInfo: undefined;
   BusinessCategory: undefined;
   BusinessLocation: { fromEdit?: boolean } | undefined;
+  AddServicesOnboarding: undefined;
   Dashboard: NavigatorScreenParams<DashboardTabParamList> | undefined;
   NewAppointment:
     | {

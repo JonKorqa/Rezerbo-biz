@@ -74,7 +74,7 @@ export default function BusinessCategoryScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <ProgressBar step={3} totalSteps={4} />
+      <ProgressBar step={3} totalSteps={5} />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>{t('onboarding.businessCategory.title')}</Text>
         <Text style={styles.subtitle}>{t('onboarding.businessCategory.subtitle')}</Text>

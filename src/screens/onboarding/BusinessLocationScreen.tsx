@@ -112,20 +112,20 @@ export default function BusinessLocationScreen({ navigation, route }: Props) {
       setLoading(false);
     }
     // Reached from Business Details' "Edit" link (fromEdit param set explicitly there) →
-    // pop back to it. Otherwise this is the last step of onboarding → replace the whole
-    // onboarding stack with Dashboard. canGoBack() used to gate this and was unreliable:
-    // onboarding screens are pushed via navigate(), so there's always back history by the
-    // time this screen is reached, even on a fresh signup.
+    // pop back to it. Otherwise this is onboarding → push forward to the Add Services
+    // step. canGoBack() used to gate this and was unreliable: onboarding screens are
+    // pushed via navigate(), so there's always back history by the time this screen is
+    // reached, even on a fresh signup.
     if (route.params?.fromEdit) {
       navigation.goBack();
     } else {
-      navigation.replace('Dashboard');
+      navigation.navigate('AddServicesOnboarding');
     }
   };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <ProgressBar step={4} totalSteps={4} />
+      <ProgressBar step={4} totalSteps={5} />
       <View style={styles.content}>
         <Text style={styles.title}>{t('onboarding.businessLocation.title')}</Text>
         <Text style={styles.subtitle}>{t('onboarding.businessLocation.subtitle')}</Text>
