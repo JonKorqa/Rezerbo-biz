@@ -23,7 +23,7 @@ export type RootStackParamList = {
   ConsumerRedirect: undefined;
   BusinessInfo: undefined;
   BusinessCategory: undefined;
-  BusinessLocation: undefined;
+  BusinessLocation: { fromEdit?: boolean } | undefined;
   Dashboard: NavigatorScreenParams<DashboardTabParamList> | undefined;
   NewAppointment:
     | {

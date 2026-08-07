@@ -548,7 +548,7 @@ export default function BusinessDetailsScreen({ navigation }: Props) {
               <TouchableOpacity
                 style={styles.editChip}
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('BusinessLocation')}
+                onPress={() => navigation.navigate('BusinessLocation', { fromEdit: true })}
               >
                 <Text style={styles.editChipLabel}>{t('common.edit')}</Text>
               </TouchableOpacity>

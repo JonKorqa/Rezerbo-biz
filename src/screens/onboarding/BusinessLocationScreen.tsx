@@ -24,7 +24,7 @@ const DEFAULT_REGION: Region = {
   longitudeDelta: 0.05,
 };
 
-export default function BusinessLocationScreen({ navigation }: Props) {
+export default function BusinessLocationScreen({ navigation, route }: Props) {
   const { t } = useTranslation();
   const mapRef = useRef<MapView>(null);
   const userEditedAddress = useRef(false);
@@ -111,9 +111,12 @@ export default function BusinessLocationScreen({ navigation }: Props) {
     } finally {
       setLoading(false);
     }
-    // Onboarding always pushes this screen fresh (nothing to go back to), but when reached
-    // from Business Details' "Edit" link it's on top of the stack and should just pop back.
-    if (navigation.canGoBack()) {
+    // Reached from Business Details' "Edit" link (fromEdit param set explicitly there) →
+    // pop back to it. Otherwise this is the last step of onboarding → replace the whole
+    // onboarding stack with Dashboard. canGoBack() used to gate this and was unreliable:
+    // onboarding screens are pushed via navigate(), so there's always back history by the
+    // time this screen is reached, even on a fresh signup.
+    if (route.params?.fromEdit) {
       navigation.goBack();
     } else {
       navigation.replace('Dashboard');
