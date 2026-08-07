@@ -19,14 +19,14 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
   const today = useMemo(() => new Date(), []);
 
   const weekDates = useMemo(() => {
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
+    const startOfWeek = new Date(selectedDate);
+    startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(startOfWeek);
       d.setDate(startOfWeek.getDate() + i);
       return d;
     });
-  }, [today]);
+  }, [selectedDate]);
 
   return (
     <View style={styles.row}>
