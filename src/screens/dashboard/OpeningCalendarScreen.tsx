@@ -117,8 +117,13 @@ export default function OpeningCalendarScreen({ navigation }: Props) {
 
   const clearSelection = () => setSelectedDates(new Set());
 
+  // Pre-fills from the existing override when editing a single already-customized date —
+  // otherwise reopening the sheet always shows the generic default and silently overwrites
+  // the real saved hours if the owner taps Save without changing anything.
   const openHoursSheet = () => {
-    setDraftHours(DEFAULT_CUSTOM_HOURS);
+    const [onlyDate] = selectedDates;
+    const existing = selectedDates.size === 1 ? hoursOverrides[onlyDate] : undefined;
+    setDraftHours(existing ?? DEFAULT_CUSTOM_HOURS);
     setShowHoursSheet(true);
   };
 
