@@ -33,7 +33,7 @@ import {
   saveInstagramHandle,
 } from '../../services/businesses';
 import { uploadBusinessImage } from '../../services/imageUpload';
-import { Button, ProgressBar } from '../../components/ui';
+import { Button } from '../../components/ui';
 import { ShareProfileSheet } from '../../components/ShareProfileSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
@@ -261,21 +261,6 @@ export default function ProfileScreen() {
               <Text style={styles.addInstagramLabel}>{t('profile.addInstagram')}</Text>
             </TouchableOpacity>
           )}
-
-          <TouchableOpacity
-            style={styles.progressCard}
-            activeOpacity={0.8}
-            onPress={() => handleStubNav(t('profile.completionChecklist'), 'checkmark-circle-outline')}
-          >
-            <View style={styles.progressCardTop}>
-              <View>
-                <Text style={styles.progressLevel}>{t('profile.novice')}</Text>
-                <Text style={styles.progressLabel}>{t('profile.completedCount', { done: 0, total: 5 })}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color={Light.textMuted} />
-            </View>
-            <ProgressBar step={0} totalSteps={5} />
-          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
@@ -567,29 +552,6 @@ const styles = StyleSheet.create({
     color: Colors.teal,
     fontSize: Typography.fontSize.sm,
     fontFamily: Typography.fontFamily.bold,
-  },
-  progressCard: {
-    width: '100%',
-    backgroundColor: Light.fieldBg,
-    borderRadius: Radius.lg,
-    padding: Spacing.base,
-    marginBottom: Spacing.xl,
-  },
-  progressCardTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
-  },
-  progressLevel: {
-    color: Light.textPrimary,
-    fontSize: Typography.fontSize.base,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  progressLabel: {
-    color: Light.textSecondary,
-    fontSize: Typography.fontSize.sm,
-    fontFamily: Typography.fontFamily.regular,
   },
   rowCard: {
     flexDirection: 'row',
