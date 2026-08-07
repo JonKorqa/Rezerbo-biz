@@ -16,6 +16,7 @@ import { TimeGrid } from './components/TimeGrid';
 import { AgendaList } from './components/AgendaList';
 import { Button } from '../../components/ui';
 import { EmptyState } from '../../components/EmptyState';
+import { DateJumpSheet } from '../../components/DateJumpSheet';
 import { Colors, Radius, Spacing, Typography } from '../../theme';
 import { Light } from '../../theme/light';
 import { DEFAULT_BUSINESS_HOURS, effectiveDayHours, findTimeOffForDate } from '../../constants/businessHours';
@@ -42,6 +43,7 @@ export default function AppointmentsScreen() {
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [showCalendarSettings, setShowCalendarSettings] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const uid = auth.currentUser?.uid;
 
@@ -130,13 +132,13 @@ export default function AppointmentsScreen() {
           </View>
         </TouchableOpacity>
 
-        <View style={styles.headerCenter}>
+        <TouchableOpacity style={styles.headerCenter} activeOpacity={0.7} onPress={() => setShowDatePicker(true)}>
           <View style={styles.headerDateRow}>
             <Text style={styles.headerDate}>{formatHeaderDate(selectedDate, localeTag(i18n.language), t('appointments.today'))}</Text>
             <Ionicons name="chevron-down" size={16} color={Light.textSecondary} />
           </View>
           <Text style={styles.headerHours}>{BUSINESS_HOURS}</Text>
-        </View>
+        </TouchableOpacity>
 
         <TouchableOpacity hitSlop={10} onPress={openCalendarSettings}>
           <Ionicons name="ellipsis-horizontal" size={22} color={Light.textPrimary} />
@@ -253,6 +255,13 @@ export default function AppointmentsScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      <DateJumpSheet
+        visible={showDatePicker}
+        selectedDate={selectedDate}
+        onSelectDate={setSelectedDate}
+        onClose={() => setShowDatePicker(false)}
+      />
     </SafeAreaView>
   );
 }

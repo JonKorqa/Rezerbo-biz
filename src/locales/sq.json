@@ -148,6 +148,7 @@
   },
   "appointments": {
     "today": "Sot",
+    "jumpToDate": "Shko te data",
     "dayOff": "Ditë Pushimi",
     "dayOffUppercase": "DITË PUSHIMI",
     "dayOffUnavailable": "{{label}} - Nuk pranon rezervime",

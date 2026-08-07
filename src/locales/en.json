@@ -148,6 +148,7 @@
   },
   "appointments": {
     "today": "Today",
+    "jumpToDate": "Jump to date",
     "dayOff": "Day Off",
     "dayOffUppercase": "DAY OFF",
     "dayOffUnavailable": "{{label}} - Unavailable for Bookings",
